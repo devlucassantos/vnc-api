@@ -1,0 +1,222 @@
+basePath: /api/v1
+definitions:
+  response.Party:
+    properties:
+      acronym:
+        type: string
+      code:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.SwaggerDeputy:
+    properties:
+      code:
+        example: 87624
+        type: integer
+      cpf:
+        example: "12365478955"
+        type: string
+      created_at:
+        example: "2022-08-07T15:55:00Z"
+        type: string
+      electoral_name:
+        example: José do Povo
+        type: string
+      id:
+        example: a4b04454-f426-44d2-843e-1331510b19ad
+        type: string
+      image_url:
+        example: https://www.camara.leg.br/internet/deputado/bandep/87624.jpg
+        type: string
+      name:
+        example: José da Silva Santos
+        type: string
+      party:
+        $ref: '#/definitions/response.Party'
+      updated_at:
+        example: "2022-08-07T15:55:00Z"
+        type: string
+    type: object
+  response.SwaggerError:
+    properties:
+      message:
+        example: 'Parâmetro inválido: ID da Proposição'
+        type: string
+    type: object
+  response.SwaggerKeyword:
+    properties:
+      created_at:
+        example: "2019-01-02T09:44:00Z"
+        type: string
+      id:
+        example: ae01ec73-306b-4726-9ae7-4a90594ae994
+        type: string
+      keyword:
+        example: Educação
+        type: string
+      updated_at:
+        example: "2019-02-06T09:44:00Z"
+        type: string
+    type: object
+  response.SwaggerOrganization:
+    properties:
+      acronym:
+        example: OVNC
+        type: string
+      code:
+        example: 73214
+        type: integer
+      created_at:
+        example: "2020-12-13T18:37:00Z"
+        type: string
+      id:
+        example: 9d543e6f-20e3-4895-83e4-26b6a976580e
+        type: string
+      name:
+        example: Organização Você na Câmara
+        type: string
+      nickname:
+        example: Org da Câmara
+        type: string
+      updated_at:
+        example: "2020-12-13T18:37:00Z"
+        type: string
+    type: object
+  response.SwaggerProposition:
+    properties:
+      code:
+        example: 9465723
+        type: integer
+      created_at:
+        example: "2023-08-09T14:55:00Z"
+        type: string
+      deputies:
+        items:
+          $ref: '#/definitions/response.SwaggerDeputy'
+        type: array
+      id:
+        example: 9dc67bd9-674f-4e4d-9536-07485335c362
+        type: string
+      keywords:
+        items:
+          $ref: '#/definitions/response.SwaggerKeyword'
+        type: array
+      organizations:
+        items:
+          $ref: '#/definitions/response.SwaggerOrganization'
+        type: array
+      original_text_url:
+        example: https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485
+        type: string
+      submitted_at:
+        example: "2023-08-09T14:25:00Z"
+        type: string
+      summary:
+        example: O presente requerimento foi elaborado pelos deputados...
+        type: string
+      title:
+        example: Requerimento de Votação Nominal-Destaque de Emenda
+        type: string
+      updated_at:
+        example: "2023-08-09T14:55:00Z"
+        type: string
+    type: object
+  response.SwaggerPropositionPagination:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.SwaggerProposition'
+        type: array
+      itens_per_page:
+        example: 25
+        type: integer
+      page:
+        example: 1
+        type: integer
+      total:
+        example: 4562
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: Este repositório é responsável pela leitura dos dados nas bases de
+    dados da Plataforma Você na Câmara.
+  title: VNC Read API
+  version: v1
+paths:
+  /proposition:
+    get:
+      description: Esta requisição é responsável por retornar as proposições mais
+        recentes disponíveis na plataforma Você na Câmara.
+      operationId: GetPropositions
+      parameters:
+      - description: Número da página. Por padrão é 1.
+        in: query
+        name: page
+        type: integer
+      - description: Quantidade de proposições retornadas por página. Por padrão é
+          25.
+        in: query
+        name: itemsPerPage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requisição bem sucedida
+          schema:
+            items:
+              $ref: '#/definitions/response.SwaggerPropositionPagination'
+            type: array
+        "400":
+          description: Algum dado informado durante a requisição é inválido
+          schema:
+            $ref: '#/definitions/response.SwaggerError'
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição
+          schema:
+            $ref: '#/definitions/response.SwaggerError'
+      summary: Listar as proposições mais recentes
+      tags:
+      - Proposições
+  /proposition/{propositionId}:
+    get:
+      description: Esta requisição é responsável por retornar os detalhes de uma proposição
+        pelo seu ID.
+      operationId: GetPropositionById
+      parameters:
+      - description: ID da proposição
+        in: path
+        name: propositionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requisição bem sucedida
+          schema:
+            items:
+              $ref: '#/definitions/response.SwaggerPropositionPagination'
+            type: array
+        "400":
+          description: Algum dado informado durante a requisição é inválido
+          schema:
+            $ref: '#/definitions/response.SwaggerError'
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição
+          schema:
+            $ref: '#/definitions/response.SwaggerError'
+      summary: Buscar os detalhes de uma proposição pelo seu ID
+      tags:
+      - Proposições
+swagger: "2.0"
