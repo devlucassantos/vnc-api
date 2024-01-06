@@ -1,0 +1,29 @@
+package response
+
+import (
+	"github.com/google/uuid"
+	"time"
+	"vnc-read-api/core/domains/news"
+)
+
+type News struct {
+	Id        uuid.UUID `json:"id,omitempty"`
+	Title     string    `json:"title,omitempty"`
+	Content   string    `json:"content,omitempty"`
+	Views     int       `json:"views,omitempty"`
+	Type      string    `json:"type,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+}
+
+func NewNews(news news.News) *News {
+	return &News{
+		Id:        news.Id(),
+		Title:     news.Title(),
+		Content:   news.Content(),
+		Views:     news.Views(),
+		Type:      news.Type(),
+		CreatedAt: news.CreatedAt(),
+		UpdatedAt: news.UpdatedAt(),
+	}
+}

@@ -7,13 +7,14 @@ import (
 )
 
 type Organization struct {
-	Id        uuid.UUID `json:"id"`
-	Code      int       `json:"code"`
-	Name      string    `json:"name"`
-	Acronym   string    `json:"acronym"`
-	Nickname  string    `json:"nickname"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id        uuid.UUID `json:"id,omitempty"`
+	Code      int       `json:"code,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Acronym   string    `json:"acronym,omitempty"`
+	Type      string    `json:"type,omitempty"`
+	Nickname  string    `json:"nickname,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func NewOrganization(organization organization.Organization) *Organization {
@@ -22,6 +23,7 @@ func NewOrganization(organization organization.Organization) *Organization {
 		Code:      organization.Code(),
 		Name:      organization.Name(),
 		Acronym:   organization.Acronym(),
+		Type:      organization.Type(),
 		Nickname:  organization.Nickname(),
 		CreatedAt: organization.CreatedAt(),
 		UpdatedAt: organization.UpdatedAt(),

@@ -16,17 +16,17 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/proposition": {
+        "/news": {
             "get": {
-                "description": "Esta requisição é responsável por retornar as proposições mais recentes disponíveis na plataforma Você na Câmara.",
+                "description": "Esta requisição é responsável por retornar as matérias mais recentes disponíveis na plataforma Você na Câmara.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Proposições"
+                    "Matérias"
                 ],
-                "summary": "Listar as proposições mais recentes",
-                "operationId": "GetPropositions",
+                "summary": "Listagem das matérias mais recentes",
+                "operationId": "GetNews",
                 "parameters": [
                     {
                         "type": "integer",
@@ -36,7 +36,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de proposições retornadas por página. Por padrão é 25.",
+                        "description": "Quantidade de matérias retornadas por página. Por padrão é 25.",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
@@ -47,7 +47,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/response.SwaggerPropositionPagination"
+                                "$ref": "#/definitions/response.SwaggerNewsPagination"
                             }
                         }
                     },
@@ -66,16 +66,61 @@ const docTemplate = `{
                 }
             }
         },
-        "/proposition/{propositionId}": {
+        "/news/newsletter/{newsletterId}": {
             "get": {
-                "description": "Esta requisição é responsável por retornar os detalhes de uma proposição pelo seu ID.",
+                "description": "Esta requisição é responsável por retornar os detalhes do boletim pelo ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Boletins"
+                ],
+                "summary": "Busca dos detalhes do boletim pelo ID",
+                "operationId": "GetNewsletterById",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do boletim",
+                        "name": "newsletterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição bem sucedida",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.SwaggerNewsletter"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Algum dado informado durante a requisição é inválido",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/news/proposition/{propositionId}": {
+            "get": {
+                "description": "Esta requisição é responsável por retornar os detalhes da proposição pelo ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Proposições"
                 ],
-                "summary": "Buscar os detalhes de uma proposição pelo seu ID",
+                "summary": "Busca dos detalhes da proposição pelo ID",
                 "operationId": "GetPropositionById",
                 "parameters": [
                     {
@@ -92,7 +137,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/response.SwaggerPropositionPagination"
+                                "$ref": "#/definitions/response.SwaggerProposition"
                             }
                         }
                     },
@@ -113,32 +158,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "response.Party": {
-            "type": "object",
-            "properties": {
-                "acronym": {
-                    "type": "string"
-                },
-                "code": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "response.SwaggerDeputy": {
             "type": "object",
             "properties": {
@@ -171,7 +190,10 @@ const docTemplate = `{
                     "example": "José da Silva Santos"
                 },
                 "party": {
-                    "$ref": "#/definitions/response.Party"
+                    "$ref": "#/definitions/response.SwaggerParty"
+                },
+                "party_in_the_proposal": {
+                    "$ref": "#/definitions/response.SwaggerParty"
                 },
                 "updated_at": {
                     "type": "string",
@@ -188,24 +210,131 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerKeyword": {
+        "response.SwaggerNews": {
             "type": "object",
             "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "Foi sancionado o projeto de lei que altera a Lei n° 11.033 para prorrogar o Regime Tributário..."
+                },
                 "created_at": {
                     "type": "string",
-                    "example": "2019-01-02T09:44:00Z"
+                    "example": "2024-01-05T20:25:19Z"
                 },
                 "id": {
                     "type": "string",
-                    "example": "ae01ec73-306b-4726-9ae7-4a90594ae994"
+                    "example": "b27947d6-3224-4479-8da4-7917ae16b34d"
                 },
-                "keyword": {
+                "title": {
                     "type": "string",
-                    "example": "Educação"
+                    "example": "Novo projeto de lei impulsiona crescimento do setor portuário até 2028"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Proposição"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2019-02-06T09:44:00Z"
+                    "example": "2024-01-05T20:25:19Z"
+                }
+            }
+        },
+        "response.SwaggerNewsPagination": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerNews"
+                    }
+                },
+                "itens_per_page": {
+                    "type": "integer",
+                    "example": 25
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 4562
+                }
+            }
+        },
+        "response.SwaggerNewsletter": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "O presidente enviou ao Congresso Nacional um projeto de lei que permite a concessão de descontos fiscais..."
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-12-24T19:15:22Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "7963a6dd-f0b8-4065-8e56-6d2a79626db7"
+                },
+                "propositions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerNewsletterProposition"
+                    }
+                },
+                "reference_date": {
+                    "type": "string",
+                    "example": "2023-12-23T16:34:14Z"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Proposta inovadora busca impulsionar o crescimento empresarial"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-12-24T19:15:22Z"
+                }
+            }
+        },
+        "response.SwaggerNewsletterProposition": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 9465723
+                },
+                "content": {
+                    "type": "string",
+                    "example": "O presente requerimento foi elaborado pelos deputados..."
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-08-09T14:55:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "9dc67bd9-674f-4e4d-9536-07485335c362"
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://www.vnc.com.br/news/proposition/image/87624.jpg"
+                },
+                "original_text_url": {
+                    "type": "string",
+                    "example": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"
+                },
+                "submitted_at": {
+                    "type": "string",
+                    "example": "2023-08-09T14:25:00Z"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Requerimento de Votação Nominal-Destaque de Emenda"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-08-09T14:55:00Z"
                 }
             }
         },
@@ -234,11 +363,48 @@ const docTemplate = `{
                 },
                 "nickname": {
                     "type": "string",
+                    "example": "VNC"
+                },
+                "type": {
+                    "type": "string",
                     "example": "Org da Câmara"
                 },
                 "updated_at": {
                     "type": "string",
                     "example": "2020-12-13T18:37:00Z"
+                }
+            }
+        },
+        "response.SwaggerParty": {
+            "type": "object",
+            "properties": {
+                "acronym": {
+                    "type": "string",
+                    "example": "PVNC"
+                },
+                "code": {
+                    "type": "integer",
+                    "example": 78965
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-05-19T18:10:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "9bb4028f-6fa8-493a-9fe8-e3bbd341c794"
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://www.camara.leg.br/internet/Deputado/img/partidos/VNC.gif"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Partido Você na Câmara"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-05-19T18:10:00Z"
                 }
             }
         },
@@ -248,6 +414,10 @@ const docTemplate = `{
                 "code": {
                     "type": "integer",
                     "example": 9465723
+                },
+                "content": {
+                    "type": "string",
+                    "example": "O presente requerimento foi elaborado pelos deputados..."
                 },
                 "created_at": {
                     "type": "string",
@@ -263,11 +433,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "9dc67bd9-674f-4e4d-9536-07485335c362"
                 },
-                "keywords": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerKeyword"
-                    }
+                "image_url": {
+                    "type": "string",
+                    "example": "https://www.vnc.com.br/news/proposition/image/87624.jpg"
                 },
                 "organizations": {
                     "type": "array",
@@ -283,10 +451,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "2023-08-09T14:25:00Z"
                 },
-                "summary": {
-                    "type": "string",
-                    "example": "O presente requerimento foi elaborado pelos deputados..."
-                },
                 "title": {
                     "type": "string",
                     "example": "Requerimento de Votação Nominal-Destaque de Emenda"
@@ -294,29 +458,6 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string",
                     "example": "2023-08-09T14:55:00Z"
-                }
-            }
-        },
-        "response.SwaggerPropositionPagination": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerProposition"
-                    }
-                },
-                "itens_per_page": {
-                    "type": "integer",
-                    "example": 25
-                },
-                "page": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 4562
                 }
             }
         }
