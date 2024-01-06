@@ -10,6 +10,7 @@ type Organization struct {
 	Code      int       `db:"organization_code"`
 	Name      string    `db:"organization_name"`
 	Acronym   string    `db:"organization_acronym"`
+	Type      string    `db:"organization_type"`
 	Nickname  string    `db:"organization_nickname"`
 	Active    bool      `db:"organization_active"`
 	CreatedAt time.Time `db:"organization_created_at"`

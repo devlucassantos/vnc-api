@@ -8,3 +8,11 @@ import (
 func GetPropositionService() interfaces.Proposition {
 	return services.NewPropositionService(GetPropositionPostgresRepository())
 }
+
+func GetNewsletterService() interfaces.Newsletter {
+	return services.NewNewsletterService(GetNewsletterPostgresRepository())
+}
+
+func GetNewsService() interfaces.News {
+	return services.NewNewsService(GetNewsPostgresRepository())
+}

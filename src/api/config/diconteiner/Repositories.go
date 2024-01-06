@@ -12,3 +12,11 @@ func GetPostgresDatabaseManager() *postgres.ConnectionManager {
 func GetPropositionPostgresRepository() repositories.Proposition {
 	return postgres.NewPropositionRepository(GetPostgresDatabaseManager())
 }
+
+func GetNewsletterPostgresRepository() repositories.Newsletter {
+	return postgres.NewNewsletterRepository(GetPostgresDatabaseManager())
+}
+
+func GetNewsPostgresRepository() repositories.News {
+	return postgres.NewNewsRepository(GetPostgresDatabaseManager())
+}

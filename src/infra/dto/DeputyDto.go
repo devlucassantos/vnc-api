@@ -16,4 +16,5 @@ type Deputy struct {
 	CreatedAt     time.Time `db:"deputy_created_at"`
 	UpdatedAt     time.Time `db:"deputy_updated_at"`
 	*Party
+	*PartyInTheProposition
 }

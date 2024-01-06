@@ -1,5 +1,5 @@
 package filter
 
-type PropositionFilter struct {
+type NewsFilter struct {
 	PaginationFilter PaginationFilter
 }

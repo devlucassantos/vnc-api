@@ -7,13 +7,13 @@ import (
 )
 
 type Party struct {
-	Id        uuid.UUID `json:"id"`
-	Code      int       `json:"code"`
-	Name      string    `json:"name"`
-	Acronym   string    `json:"acronym"`
-	ImageUrl  string    `json:"image_url"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id        uuid.UUID `json:"id,omitempty"`
+	Code      int       `json:"code,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Acronym   string    `json:"acronym,omitempty"`
+	ImageUrl  string    `json:"image_url,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func NewParty(party party.Party) *Party {

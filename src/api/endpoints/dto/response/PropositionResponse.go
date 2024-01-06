@@ -7,20 +7,20 @@ import (
 )
 
 type Proposition struct {
-	Id              uuid.UUID      `json:"id"`
-	Code            int            `json:"code"`
-	OriginalTextUrl string         `json:"original_text_url"`
-	Title           string         `json:"title"`
-	Summary         string         `json:"summary"`
-	SubmittedAt     time.Time      `json:"submitted_at"`
-	Deputies        []Deputy       `json:"deputies"`
-	Organizations   []Organization `json:"organizations"`
-	Keywords        []Keyword      `json:"keywords"`
-	CreatedAt       time.Time      `json:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at"`
+	Id              uuid.UUID      `json:"id,omitempty"`
+	Code            int            `json:"code,omitempty"`
+	OriginalTextUrl string         `json:"original_text_url,omitempty"`
+	Title           string         `json:"title,omitempty"`
+	Content         string         `json:"content,omitempty"`
+	SubmittedAt     time.Time      `json:"submitted_at,omitempty"`
+	ImageUrl        string         `json:"image_url,omitempty"`
+	Deputies        []Deputy       `json:"deputies,omitempty"`
+	Organizations   []Organization `json:"organizations,omitempty"`
+	CreatedAt       time.Time      `json:"created_at,omitempty"`
+	UpdatedAt       time.Time      `json:"updated_at,omitempty"`
 }
 
-func NewProposition(proposition proposition.Proposition) Proposition {
+func NewProposition(proposition proposition.Proposition) *Proposition {
 	var deputies []Deputy
 	for _, deputyData := range proposition.Deputies() {
 		deputies = append(deputies, *NewDeputy(deputyData))
@@ -31,21 +31,16 @@ func NewProposition(proposition proposition.Proposition) Proposition {
 		organizations = append(organizations, *NewOrganization(organizationData))
 	}
 
-	var keywords []Keyword
-	for _, keyword := range proposition.Keywords() {
-		keywords = append(keywords, *NewKeyword(keyword))
-	}
-
-	return Proposition{
+	return &Proposition{
 		Id:              proposition.Id(),
 		Code:            proposition.Code(),
 		OriginalTextUrl: proposition.OriginalTextUrl(),
 		Title:           proposition.Title(),
-		Summary:         proposition.Summary(),
+		Content:         proposition.Content(),
 		SubmittedAt:     proposition.SubmittedAt(),
+		ImageUrl:        proposition.ImageUrl(),
 		Deputies:        deputies,
 		Organizations:   organizations,
-		Keywords:        keywords,
 		CreatedAt:       proposition.CreatedAt(),
 		UpdatedAt:       proposition.UpdatedAt(),
 	}
