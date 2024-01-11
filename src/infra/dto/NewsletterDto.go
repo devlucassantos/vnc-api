@@ -13,5 +13,4 @@ type Newsletter struct {
 	Active        bool      `db:"newsletter_active"`
 	CreatedAt     time.Time `db:"newsletter_created_at"`
 	UpdatedAt     time.Time `db:"newsletter_updated_at"`
-	NewsId        uuid.UUID `db:"newsletter_news_id"`
 }

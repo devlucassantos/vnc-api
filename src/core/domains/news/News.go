@@ -10,7 +10,6 @@ type News struct {
 	id        uuid.UUID
 	title     string
 	content   string
-	views     int
 	_type     string
 	active    bool
 	createdAt time.Time
@@ -31,10 +30,6 @@ func (instance *News) Title() string {
 
 func (instance *News) Content() string {
 	return instance.content
-}
-
-func (instance *News) Views() int {
-	return instance.views
 }
 
 func (instance *News) Type() string {

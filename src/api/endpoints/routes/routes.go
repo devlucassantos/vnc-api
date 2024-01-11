@@ -7,6 +7,7 @@ func LoadRoutes() *echo.Echo {
 
 	apiGroup := router.Group("/api/v1")
 	loadDocumentationRoutes(apiGroup)
+	loadResourcesRoutes(apiGroup)
 	loadNewsRoutes(apiGroup)
 
 	return router

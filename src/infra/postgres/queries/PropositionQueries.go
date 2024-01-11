@@ -22,7 +22,8 @@ func (propositionSelectSqlManager) ById() string {
        			COALESCE(proposition.active, true) AS proposition_active,
     			COALESCE(proposition.created_at, '1970-01-01 00:00:00') AS proposition_created_at,
     			COALESCE(proposition.updated_at, '1970-01-01 00:00:00') AS proposition_updated_at,
-    			COALESCE(news.id, '00000000-0000-0000-0000-000000000000') AS proposition_news_id
+    			
+				COALESCE(news.id, '00000000-0000-0000-0000-000000000000') AS news_id
     		FROM proposition
     			INNER JOIN news ON news.proposition_id = proposition.id
     		WHERE proposition.active = true AND news.active = true AND proposition.id = $1`

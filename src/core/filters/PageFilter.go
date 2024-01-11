@@ -1,4 +1,4 @@
-package filter
+package filters
 
 type PaginationFilter struct {
 	Page         *int

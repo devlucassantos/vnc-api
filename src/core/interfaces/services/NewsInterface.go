@@ -1,10 +1,11 @@
 package services
 
 import (
-	"vnc-read-api/api/endpoints/dto/filter"
 	"vnc-read-api/core/domains/news"
+	"vnc-read-api/core/filters"
 )
 
 type News interface {
-	GetNews(filter filter.NewsFilter) ([]news.News, int, error)
+	GetNews(filter filters.NewsFilter) ([]news.News, int, error)
+	GetTrending(filter filters.NewsFilter) ([]news.News, int, error)
 }

@@ -28,8 +28,8 @@ func (instance Proposition) GetPropositionById(id uuid.UUID) (*proposition.Propo
 	}
 	defer instance.connectionManager.endConnection(postgresConnection)
 
-	var propositionData dto.Proposition
-	err = postgresConnection.Get(&propositionData, queries.Proposition().Select().ById(), id)
+	var newsData dto.News
+	err = postgresConnection.Get(&newsData, queries.Proposition().Select().ById(), id)
 	if err != nil {
 		log.Errorf("Erro ao obter os dados da proposição %s no banco de dados: %s", id, err.Error())
 		return nil, err
@@ -72,8 +72,8 @@ func (instance Proposition) GetPropositionById(id uuid.UUID) (*proposition.Propo
 				UpdatedAt(author.Deputy.PartyInTheProposition.UpdatedAt).
 				Build()
 			if err != nil {
-				log.Errorf("Erro construindo a estrutura de dados do partido na proposição %s do(a) deputado(a) "+
-					"%s para a proposição %s: %s", author.Deputy.Party.Id, author.Deputy.Id, id, err.Error())
+				log.Errorf("Erro construindo a estrutura de dados do partido %s durante a proposição pelo(a)"+
+					"deputado(a) %s para a proposição %s: %s", author.Deputy.Party.Id, author.Deputy.Id, id, err.Error())
 			}
 
 			deputyDomain, err := deputy.NewBuilder().
@@ -124,24 +124,24 @@ func (instance Proposition) GetPropositionById(id uuid.UUID) (*proposition.Propo
 	}
 
 	propositionDomain, err := proposition.NewBuilder().
-		Id(propositionData.Id).
-		Code(propositionData.Code).
-		OriginalTextUrl(propositionData.OriginalTextUrl).
-		Title(propositionData.Title).
-		Content(propositionData.Content).
-		SubmittedAt(propositionData.SubmittedAt).
+		Id(newsData.Proposition.Id).
+		Code(newsData.Proposition.Code).
+		OriginalTextUrl(newsData.Proposition.OriginalTextUrl).
+		Title(newsData.Proposition.Title).
+		Content(newsData.Proposition.Content).
+		SubmittedAt(newsData.Proposition.SubmittedAt).
 		Deputies(deputies).
 		Organizations(organizations).
-		Active(propositionData.Active).
-		CreatedAt(propositionData.CreatedAt).
-		UpdatedAt(propositionData.UpdatedAt).
+		Active(newsData.Proposition.Active).
+		CreatedAt(newsData.Proposition.CreatedAt).
+		UpdatedAt(newsData.Proposition.UpdatedAt).
 		Build()
 	if err != nil {
 		log.Errorf("Erro construindo a estrutura de dados da proposição %s: %s", id, err.Error())
 		return nil, err
 	}
 
-	_, err = postgresConnection.Exec(queries.NewsView().Insert(), propositionData.NewsId)
+	_, err = postgresConnection.Exec(queries.NewsView().Insert(), newsData.Id)
 	if err != nil {
 		log.Errorf("Erro ao registrar a visualização da proposição %s: %s", propositionDomain.Id, err.Error())
 	}

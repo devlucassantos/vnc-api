@@ -19,3 +19,7 @@ func NewNewsletterService(repository repositories.Newsletter) *Newsletter {
 func (instance Newsletter) GetNewsletterById(id uuid.UUID) (*newsletter.Newsletter, error) {
 	return instance.repository.GetNewsletterById(id)
 }
+
+func (instance Newsletter) GetNewslettersByPropositionId(propositionId uuid.UUID) ([]newsletter.Newsletter, error) {
+	return instance.repository.GetNewslettersByPropositionId(propositionId)
+}

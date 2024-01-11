@@ -29,7 +29,7 @@ func NewNewsletterHandler(service services.Newsletter) *Newsletter {
 // @Success 200 {array}  response.SwaggerNewsletter "Requisição bem sucedida"
 // @Failure 400 {object} response.SwaggerError      "Algum dado informado durante a requisição é inválido"
 // @Failure 500 {object} response.SwaggerError      "Ocorreu um erro inesperado durante o processamento da requisição"
-// @Router /news/newsletter/{newsletterId} [get]
+// @Router /news/newsletters/{newsletterId} [get]
 func (instance Newsletter) GetNewsletterById(context echo.Context) error {
 	newsletterId, err := uuid.Parse(context.Param("newsletterId"))
 	if err != nil {

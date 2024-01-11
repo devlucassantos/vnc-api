@@ -12,11 +12,15 @@ import (
 )
 
 type Proposition struct {
-	service services.Proposition
+	propositionService services.Proposition
+	newsletterService  services.Newsletter
 }
 
-func NewPropositionHandler(service services.Proposition) *Proposition {
-	return &Proposition{service: service}
+func NewPropositionHandler(propositionService services.Proposition, newsletterService services.Newsletter) *Proposition {
+	return &Proposition{
+		propositionService: propositionService,
+		newsletterService:  newsletterService,
+	}
 }
 
 // GetPropositionById
@@ -29,7 +33,7 @@ func NewPropositionHandler(service services.Proposition) *Proposition {
 // @Success 200 {array}  response.SwaggerProposition "Requisição bem sucedida"
 // @Failure 400 {object} response.SwaggerError       "Algum dado informado durante a requisição é inválido"
 // @Failure 500 {object} response.SwaggerError       "Ocorreu um erro inesperado durante o processamento da requisição"
-// @Router /news/proposition/{propositionId} [get]
+// @Router /news/propositions/{propositionId} [get]
 func (instance Proposition) GetPropositionById(context echo.Context) error {
 	propositionId, err := uuid.Parse(context.Param("propositionId"))
 	if err != nil {
@@ -37,7 +41,7 @@ func (instance Proposition) GetPropositionById(context echo.Context) error {
 		return context.JSON(http.StatusBadRequest, response.NewError(fmt.Sprintf("Parâmetro inválido: ID da proposição")))
 	}
 
-	proposition, err := instance.service.GetPropositionById(propositionId)
+	proposition, err := instance.propositionService.GetPropositionById(propositionId)
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows") {
 			return context.JSON(http.StatusNotFound, response.NewError(fmt.Sprintf("Proposição não encontrada")))
@@ -45,5 +49,18 @@ func (instance Proposition) GetPropositionById(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, response.NewError(err.Error()))
 	}
 
-	return context.JSON(http.StatusOK, response.NewProposition(*proposition))
+	newsletters, err := instance.newsletterService.GetNewslettersByPropositionId(propositionId)
+	if err != nil {
+		return context.JSON(http.StatusInternalServerError, response.NewError(err.Error()))
+	}
+
+	var newsletterList []response.Newsletter
+	for _, newsletter := range newsletters {
+		newsletterList = append(newsletterList, *response.NewNewsletter(newsletter))
+	}
+
+	propositionResponse := response.NewProposition(*proposition)
+	propositionResponse.Newsletters = newsletterList
+
+	return context.JSON(http.StatusOK, propositionResponse)
 }

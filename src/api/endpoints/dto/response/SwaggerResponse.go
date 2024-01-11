@@ -48,17 +48,18 @@ type SwaggerNewsletterProposition struct {
 }
 
 type SwaggerProposition struct {
-	Id              uuid.UUID             `json:"id"                example:"9dc67bd9-674f-4e4d-9536-07485335c362"`
-	Code            int                   `json:"code"              example:"9465723"`
-	OriginalTextUrl string                `json:"original_text_url" example:"https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"`
-	Title           string                `json:"title"             example:"Requerimento de Votação Nominal-Destaque de Emenda"`
-	Content         string                `json:"content"           example:"O presente requerimento foi elaborado pelos deputados..."`
-	SubmittedAt     time.Time             `json:"submitted_at"      example:"2023-08-09T14:25:00Z"`
-	ImageUrl        string                `json:"image_url"         example:"https://www.vnc.com.br/news/proposition/image/87624.jpg"`
-	Deputies        []SwaggerDeputy       `json:"deputies"`
-	Organizations   []SwaggerOrganization `json:"organizations"`
-	CreatedAt       time.Time             `json:"created_at"        example:"2023-08-09T14:55:00Z"`
-	UpdatedAt       time.Time             `json:"updated_at"        example:"2023-08-09T14:55:00Z"`
+	Id              uuid.UUID                      `json:"id"                example:"9dc67bd9-674f-4e4d-9536-07485335c362"`
+	Code            int                            `json:"code"              example:"9465723"`
+	OriginalTextUrl string                         `json:"original_text_url" example:"https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"`
+	Title           string                         `json:"title"             example:"Requerimento de Votação Nominal-Destaque de Emenda"`
+	Content         string                         `json:"content"           example:"O presente requerimento foi elaborado pelos deputados..."`
+	SubmittedAt     time.Time                      `json:"submitted_at"      example:"2023-08-09T14:25:00Z"`
+	ImageUrl        string                         `json:"image_url"         example:"https://www.vnc.com.br/news/proposition/image/87624.jpg"`
+	Deputies        []SwaggerDeputy                `json:"deputies"`
+	Organizations   []SwaggerOrganization          `json:"organizations"`
+	Newsletters     []SwaggerNewsletterProposition `json:"newsletters"`
+	CreatedAt       time.Time                      `json:"created_at"        example:"2023-08-09T14:55:00Z"`
+	UpdatedAt       time.Time                      `json:"updated_at"        example:"2023-08-09T14:55:00Z"`
 }
 
 type SwaggerDeputy struct {
@@ -93,4 +94,22 @@ type SwaggerOrganization struct {
 	Type      string    `json:"type"       example:"Org da Câmara"`
 	CreatedAt time.Time `json:"created_at" example:"2020-12-13T18:37:00Z"`
 	UpdatedAt time.Time `json:"updated_at" example:"2020-12-13T18:37:00Z"`
+}
+
+type SwaggerResources struct {
+	Parties       []SwaggerParty          `json:"parties"`
+	Deputies      []SwaggerDeputyResource `json:"deputies"`
+	Organizations []SwaggerOrganization   `json:"organizations"`
+}
+
+type SwaggerDeputyResource struct {
+	Id            uuid.UUID     `json:"id"             example:"a4b04454-f426-44d2-843e-1331510b19ad"`
+	Code          int           `json:"code"           example:"87624"`
+	Cpf           string        `json:"cpf"            example:"12365478955"`
+	Name          string        `json:"name"           example:"José da Silva Santos"`
+	ElectoralName string        `json:"electoral_name" example:"José do Povo"`
+	ImageUrl      string        `json:"image_url"      example:"https://www.camara.leg.br/internet/deputado/bandep/87624.jpg"`
+	CreatedAt     time.Time     `json:"created_at"     example:"2022-08-07T15:55:00Z"`
+	UpdatedAt     time.Time     `json:"updated_at"     example:"2022-08-07T15:55:00Z"`
+	Party         *SwaggerParty `json:"party"`
 }

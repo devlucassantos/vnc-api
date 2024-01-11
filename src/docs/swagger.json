@@ -21,6 +21,48 @@
                 "operationId": "GetNews",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
+                        "name": "content",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do deputado que elaborou a proposição.",
+                        "name": "deputyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do partido que elaborou a proposição.",
+                        "name": "partyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID da organização que elaborou a proposição.",
+                        "name": "organizationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'.",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Número da página. Por padrão é 1.",
                         "name": "page",
@@ -58,7 +100,7 @@
                 }
             }
         },
-        "/news/newsletter/{newsletterId}": {
+        "/news/newsletters/{newsletterId}": {
             "get": {
                 "description": "Esta requisição é responsável por retornar os detalhes do boletim pelo ID.",
                 "produces": [
@@ -103,7 +145,7 @@
                 }
             }
         },
-        "/news/proposition/{propositionId}": {
+        "/news/propositions/{propositionId}": {
             "get": {
                 "description": "Esta requisição é responsável por retornar os detalhes da proposição pelo ID.",
                 "produces": [
@@ -137,6 +179,128 @@
                         "description": "Algum dado informado durante a requisição é inválido",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/news/trending": {
+            "get": {
+                "description": "Esta requisição é responsável por retornar as matérias mais populares disponíveis na plataforma Você na Câmara.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Matérias"
+                ],
+                "summary": "Listagem das matérias mais populares",
+                "operationId": "GetTrending",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
+                        "name": "content",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do deputado que elaborou a proposição.",
+                        "name": "deputyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do partido que elaborou a proposição.",
+                        "name": "partyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID da organização que elaborou a proposição.",
+                        "name": "organizationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'.",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número da página. Por padrão é 1.",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Quantidade de matérias retornadas por página. Por padrão é 25.",
+                        "name": "itemsPerPage",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição bem sucedida",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.SwaggerNewsPagination"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Algum dado informado durante a requisição é inválido",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/resources": {
+            "get": {
+                "description": "Esta requisição é responsável por retornar todos os recursos da plataforma.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recursos"
+                ],
+                "summary": "Busca de todos os recursos",
+                "operationId": "GetResources",
+                "responses": {
+                    "200": {
+                        "description": "Requisição bem sucedida",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.SwaggerResources"
+                            }
                         }
                     },
                     "500": {
@@ -185,6 +349,46 @@
                     "$ref": "#/definitions/response.SwaggerParty"
                 },
                 "party_in_the_proposal": {
+                    "$ref": "#/definitions/response.SwaggerParty"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2022-08-07T15:55:00Z"
+                }
+            }
+        },
+        "response.SwaggerDeputyResource": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 87624
+                },
+                "cpf": {
+                    "type": "string",
+                    "example": "12365478955"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2022-08-07T15:55:00Z"
+                },
+                "electoral_name": {
+                    "type": "string",
+                    "example": "José do Povo"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "a4b04454-f426-44d2-843e-1331510b19ad"
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://www.camara.leg.br/internet/deputado/bandep/87624.jpg"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "José da Silva Santos"
+                },
+                "party": {
                     "$ref": "#/definitions/response.SwaggerParty"
                 },
                 "updated_at": {
@@ -429,6 +633,12 @@
                     "type": "string",
                     "example": "https://www.vnc.com.br/news/proposition/image/87624.jpg"
                 },
+                "newsletters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerNewsletterProposition"
+                    }
+                },
                 "organizations": {
                     "type": "array",
                     "items": {
@@ -450,6 +660,29 @@
                 "updated_at": {
                     "type": "string",
                     "example": "2023-08-09T14:55:00Z"
+                }
+            }
+        },
+        "response.SwaggerResources": {
+            "type": "object",
+            "properties": {
+                "deputies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerDeputyResource"
+                    }
+                },
+                "organizations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerOrganization"
+                    }
+                },
+                "parties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerParty"
+                    }
                 }
             }
         }

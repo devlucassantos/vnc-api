@@ -5,6 +5,10 @@ import (
 	"vnc-read-api/core/services"
 )
 
+func GetResourcesService() interfaces.Resources {
+	return services.NewResourcesService(GetResourcesPostgresRepository())
+}
+
 func GetPropositionService() interfaces.Proposition {
 	return services.NewPropositionService(GetPropositionPostgresRepository())
 }

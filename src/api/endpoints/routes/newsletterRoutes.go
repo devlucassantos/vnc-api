@@ -8,5 +8,5 @@ import (
 func loadNewsletterRoutes(group *echo.Group) {
 	newsletterHandler := diconteiner.GetNewsletterHandler()
 
-	group.GET("/newsletter/:newsletterId", newsletterHandler.GetNewsletterById)
+	group.GET("/newsletters/:newsletterId", newsletterHandler.GetNewsletterById)
 }
