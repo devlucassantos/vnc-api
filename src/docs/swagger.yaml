@@ -233,10 +233,8 @@ definitions:
       image_url:
         example: https://www.vnc.com.br/news/proposition/image/87624.jpg
         type: string
-      newsletters:
-        items:
-          $ref: '#/definitions/response.SwaggerNewsletterProposition'
-        type: array
+      newsletter:
+        $ref: '#/definitions/response.SwaggerNewsletterProposition'
       organizations:
         items:
           $ref: '#/definitions/response.SwaggerOrganization'

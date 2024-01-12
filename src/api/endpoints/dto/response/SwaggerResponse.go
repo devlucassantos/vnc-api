@@ -48,18 +48,18 @@ type SwaggerNewsletterProposition struct {
 }
 
 type SwaggerProposition struct {
-	Id              uuid.UUID                      `json:"id"                example:"9dc67bd9-674f-4e4d-9536-07485335c362"`
-	Code            int                            `json:"code"              example:"9465723"`
-	OriginalTextUrl string                         `json:"original_text_url" example:"https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"`
-	Title           string                         `json:"title"             example:"Requerimento de Votação Nominal-Destaque de Emenda"`
-	Content         string                         `json:"content"           example:"O presente requerimento foi elaborado pelos deputados..."`
-	SubmittedAt     time.Time                      `json:"submitted_at"      example:"2023-08-09T14:25:00Z"`
-	ImageUrl        string                         `json:"image_url"         example:"https://www.vnc.com.br/news/proposition/image/87624.jpg"`
-	Deputies        []SwaggerDeputy                `json:"deputies"`
-	Organizations   []SwaggerOrganization          `json:"organizations"`
-	Newsletters     []SwaggerNewsletterProposition `json:"newsletters"`
-	CreatedAt       time.Time                      `json:"created_at"        example:"2023-08-09T14:55:00Z"`
-	UpdatedAt       time.Time                      `json:"updated_at"        example:"2023-08-09T14:55:00Z"`
+	Id              uuid.UUID                    `json:"id"                example:"9dc67bd9-674f-4e4d-9536-07485335c362"`
+	Code            int                          `json:"code"              example:"9465723"`
+	OriginalTextUrl string                       `json:"original_text_url" example:"https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"`
+	Title           string                       `json:"title"             example:"Requerimento de Votação Nominal-Destaque de Emenda"`
+	Content         string                       `json:"content"           example:"O presente requerimento foi elaborado pelos deputados..."`
+	SubmittedAt     time.Time                    `json:"submitted_at"      example:"2023-08-09T14:25:00Z"`
+	ImageUrl        string                       `json:"image_url"         example:"https://www.vnc.com.br/news/proposition/image/87624.jpg"`
+	Deputies        []SwaggerDeputy              `json:"deputies"`
+	Organizations   []SwaggerOrganization        `json:"organizations"`
+	Newsletter      SwaggerNewsletterProposition `json:"newsletter"`
+	CreatedAt       time.Time                    `json:"created_at"        example:"2023-08-09T14:55:00Z"`
+	UpdatedAt       time.Time                    `json:"updated_at"        example:"2023-08-09T14:55:00Z"`
 }
 
 type SwaggerDeputy struct {

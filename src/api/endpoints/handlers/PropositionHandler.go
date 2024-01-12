@@ -49,18 +49,16 @@ func (instance Proposition) GetPropositionById(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, response.NewError(err.Error()))
 	}
 
-	newsletters, err := instance.newsletterService.GetNewslettersByPropositionId(propositionId)
+	newsletter, err := instance.newsletterService.GetNewsletterByPropositionId(propositionId)
 	if err != nil {
-		return context.JSON(http.StatusInternalServerError, response.NewError(err.Error()))
-	}
-
-	var newsletterList []response.Newsletter
-	for _, newsletter := range newsletters {
-		newsletterList = append(newsletterList, *response.NewNewsletter(newsletter))
+		log.Error("Erro ao obter os dados do boletim relacionado a proposição %s: %s", propositionId, err.Error())
 	}
 
 	propositionResponse := response.NewProposition(*proposition)
-	propositionResponse.Newsletters = newsletterList
+
+	if newsletter != nil {
+		propositionResponse.Newsletter = response.NewNewsletter(*newsletter)
+	}
 
 	return context.JSON(http.StatusOK, propositionResponse)
 }

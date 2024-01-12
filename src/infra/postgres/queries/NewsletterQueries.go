@@ -38,5 +38,6 @@ func (newsletterSelectSqlManager) ByPropositionId() string {
 			FROM newsletter
 				INNER JOIN news ON news.newsletter_id = newsletter.id
 				INNER JOIN newsletter_proposition ON newsletter_proposition.newsletter_id = newsletter.id
-			WHERE newsletter.active = true AND news.active = true AND newsletter_proposition.proposition_id = $1`
+			WHERE newsletter.active = true AND news.active = true AND newsletter_proposition.proposition_id = $1
+			ORDER BY newsletter.created_at DESC LIMIT 1`
 }

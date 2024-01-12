@@ -84,38 +84,33 @@ func (instance Newsletter) GetNewsletterById(id uuid.UUID) (*newsletter.Newslett
 	return newsletterDomain, nil
 }
 
-func (instance Newsletter) GetNewslettersByPropositionId(propositionId uuid.UUID) ([]newsletter.Newsletter, error) {
+func (instance Newsletter) GetNewsletterByPropositionId(propositionId uuid.UUID) (*newsletter.Newsletter, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
 		return nil, err
 	}
 	defer instance.connectionManager.endConnection(postgresConnection)
 
-	var newsletters []dto.News
-	err = postgresConnection.Select(&newsletters, queries.Newsletter().Select().ByPropositionId(), propositionId)
+	var newsletterData dto.Newsletter
+	err = postgresConnection.Get(&newsletterData, queries.Newsletter().Select().ByPropositionId(), propositionId)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos boletins relacionados a proposição %s no banco de dados: %s", propositionId, err.Error())
+		log.Errorf("Erro ao obter os dados do boletim relacionado a proposição %s no banco de dados: %s", propositionId, err.Error())
 		return nil, err
 	}
 
-	var newsletterList []newsletter.Newsletter
-	for _, newsletterData := range newsletters {
-		newsletterDomain, err := newsletter.NewBuilder().
-			Id(newsletterData.Newsletter.Id).
-			Title(newsletterData.Newsletter.Title).
-			Content(newsletterData.Newsletter.Content).
-			ReferenceDate(newsletterData.Newsletter.ReferenceDate).
-			Active(newsletterData.Newsletter.Active).
-			CreatedAt(newsletterData.Newsletter.CreatedAt).
-			UpdatedAt(newsletterData.Newsletter.UpdatedAt).
-			Build()
-		if err != nil {
-			log.Errorf("Erro construindo a estrutura de dados dos boletins relacionados a proposição %s: %s", propositionId, err.Error())
-			return nil, err
-		}
-
-		newsletterList = append(newsletterList, *newsletterDomain)
+	newsletterDomain, err := newsletter.NewBuilder().
+		Id(newsletterData.Id).
+		Title(newsletterData.Title).
+		Content(newsletterData.Content).
+		ReferenceDate(newsletterData.ReferenceDate).
+		Active(newsletterData.Active).
+		CreatedAt(newsletterData.CreatedAt).
+		UpdatedAt(newsletterData.UpdatedAt).
+		Build()
+	if err != nil {
+		log.Errorf("Erro construindo a estrutura de dados do boletim relacionado a proposição %s: %s", propositionId, err.Error())
+		return nil, err
 	}
 
-	return newsletterList, nil
+	return newsletterDomain, nil
 }

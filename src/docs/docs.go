@@ -641,11 +641,8 @@ const docTemplate = `{
                     "type": "string",
                     "example": "https://www.vnc.com.br/news/proposition/image/87624.jpg"
                 },
-                "newsletters": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerNewsletterProposition"
-                    }
+                "newsletter": {
+                    "$ref": "#/definitions/response.SwaggerNewsletterProposition"
                 },
                 "organizations": {
                     "type": "array",
