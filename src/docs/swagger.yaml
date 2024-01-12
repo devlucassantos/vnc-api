@@ -31,6 +31,35 @@ definitions:
         example: "2022-08-07T15:55:00Z"
         type: string
     type: object
+  response.SwaggerDeputyResource:
+    properties:
+      code:
+        example: 87624
+        type: integer
+      cpf:
+        example: "12365478955"
+        type: string
+      created_at:
+        example: "2022-08-07T15:55:00Z"
+        type: string
+      electoral_name:
+        example: José do Povo
+        type: string
+      id:
+        example: a4b04454-f426-44d2-843e-1331510b19ad
+        type: string
+      image_url:
+        example: https://www.camara.leg.br/internet/deputado/bandep/87624.jpg
+        type: string
+      name:
+        example: José da Silva Santos
+        type: string
+      party:
+        $ref: '#/definitions/response.SwaggerParty'
+      updated_at:
+        example: "2022-08-07T15:55:00Z"
+        type: string
+    type: object
   response.SwaggerError:
     properties:
       message:
@@ -204,6 +233,8 @@ definitions:
       image_url:
         example: https://www.vnc.com.br/news/proposition/image/87624.jpg
         type: string
+      newsletter:
+        $ref: '#/definitions/response.SwaggerNewsletterProposition'
       organizations:
         items:
           $ref: '#/definitions/response.SwaggerOrganization'
@@ -221,6 +252,21 @@ definitions:
         example: "2023-08-09T14:55:00Z"
         type: string
     type: object
+  response.SwaggerResources:
+    properties:
+      deputies:
+        items:
+          $ref: '#/definitions/response.SwaggerDeputyResource'
+        type: array
+      organizations:
+        items:
+          $ref: '#/definitions/response.SwaggerOrganization'
+        type: array
+      parties:
+        items:
+          $ref: '#/definitions/response.SwaggerParty'
+        type: array
+    type: object
 info:
   contact: {}
   description: Este repositório é responsável pela leitura dos dados nas bases de
@@ -234,6 +280,35 @@ paths:
         disponíveis na plataforma Você na Câmara.
       operationId: GetNews
       parameters:
+      - description: Parte do conteúdo das matérias, no título ou conteúdo.
+        in: query
+        name: content
+        type: string
+      - description: ID do deputado que elaborou a proposição.
+        in: query
+        name: deputyId
+        type: string
+      - description: ID do partido que elaborou a proposição.
+        in: query
+        name: partyId
+        type: string
+      - description: ID da organização que elaborou a proposição.
+        in: query
+        name: organizationId
+        type: string
+      - description: 'Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD'
+        in: query
+        name: startDate
+        type: string
+      - description: 'Data final para submissão da proposta. Formato aceito: YYYY-MM-DD'
+        in: query
+        name: endDate
+        type: string
+      - description: 'Tipo das matérias. Por padrão retorna todos os tipos. Valores
+          permitidos: ''Proposição'', ''Boletim''.'
+        in: query
+        name: type
+        type: string
       - description: Número da página. Por padrão é 1.
         in: query
         name: page
@@ -262,7 +337,7 @@ paths:
       summary: Listagem das matérias mais recentes
       tags:
       - Matérias
-  /news/newsletter/{newsletterId}:
+  /news/newsletters/{newsletterId}:
     get:
       description: Esta requisição é responsável por retornar os detalhes do boletim
         pelo ID.
@@ -293,7 +368,7 @@ paths:
       summary: Busca dos detalhes do boletim pelo ID
       tags:
       - Boletins
-  /news/proposition/{propositionId}:
+  /news/propositions/{propositionId}:
     get:
       description: Esta requisição é responsável por retornar os detalhes da proposição
         pelo ID.
@@ -324,4 +399,88 @@ paths:
       summary: Busca dos detalhes da proposição pelo ID
       tags:
       - Proposições
+  /news/trending:
+    get:
+      description: Esta requisição é responsável por retornar as matérias mais populares
+        disponíveis na plataforma Você na Câmara.
+      operationId: GetTrending
+      parameters:
+      - description: Parte do conteúdo das matérias, no título ou conteúdo.
+        in: query
+        name: content
+        type: string
+      - description: ID do deputado que elaborou a proposição.
+        in: query
+        name: deputyId
+        type: string
+      - description: ID do partido que elaborou a proposição.
+        in: query
+        name: partyId
+        type: string
+      - description: ID da organização que elaborou a proposição.
+        in: query
+        name: organizationId
+        type: string
+      - description: 'Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD'
+        in: query
+        name: startDate
+        type: string
+      - description: 'Data final para submissão da proposta. Formato aceito: YYYY-MM-DD'
+        in: query
+        name: endDate
+        type: string
+      - description: 'Tipo das matérias. Por padrão retorna todos os tipos. Valores
+          permitidos: ''Proposição'', ''Boletim''.'
+        in: query
+        name: type
+        type: string
+      - description: Número da página. Por padrão é 1.
+        in: query
+        name: page
+        type: integer
+      - description: Quantidade de matérias retornadas por página. Por padrão é 25.
+        in: query
+        name: itemsPerPage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requisição bem sucedida
+          schema:
+            items:
+              $ref: '#/definitions/response.SwaggerNewsPagination'
+            type: array
+        "400":
+          description: Algum dado informado durante a requisição é inválido
+          schema:
+            $ref: '#/definitions/response.SwaggerError'
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição
+          schema:
+            $ref: '#/definitions/response.SwaggerError'
+      summary: Listagem das matérias mais populares
+      tags:
+      - Matérias
+  /resources:
+    get:
+      description: Esta requisição é responsável por retornar todos os recursos da
+        plataforma.
+      operationId: GetResources
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requisição bem sucedida
+          schema:
+            items:
+              $ref: '#/definitions/response.SwaggerResources'
+            type: array
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição
+          schema:
+            $ref: '#/definitions/response.SwaggerError'
+      summary: Busca de todos os recursos
+      tags:
+      - Recursos
 swagger: "2.0"

@@ -13,4 +13,5 @@ func loadNewsRoutes(group *echo.Group) {
 	loadNewsletterRoutes(group)
 
 	group.GET("", newsHandler.GetNews)
+	group.GET("/trending", newsHandler.GetTrending)
 }

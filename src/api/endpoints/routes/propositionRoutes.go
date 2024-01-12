@@ -8,5 +8,5 @@ import (
 func loadPropositionRoutes(group *echo.Group) {
 	propositionHandler := diconteiner.GetPropositionHandler()
 
-	group.GET("/proposition/:propositionId", propositionHandler.GetPropositionById)
+	group.GET("/propositions/:propositionId", propositionHandler.GetPropositionById)
 }

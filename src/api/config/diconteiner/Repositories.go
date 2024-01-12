@@ -9,6 +9,10 @@ func GetPostgresDatabaseManager() *postgres.ConnectionManager {
 	return postgres.NewPostgresConnectionManager()
 }
 
+func GetResourcesPostgresRepository() repositories.Resources {
+	return postgres.NewResourcesRepository(GetPostgresDatabaseManager())
+}
+
 func GetPropositionPostgresRepository() repositories.Proposition {
 	return postgres.NewPropositionRepository(GetPostgresDatabaseManager())
 }

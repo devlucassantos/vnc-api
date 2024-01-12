@@ -16,6 +16,7 @@ type Proposition struct {
 	ImageUrl        string         `json:"image_url,omitempty"`
 	Deputies        []Deputy       `json:"deputies,omitempty"`
 	Organizations   []Organization `json:"organizations,omitempty"`
+	Newsletter      *Newsletter    `json:"newsletter,omitempty"`
 	CreatedAt       time.Time      `json:"created_at,omitempty"`
 	UpdatedAt       time.Time      `json:"updated_at,omitempty"`
 }

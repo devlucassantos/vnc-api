@@ -1,8 +1,8 @@
 package services
 
 import (
-	"vnc-read-api/api/endpoints/dto/filter"
 	"vnc-read-api/core/domains/news"
+	"vnc-read-api/core/filters"
 	"vnc-read-api/core/interfaces/repositories"
 )
 
@@ -16,6 +16,10 @@ func NewNewsService(repository repositories.News) *News {
 	}
 }
 
-func (instance News) GetNews(filter filter.NewsFilter) ([]news.News, int, error) {
+func (instance News) GetNews(filter filters.NewsFilter) ([]news.News, int, error) {
 	return instance.repository.GetNews(filter)
+}
+
+func (instance News) GetTrending(filter filters.NewsFilter) ([]news.News, int, error) {
+	return instance.repository.GetTrending(filter)
 }

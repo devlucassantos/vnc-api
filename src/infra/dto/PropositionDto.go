@@ -15,5 +15,4 @@ type Proposition struct {
 	Active          bool      `db:"proposition_active"`
 	CreatedAt       time.Time `db:"proposition_created_at"`
 	UpdatedAt       time.Time `db:"proposition_updated_at"`
-	NewsId          uuid.UUID `db:"proposition_news_id"`
 }

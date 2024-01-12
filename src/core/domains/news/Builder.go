@@ -44,15 +44,6 @@ func (instance *builder) Content(content string) *builder {
 	return instance
 }
 
-func (instance *builder) Views(views int) *builder {
-	if views < 0 {
-		instance.invalidFields = append(instance.invalidFields, "O número de visualizações da matéria é inválido")
-		return instance
-	}
-	instance.news.views = views
-	return instance
-}
-
 func (instance *builder) Type(_type string) *builder {
 	_type = strings.TrimSpace(_type)
 	if len(_type) == 0 {
