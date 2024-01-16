@@ -1,8 +1,8 @@
 package services
 
 import (
+	"github.com/devlucassantos/vnc-domains/src/domains/newsletter"
 	"github.com/google/uuid"
-	"vnc-read-api/core/domains/newsletter"
 	"vnc-read-api/core/interfaces/repositories"
 )
 

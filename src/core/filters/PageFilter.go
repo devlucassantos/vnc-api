@@ -6,7 +6,7 @@ type PaginationFilter struct {
 }
 
 const DefaultPageNumberFilter = 1
-const DefaultNumberOfItemsPerPageFilter = 25
+const DefaultNumberOfItemsPerPageFilter = 15
 
 func (instance PaginationFilter) GetPage() int {
 	if instance.Page == nil {

@@ -1,9 +1,9 @@
 package services
 
 import (
-	"vnc-read-api/core/domains/deputy"
-	"vnc-read-api/core/domains/organization"
-	"vnc-read-api/core/domains/party"
+	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
+	"github.com/devlucassantos/vnc-domains/src/domains/organization"
+	"github.com/devlucassantos/vnc-domains/src/domains/party"
 )
 
 type Resources interface {

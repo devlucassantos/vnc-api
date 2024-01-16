@@ -1,9 +1,9 @@
 package response
 
 import (
+	"github.com/devlucassantos/vnc-domains/src/domains/organization"
 	"github.com/google/uuid"
 	"time"
-	"vnc-read-api/core/domains/organization"
 )
 
 type Organization struct {

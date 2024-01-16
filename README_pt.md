@@ -8,8 +8,13 @@ também o container responsável por executar este código, deste modo você pod
 
 ## Como Executar
 
-> Observe que para executar corretamente o `vnc-read-api` você precisará ter os [containers do `vnc-database`](https://github.com/devlucassantos/vnc-database)
-em execução de modo que o container desta aplicação tenha acesso aos bancos de dados necessários para a consulta dos dados.
+### Pré-requisitos
+
+> Observe que para executar corretamente o `vnc-read-api` você precisará ter os
+[containers do `vnc-databases`](https://github.com/devlucassantos/vnc-databases) em execução de modo que o container
+desta aplicação tenha acesso aos bancos de dados necessários para a consulta dos dados.
+
+### Executando via Docker
 
 Para executar a API você precisará ter o [Docker](https://www.docker.com) instalado na sua máquina e executar o seguinte
 comando no diretório raiz deste projeto:
@@ -17,6 +22,12 @@ comando no diretório raiz deste projeto:
 ````shell
 docker compose up
 ````
+
+### Documentação
+
+Após a execução do projeto, todas as rotas disponíveis para acesso à API podem ser encontradas através do link:
+
+> [http://localhost:8084/api/v1/documentation/index.html](http://localhost:8084/api/v1/documentation/index.html)
 
 ## Você Na Câmara (VNC)
 

@@ -11,7 +11,7 @@ type SwaggerError struct {
 
 type SwaggerNewsPagination struct {
 	Page         int           `json:"page"           example:"1"`
-	ItensPerPage int           `json:"itens_per_page" example:"25"`
+	ItensPerPage int           `json:"itens_per_page" example:"15"`
 	Total        int           `json:"total"          example:"4562"`
 	Data         []SwaggerNews `json:"data"`
 }
