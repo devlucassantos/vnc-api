@@ -1,7 +1,7 @@
 package services
 
 import (
-	"vnc-read-api/core/domains/news"
+	"github.com/devlucassantos/vnc-domains/src/domains/news"
 	"vnc-read-api/core/filters"
 	"vnc-read-api/core/interfaces/repositories"
 )

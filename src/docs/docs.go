@@ -78,7 +78,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por página. Por padrão é 25.",
+                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15.",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
@@ -260,7 +260,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por página. Por padrão é 25.",
+                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15.",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
@@ -454,7 +454,7 @@ const docTemplate = `{
                 },
                 "itens_per_page": {
                     "type": "integer",
-                    "example": 25
+                    "example": 15
                 },
                 "page": {
                     "type": "integer",

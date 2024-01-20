@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"fmt"
+	"github.com/devlucassantos/vnc-domains/src/domains/news"
 	"github.com/labstack/gommon/log"
-	"vnc-read-api/core/domains/news"
 	"vnc-read-api/core/filters"
 	"vnc-read-api/infra/dto"
 	"vnc-read-api/infra/postgres/queries"

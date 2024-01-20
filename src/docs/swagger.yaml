@@ -96,7 +96,7 @@ definitions:
           $ref: '#/definitions/response.SwaggerNews'
         type: array
       itens_per_page:
-        example: 25
+        example: 15
         type: integer
       page:
         example: 1
@@ -313,7 +313,7 @@ paths:
         in: query
         name: page
         type: integer
-      - description: Quantidade de matérias retornadas por página. Por padrão é 25.
+      - description: Quantidade de matérias retornadas por página. Por padrão é 15.
         in: query
         name: itemsPerPage
         type: integer
@@ -438,7 +438,7 @@ paths:
         in: query
         name: page
         type: integer
-      - description: Quantidade de matérias retornadas por página. Por padrão é 25.
+      - description: Quantidade de matérias retornadas por página. Por padrão é 15.
         in: query
         name: itemsPerPage
         type: integer

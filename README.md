@@ -8,15 +8,26 @@ responsible for executing this code, so you can easily run the project.
 
 ## How to run
 
-> Note that to properly run `vnc-read-api` you will need to have the [`vnc-database` containers](https://github.com/devlucassantos/vnc-database)
-running so that this application's container has access to the databases needed to query the data.
+### Prerequisites
 
-To build the databases you will need to have [Docker](https://www.docker.com) installed on your machine and run the
-following commands in the root directory of this project:
+> Note that to properly run `vnc-read-api` you will need to have the
+[`vnc-databases` containers](https://github.com/devlucassantos/vnc-databases) running so that this application's
+container has access to the databases needed to query the data.
+
+### Running via Docker
+
+To run the API you will need to have [Docker](https://www.docker.com) installed on your machine and run the following
+commands in the root directory of this project:
 
 ````shell
 docker compose up
 ````
+
+### Documentation
+
+After running the project, all the available routes for accessing the API can be found via the link:
+
+> [http://localhost:8084/api/v1/documentation/index.html](http://localhost:8084/api/v1/documentation/index.html)
 
 ## Você Na Câmara (VNC)
 
