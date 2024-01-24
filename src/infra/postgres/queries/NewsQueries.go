@@ -96,7 +96,7 @@ func (newsSelectSqlManager) All() string {
 				((proposition.title ILIKE $1 OR proposition.content ILIKE $1) OR (newsletter.title ILIKE $1 OR newsletter.content ILIKE $1)) AND
 				DATE(news.created_at) >= DATE(COALESCE($2, news.created_at)) AND
 				DATE(news.created_at) <= DATE(COALESCE($3, news.created_at))
-			ORDER BY news.created_at DESC OFFSET $4 LIMIT $5`
+			ORDER BY news.reference_date_time DESC OFFSET $4 LIMIT $5`
 }
 
 func (newsSelectSqlManager) Newsletters() string {
@@ -113,7 +113,7 @@ func (newsSelectSqlManager) Newsletters() string {
     			(newsletter.title ILIKE $1 OR newsletter.content ILIKE $1) AND
     			DATE(news.created_at) >= DATE(COALESCE($2, news.created_at)) AND
 				DATE(news.created_at) <= DATE(COALESCE($3, news.created_at))
-    		ORDER BY news.created_at DESC OFFSET $4 LIMIT $5`
+    		ORDER BY news.reference_date_time DESC OFFSET $4 LIMIT $5`
 }
 
 func (newsSelectSqlManager) Propositions() string {
@@ -155,7 +155,7 @@ func (newsSelectSqlManager) Propositions() string {
 			    news.newsletter_id IS NULL AND
 				DATE(news.created_at) >= DATE(COALESCE($5, news.created_at)) AND
 				DATE(news.created_at) <= DATE(COALESCE($6, news.created_at))
-			ORDER BY news.created_at DESC OFFSET $7 LIMIT $8`
+			ORDER BY news.reference_date_time DESC OFFSET $7 LIMIT $8`
 }
 
 func (newsSelectSqlManager) TrendingNews() string {
@@ -190,8 +190,8 @@ func (newsSelectSqlManager) TrendingNews() string {
 				proposition_submitted_at, proposition_active, proposition_created_at, proposition_updated_at,
 				newsletter.id, newsletter_title, newsletter_content, newsletter_reference_date, newsletter_active,
 				newsletter_created_at, newsletter_updated_at,
-				news_view.news_id, news.created_at
-			ORDER BY news_views DESC, news.created_at DESC OFFSET $4 LIMIT $5`
+				news_view.news_id, news.reference_date_time
+			ORDER BY news_views DESC, news.reference_date_time DESC OFFSET $4 LIMIT $5`
 }
 
 func (newsSelectSqlManager) TrendingNewsletters() string {
@@ -212,8 +212,8 @@ func (newsSelectSqlManager) TrendingNewsletters() string {
     			DATE(news.created_at) >= DATE(COALESCE($2, news.created_at)) AND
 				DATE(news.created_at) <= DATE(COALESCE($3, news.created_at))
 			GROUP BY newsletter.id, newsletter_title, newsletter_content, newsletter_reference_date, newsletter_active,
-				newsletter_created_at, newsletter_updated_at, news_view.news_id, news.created_at
-			ORDER BY news_views DESC, news.created_at DESC OFFSET $4 LIMIT $5`
+				newsletter_created_at, newsletter_updated_at, news_view.news_id, news.reference_date_time
+			ORDER BY news_views DESC, news.reference_date_time DESC OFFSET $4 LIMIT $5`
 }
 
 func (newsSelectSqlManager) TrendingPropositions() string {
@@ -260,6 +260,6 @@ func (newsSelectSqlManager) TrendingPropositions() string {
 				DATE(news.created_at) <= DATE(COALESCE($6, news.created_at))
 			GROUP BY prop.id, proposition_code, proposition_original_text_url, proposition_title, proposition_content,
 				proposition_submitted_at, proposition_active, proposition_created_at, proposition_updated_at, news_view.news_id,
-				news.created_at
-			ORDER BY news_views DESC, news.created_at DESC OFFSET $7 LIMIT $8`
+				news.reference_date_time
+			ORDER BY news_views DESC, news.reference_date_time DESC OFFSET $7 LIMIT $8`
 }

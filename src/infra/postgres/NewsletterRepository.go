@@ -54,7 +54,8 @@ func (instance Newsletter) GetNewsletterById(id uuid.UUID) (*newsletter.Newslett
 			UpdatedAt(propositionData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro construindo a estrutura de dados da proposição %s: %s", id, err.Error())
+			log.Errorf("Erro construindo a estrutura de dados da proposição %s do boletim %s: %s",
+				propositionData.Id, id, err.Error())
 			continue
 		}
 
@@ -78,7 +79,7 @@ func (instance Newsletter) GetNewsletterById(id uuid.UUID) (*newsletter.Newslett
 
 	_, err = postgresConnection.Exec(queries.NewsView().Insert(), newsData.Id)
 	if err != nil {
-		log.Errorf("Erro ao registrar a visualização do boletim %s: %s", newsData.Id, err.Error())
+		log.Errorf("Erro ao registrar a visualização do boletim %s: %s", id, err.Error())
 	}
 
 	return newsletterDomain, nil
@@ -94,7 +95,8 @@ func (instance Newsletter) GetNewsletterByPropositionId(propositionId uuid.UUID)
 	var newsletterData dto.Newsletter
 	err = postgresConnection.Get(&newsletterData, queries.Newsletter().Select().ByPropositionId(), propositionId)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados do boletim relacionado a proposição %s no banco de dados: %s", propositionId, err.Error())
+		log.Errorf("Erro ao obter os dados do boletim relacionado a proposição %s no banco de dados: %s",
+			propositionId, err.Error())
 		return nil, err
 	}
 
@@ -108,7 +110,8 @@ func (instance Newsletter) GetNewsletterByPropositionId(propositionId uuid.UUID)
 		UpdatedAt(newsletterData.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro construindo a estrutura de dados do boletim relacionado a proposição %s: %s", propositionId, err.Error())
+		log.Errorf("Erro construindo a estrutura de dados do boletim relacionado a proposição %s: %s",
+			propositionId, err.Error())
 		return nil, err
 	}
 

@@ -143,7 +143,7 @@ func (instance Proposition) GetPropositionById(id uuid.UUID) (*proposition.Propo
 
 	_, err = postgresConnection.Exec(queries.NewsView().Insert(), newsData.Id)
 	if err != nil {
-		log.Errorf("Erro ao registrar a visualização da proposição %s: %s", propositionDomain.Id, err.Error())
+		log.Errorf("Erro ao registrar a visualização da proposição %s: %s", id, err.Error())
 	}
 
 	return propositionDomain, nil
