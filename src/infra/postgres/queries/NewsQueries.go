@@ -13,7 +13,7 @@ func (newsSqlManager) Select() *newsSelectSqlManager {
 }
 
 func (newsSelectSqlManager) TotalNumberOfNews() string {
-	return `SELECT COUNT(*) FROM news
+	return `SELECT COUNT(DISTINCT news.id) FROM news
 			    LEFT JOIN proposition ON proposition.id = news.proposition_id
 			    LEFT JOIN proposition_author ON proposition_author.proposition_id = proposition.id
 			    LEFT JOIN deputy ON deputy.id = proposition_author.deputy_id
@@ -36,7 +36,7 @@ func (newsSelectSqlManager) TotalNumberOfNewsletters() string {
 }
 
 func (newsSelectSqlManager) TotalNumberOfPropositions() string {
-	return `SELECT COUNT(*) FROM news
+	return `SELECT COUNT(DISTINCT news.id) FROM news
 			    LEFT JOIN proposition prop ON prop.id = news.proposition_id
 			    LEFT JOIN proposition_author ON proposition_author.proposition_id = prop.id
 			    LEFT JOIN deputy ON deputy.id = proposition_author.deputy_id
@@ -96,6 +96,10 @@ func (newsSelectSqlManager) All() string {
 				((proposition.title ILIKE $1 OR proposition.content ILIKE $1) OR (newsletter.title ILIKE $1 OR newsletter.content ILIKE $1)) AND
 				DATE(news.created_at) >= DATE(COALESCE($2, news.created_at)) AND
 				DATE(news.created_at) <= DATE(COALESCE($3, news.created_at))
+			GROUP BY proposition.id, proposition.code, proposition.original_text_url, proposition.title, proposition.content,
+			         proposition.submitted_at, proposition.active, proposition.created_at, proposition.updated_at,
+			         newsletter.id, newsletter.title, newsletter.content, newsletter.reference_date, newsletter.active,
+			         newsletter.created_at, newsletter.updated_at, news.reference_date_time
 			ORDER BY news.reference_date_time DESC OFFSET $4 LIMIT $5`
 }
 
@@ -155,6 +159,8 @@ func (newsSelectSqlManager) Propositions() string {
 			    news.newsletter_id IS NULL AND
 				DATE(news.created_at) >= DATE(COALESCE($5, news.created_at)) AND
 				DATE(news.created_at) <= DATE(COALESCE($6, news.created_at))
+			GROUP BY prop.id, prop.code, prop.original_text_url, prop.title, prop.content, prop.submitted_at, prop.active,
+			         prop.created_at, prop.updated_at, news.reference_date_time
 			ORDER BY news.reference_date_time DESC OFFSET $7 LIMIT $8`
 }
 
