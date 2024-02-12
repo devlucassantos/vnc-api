@@ -20,16 +20,22 @@ type Deputy struct {
 }
 
 func NewDeputy(deputy deputy.Deputy) *Deputy {
-	return &Deputy{
-		Id:                    deputy.Id(),
-		Code:                  deputy.Code(),
-		Cpf:                   deputy.Cpf(),
-		Name:                  deputy.Name(),
-		ElectoralName:         deputy.ElectoralName(),
-		ImageUrl:              deputy.ImageUrl(),
-		CreatedAt:             deputy.CreatedAt(),
-		UpdatedAt:             deputy.CreatedAt(),
-		Party:                 NewParty(deputy.Party()),
-		PartyInTheProposition: NewParty(deputy.PartyInTheProposition()),
+	deputyResponse := &Deputy{
+		Id:            deputy.Id(),
+		Code:          deputy.Code(),
+		Cpf:           deputy.Cpf(),
+		Name:          deputy.Name(),
+		ElectoralName: deputy.ElectoralName(),
+		ImageUrl:      deputy.ImageUrl(),
+		CreatedAt:     deputy.CreatedAt(),
+		UpdatedAt:     deputy.CreatedAt(),
+		Party:         NewParty(deputy.Party()),
 	}
+
+	partyInTheProposition := deputy.PartyInTheProposition()
+	if !partyInTheProposition.IsZero() {
+		deputyResponse.PartyInTheProposition = NewParty(partyInTheProposition)
+	}
+
+	return deputyResponse
 }

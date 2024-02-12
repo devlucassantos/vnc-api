@@ -22,5 +22,6 @@ func (organizationSelectSqlManager) All() string {
         		COALESCE(organization.active, true) AS organization_active,
         		COALESCE(organization.created_at, '1970-01-01 00:00:00') AS organization_created_at,
         		COALESCE(organization.updated_at, '1970-01-01 00:00:00') AS organization_updated_at
-    		FROM organization WHERE organization.active = true`
+    		FROM organization WHERE organization.active = true
+    		ORDER BY organization.name`
 }

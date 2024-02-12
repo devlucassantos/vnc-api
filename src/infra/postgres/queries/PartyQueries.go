@@ -21,5 +21,6 @@ func (partySelectSqlManager) All() string {
         		COALESCE(party.active, true) AS party_active,
         		COALESCE(party.created_at, '1970-01-01 00:00:00') AS party_created_at,
         		COALESCE(party.updated_at, '1970-01-01 00:00:00') AS party_updated_at
-    		FROM party WHERE party.active = true`
+    		FROM party WHERE party.active = true
+    		ORDER BY party.acronym, party.name`
 }

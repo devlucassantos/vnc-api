@@ -33,5 +33,6 @@ func (deputySelectSqlManager) All() string {
         		COALESCE(party.updated_at, '1970-01-01 00:00:00') AS party_updated_at
     		FROM deputy
     			INNER JOIN party ON party.id = deputy.party_id
-    		WHERE deputy.active = true AND party.active = true`
+    		WHERE deputy.active = true AND party.active = true
+    		ORDER BY deputy.name, party.acronym, party.name`
 }
