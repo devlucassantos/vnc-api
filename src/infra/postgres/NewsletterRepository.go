@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"database/sql"
 	"github.com/devlucassantos/vnc-domains/src/domains/newsletter"
 	"github.com/devlucassantos/vnc-domains/src/domains/proposition"
 	"github.com/google/uuid"
@@ -95,6 +96,11 @@ func (instance Newsletter) GetNewsletterByPropositionId(propositionId uuid.UUID)
 	var newsletterData dto.Newsletter
 	err = postgresConnection.Get(&newsletterData, queries.Newsletter().Select().ByPropositionId(), propositionId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Warnf("A proposição %s ainda não está presente em nenhum boletim", propositionId)
+			return nil, err
+		}
+
 		log.Errorf("Erro ao obter os dados do boletim relacionado a proposição %s no banco de dados: %s",
 			propositionId, err.Error())
 		return nil, err

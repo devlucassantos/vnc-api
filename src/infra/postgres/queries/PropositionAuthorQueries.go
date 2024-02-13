@@ -55,6 +55,6 @@ func (propositionAuthorSelectSqlManager) ByPropositionId() string {
 				LEFT JOIN party ON party.id = deputy.party_id
 				LEFT JOIN party party_in_the_proposal ON party_in_the_proposal.id = proposition_author.party_id
 				LEFT JOIN organization ON organization.id = proposition_author.organization_id
-			WHERE proposition_author.active = true AND (deputy.active = true AND party.active = true AND
-			   party_in_the_proposal.active = true) OR organization.active = true AND proposition_author.proposition_id = $1`
+			WHERE proposition_author.active = true AND ((deputy.active = true AND party.active = true AND
+			   party_in_the_proposal.active = true) OR organization.active = true) AND proposition_author.proposition_id = $1`
 }

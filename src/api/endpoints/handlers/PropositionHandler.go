@@ -49,13 +49,9 @@ func (instance Proposition) GetPropositionById(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, response.NewError(err.Error()))
 	}
 
-	newsletter, err := instance.newsletterService.GetNewsletterByPropositionId(propositionId)
-	if err != nil {
-		log.Error("Erro ao obter os dados do boletim relacionado a proposição %s: %s", propositionId, err.Error())
-	}
-
 	propositionResponse := response.NewProposition(*proposition)
 
+	newsletter, _ := instance.newsletterService.GetNewsletterByPropositionId(propositionId)
 	if newsletter != nil {
 		propositionResponse.Newsletter = response.NewNewsletter(*newsletter)
 	}
