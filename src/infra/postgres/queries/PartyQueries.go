@@ -16,5 +16,6 @@ func (partySelectSqlManager) All() string {
 	return `SELECT id AS party_id, name AS party_name, acronym AS party_acronym, image_url AS party_image_url,
        			created_at AS party_created_at, updated_at AS party_updated_at
     		FROM party
-    		WHERE party.active = true`
+    		WHERE party.active = true
+			ORDER BY party.name, party.acronym`
 }

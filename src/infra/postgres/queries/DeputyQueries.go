@@ -20,5 +20,5 @@ func (deputySelectSqlManager) All() string {
     		FROM deputy
     			INNER JOIN party ON party.id = deputy.party_id
     		WHERE deputy.active = true AND party.active = true
-    		ORDER BY deputy.electoral_name, party.acronym, party.name`
+    		ORDER BY deputy.electoral_name, party.acronym`
 }
