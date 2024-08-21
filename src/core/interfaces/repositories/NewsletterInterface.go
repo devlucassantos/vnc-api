@@ -6,6 +6,5 @@ import (
 )
 
 type Newsletter interface {
-	GetNewsletterById(id uuid.UUID) (*newsletter.Newsletter, error)
-	GetNewsletterByPropositionId(propositionId uuid.UUID) (*newsletter.Newsletter, error)
+	GetNewsletterByArticleId(articleId uuid.UUID, userId uuid.UUID) (*newsletter.Newsletter, error)
 }

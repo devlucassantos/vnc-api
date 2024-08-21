@@ -1,12 +1,20 @@
 package diconteiner
 
 import (
-	interfaces "vnc-read-api/core/interfaces/services"
-	"vnc-read-api/core/services"
+	interfaces "vnc-api/core/interfaces/services"
+	"vnc-api/core/services"
 )
+
+func GetAuthenticationService() interfaces.Authentication {
+	return services.NewAuthenticationService(GetUserPostgresRepository(), GetSessionRedisRepository())
+}
 
 func GetResourcesService() interfaces.Resources {
 	return services.NewResourcesService(GetResourcesPostgresRepository())
+}
+
+func GetArticleService() interfaces.Article {
+	return services.NewArticleService(GetArticlePostgresRepository())
 }
 
 func GetPropositionService() interfaces.Proposition {
@@ -15,8 +23,4 @@ func GetPropositionService() interfaces.Proposition {
 
 func GetNewsletterService() interfaces.Newsletter {
 	return services.NewNewsletterService(GetNewsletterPostgresRepository())
-}
-
-func GetNewsService() interfaces.News {
-	return services.NewNewsService(GetNewsPostgresRepository())
 }

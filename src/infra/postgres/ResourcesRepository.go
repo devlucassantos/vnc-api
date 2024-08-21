@@ -2,29 +2,77 @@ package postgres
 
 import (
 	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
-	"github.com/devlucassantos/vnc-domains/src/domains/organization"
+	"github.com/devlucassantos/vnc-domains/src/domains/external"
 	"github.com/devlucassantos/vnc-domains/src/domains/party"
+	"github.com/devlucassantos/vnc-domains/src/domains/proptype"
+	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
-	"vnc-read-api/infra/dto"
-	"vnc-read-api/infra/postgres/queries"
+	"vnc-api/infra/dto"
+	"vnc-api/infra/postgres/queries"
 )
 
 type Resources struct {
-	connectionManager ConnectionManagerInterface
+	connectionManager connectionManagerInterface
 }
 
-func NewResourcesRepository(connectionManager ConnectionManagerInterface) *Resources {
+func NewResourcesRepository(connectionManager connectionManagerInterface) *Resources {
 	return &Resources{
 		connectionManager: connectionManager,
 	}
 }
 
+func (instance Resources) GetPropositionTypes(propositionTypeIds []uuid.UUID) ([]proptype.PropositionType, error) {
+	postgresConnection, err := instance.connectionManager.createConnection()
+	if err != nil {
+		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		return nil, err
+	}
+	defer instance.connectionManager.closeConnection(postgresConnection)
+
+	var propositionTypeIdsAsInterfaceSlice []interface{}
+	for _, propositionTypeId := range propositionTypeIds {
+		propositionTypeIdsAsInterfaceSlice = append(propositionTypeIdsAsInterfaceSlice, propositionTypeId)
+	}
+
+	var propositionTypeData []dto.PropositionType
+	if propositionTypeIdsAsInterfaceSlice != nil {
+		err = postgresConnection.Select(&propositionTypeData, queries.PropositionType().Select().In(
+			len(propositionTypeIdsAsInterfaceSlice)), propositionTypeIdsAsInterfaceSlice...)
+	} else {
+		err = postgresConnection.Select(&propositionTypeData, queries.PropositionType().Select().All())
+	}
+	if err != nil {
+		log.Errorf("Erro ao obter os dados dos tipos de proposição no banco de dados: %s", err.Error())
+		return nil, err
+	}
+
+	var propositionTypes []proptype.PropositionType
+	for _, propositionType := range propositionTypeData {
+		propositionTypeDomain, err := proptype.NewBuilder().
+			Id(propositionType.Id).
+			Description(propositionType.Description).
+			Color(propositionType.Color).
+			SortOrder(propositionType.SortOrder).
+			CreatedAt(propositionType.CreatedAt).
+			UpdatedAt(propositionType.UpdatedAt).
+			Build()
+		if err != nil {
+			log.Errorf("Erro ao validar os dados do tipo de proposição %s: %s", propositionType.Id, err.Error())
+		}
+
+		propositionTypes = append(propositionTypes, *propositionTypeDomain)
+	}
+
+	return propositionTypes, nil
+}
+
 func (instance Resources) GetParties() ([]party.Party, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
 		return nil, err
 	}
-	defer instance.connectionManager.endConnection(postgresConnection)
+	defer instance.connectionManager.closeConnection(postgresConnection)
 
 	var partiesData []dto.Party
 	err = postgresConnection.Select(&partiesData, queries.Party().Select().All())
@@ -37,16 +85,14 @@ func (instance Resources) GetParties() ([]party.Party, error) {
 	for _, partyData := range partiesData {
 		partyDomain, err := party.NewBuilder().
 			Id(partyData.Id).
-			Code(partyData.Code).
 			Name(partyData.Name).
 			Acronym(partyData.Acronym).
 			ImageUrl(partyData.ImageUrl).
-			Active(partyData.Active).
 			CreatedAt(partyData.CreatedAt).
 			UpdatedAt(partyData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro construindo a estrutura de dados do partido %s: %s", partyDomain.Id, err.Error())
+			log.Errorf("Erro ao validar os dados do partido %s: %s", partyDomain.Id, err.Error())
 		}
 
 		parties = append(parties, *partyDomain)
@@ -58,9 +104,10 @@ func (instance Resources) GetParties() ([]party.Party, error) {
 func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
 		return nil, err
 	}
-	defer instance.connectionManager.endConnection(postgresConnection)
+	defer instance.connectionManager.closeConnection(postgresConnection)
 
 	var deputiesData []dto.Deputy
 	err = postgresConnection.Select(&deputiesData, queries.Deputy().Select().All())
@@ -73,33 +120,28 @@ func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 	for _, deputyData := range deputiesData {
 		currentParty, err := party.NewBuilder().
 			Id(deputyData.Party.Id).
-			Code(deputyData.Party.Code).
 			Name(deputyData.Party.Name).
 			Acronym(deputyData.Party.Acronym).
 			ImageUrl(deputyData.Party.ImageUrl).
-			Active(deputyData.Party.Active).
 			CreatedAt(deputyData.Party.CreatedAt).
 			UpdatedAt(deputyData.Party.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro construindo a estrutura de dados do partido atual %s do(a) deputado(a) %s: %s",
+			log.Errorf("Erro ao validar os dados do partido atual %s do(a) deputado(a) %s: %s",
 				deputyData.Party.Id, deputyData.Id, err.Error())
 		}
 
 		deputyDomain, err := deputy.NewBuilder().
 			Id(deputyData.Id).
-			Code(deputyData.Code).
-			Cpf(deputyData.Cpf).
 			Name(deputyData.Name).
 			ElectoralName(deputyData.ElectoralName).
 			ImageUrl(deputyData.ImageUrl).
 			Party(*currentParty).
-			Active(deputyData.Active).
 			CreatedAt(deputyData.CreatedAt).
 			UpdatedAt(deputyData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro construindo a estrutura de dados do(a) deputado(a) %s: %s", deputyData.Id, err.Error())
+			log.Errorf("Erro ao validar os dados do(a) deputado(a) %s: %s", deputyData.Id, err.Error())
 			continue
 		}
 
@@ -109,44 +151,37 @@ func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 	return deputies, nil
 }
 
-func (instance Resources) GetOrganizations() ([]organization.Organization, error) {
+func (instance Resources) GetExternalAuthors() ([]external.ExternalAuthor, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
 		return nil, err
 	}
-	defer instance.connectionManager.endConnection(postgresConnection)
+	defer instance.connectionManager.closeConnection(postgresConnection)
 
-	var organizationsData []dto.Organization
-	err = postgresConnection.Select(&organizationsData, queries.Organization().Select().All())
+	var externalAuthorsData []dto.ExternalAuthor
+	err = postgresConnection.Select(&externalAuthorsData, queries.ExternalAuthor().Select().All())
 	if err != nil {
-		log.Errorf("Erro ao obter os dados das organizações no banco de dados: %s", err.Error())
+		log.Errorf("Erro ao obter os dados dos autores externos no banco de dados: %s", err.Error())
 		return nil, err
 	}
 
-	var organizations []organization.Organization
-	for _, organizationData := range organizationsData {
-		organizationBuilder := organization.NewBuilder().
-			Id(organizationData.Id)
-
-		if organizationData.Code > 0 {
-			organizationBuilder.Code(organizationData.Code)
-		}
-
-		organizationDomain, err := organizationBuilder.
-			Name(organizationData.Name).
-			Acronym(organizationData.Acronym).
-			Nickname(organizationData.Nickname).
-			Type(organizationData.Type).
-			Active(organizationData.Active).
-			CreatedAt(organizationData.CreatedAt).
-			UpdatedAt(organizationData.UpdatedAt).
+	var externalAuthors []external.ExternalAuthor
+	for _, externalAuthorData := range externalAuthorsData {
+		externalAuthorDomain, err := external.NewBuilder().
+			Id(externalAuthorData.Id).
+			Name(externalAuthorData.Name).
+			Type(externalAuthorData.Type).
+			CreatedAt(externalAuthorData.CreatedAt).
+			UpdatedAt(externalAuthorData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro construindo a estrutura de dados do partido %s: %s", organizationDomain.Id, err.Error())
+			log.Errorf("Erro ao validar os dados do autor externo %s: %s", externalAuthorDomain.Id,
+				err.Error())
 		}
 
-		organizations = append(organizations, *organizationDomain)
+		externalAuthors = append(externalAuthors, *externalAuthorDomain)
 	}
 
-	return organizations, nil
+	return externalAuthors, nil
 }

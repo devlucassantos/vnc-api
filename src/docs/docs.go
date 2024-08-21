@@ -10,14 +10,22 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Lucas Santos",
+            "email": "example@email.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/news": {
+        "/articles": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Esta requisição é responsável por retornar as matérias mais recentes disponíveis na plataforma Você na Câmara.",
                 "produces": [
                     "application/json"
@@ -26,7 +34,7 @@ const docTemplate = `{
                     "Matérias"
                 ],
                 "summary": "Listagem das matérias mais recentes",
-                "operationId": "GetNews",
+                "operationId": "GetArticles",
                 "parameters": [
                     {
                         "type": "string",
@@ -48,8 +56,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "ID da organização que elaborou a proposição.",
-                        "name": "organizationId",
+                        "description": "ID do autor externo que elaborou a proposição.",
+                        "name": "externalAuthorId",
                         "in": "query"
                     },
                     {
@@ -78,137 +86,61 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15.",
+                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100.",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição bem sucedida",
+                        "description": "Requisição realizada com sucesso.",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/response.SwaggerNewsPagination"
-                            }
+                            "$ref": "#/definitions/response.SwaggerArticlePagination"
                         }
                     },
                     "400": {
-                        "description": "Algum dado informado durante a requisição é inválido",
+                        "description": "Requisição mal formulada.",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     }
                 }
             }
         },
-        "/news/newsletters/{newsletterId}": {
+        "/articles/trending": {
             "get": {
-                "description": "Esta requisição é responsável por retornar os detalhes do boletim pelo ID.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Boletins"
-                ],
-                "summary": "Busca dos detalhes do boletim pelo ID",
-                "operationId": "GetNewsletterById",
-                "parameters": [
+                "security": [
                     {
-                        "type": "string",
-                        "description": "ID do boletim",
-                        "name": "newsletterId",
-                        "in": "path",
-                        "required": true
+                        "BearerAuth": []
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "Requisição bem sucedida",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/response.SwaggerNewsletter"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Algum dado informado durante a requisição é inválido",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
-                        }
-                    },
-                    "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
-                        }
-                    }
-                }
-            }
-        },
-        "/news/propositions/{propositionId}": {
-            "get": {
-                "description": "Esta requisição é responsável por retornar os detalhes da proposição pelo ID.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Proposições"
-                ],
-                "summary": "Busca dos detalhes da proposição pelo ID",
-                "operationId": "GetPropositionById",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID da proposição",
-                        "name": "propositionId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Requisição bem sucedida",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/response.SwaggerProposition"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Algum dado informado durante a requisição é inválido",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
-                        }
-                    },
-                    "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
-                        }
-                    }
-                }
-            }
-        },
-        "/news/trending": {
-            "get": {
-                "description": "Esta requisição é responsável por retornar as matérias mais populares disponíveis na plataforma Você na Câmara.",
+                "description": "Esta requisição é responsável por retornar as matérias em alta disponíveis na plataforma Você na Câmara.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Listagem das matérias mais populares",
-                "operationId": "GetTrending",
+                "summary": "Listagem das matérias em alta",
+                "operationId": "GetTrendingArticles",
                 "parameters": [
                     {
                         "type": "string",
@@ -230,8 +162,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "ID da organização que elaborou a proposição.",
-                        "name": "organizationId",
+                        "description": "ID do autor externo que elaborou a proposição.",
+                        "name": "externalAuthorId",
                         "in": "query"
                     },
                     {
@@ -260,31 +192,766 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15.",
+                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100.",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição bem sucedida",
+                        "description": "Requisição realizada com sucesso.",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/response.SwaggerNewsPagination"
-                            }
+                            "$ref": "#/definitions/response.SwaggerArticlePagination"
                         }
                     },
                     "400": {
-                        "description": "Algum dado informado durante a requisição é inválido",
+                        "description": "Requisição mal formulada.",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/trending/proposition-type": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por retornar as matérias em alta pelos tipos das proposições.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Matérias"
+                ],
+                "summary": "Listagem das matérias em alta pelos tipos das proposições",
+                "operationId": "GetTrendingArticlesByPropositionType",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Lista com os IDs dos tipos das proposições que devem ser retornados (Separados por vírgula). Por padrão retorna todos.",
+                        "name": "propositionTypeIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Quantidade de matérias retornadas por tipo. Por padrão é 5 e os valores permitidos são entre 1 e 20.",
+                        "name": "itemsPerType",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerPropositionTypeWithPropositions"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/view-later": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por retornar as matérias marcadas para ver depois na plataforma Você na Câmara.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Matérias"
+                ],
+                "summary": "Listagem das matérias marcadas para ver depois",
+                "operationId": "GetArticlesToViewLater",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
+                        "name": "content",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do deputado que elaborou a proposição.",
+                        "name": "deputyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do partido que elaborou a proposição.",
+                        "name": "partyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID do autor externo que elaborou a proposição.",
+                        "name": "externalAuthorId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'.",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número da página. Por padrão é 1.",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100.",
+                        "name": "itemsPerPage",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerArticlePagination"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{articleId}/newsletter": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por retornar os detalhes da matéria pelo ID do tipo boletim.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Matérias"
+                ],
+                "summary": "Busca dos detalhes da matéria pelo ID do tipo boletim",
+                "operationId": "GetNewsletterArticleById",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da matéria",
+                        "name": "articleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerNewsletterArticle"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "404": {
+                        "description": "Recurso solicitado não encontrado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{articleId}/proposition": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por retornar os detalhes da matéria pelo ID do tipo proposição.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Matérias"
+                ],
+                "summary": "Busca dos detalhes da matéria pelo ID do tipo proposição",
+                "operationId": "GetPropositionArticleById",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da matéria",
+                        "name": "articleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerPropositionArticle"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "404": {
+                        "description": "Recurso solicitado não encontrado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{articleId}/rating": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável pelo registro da avaliação do usuário sobre uma matéria.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Matérias"
+                ],
+                "summary": "Avaliar matéria",
+                "operationId": "SaveArticleRating",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da matéria",
+                        "name": "articleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.Rating"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Requisição realizada com sucesso."
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "403": {
+                        "description": "Acesso negado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "404": {
+                        "description": "Recurso solicitado não encontrado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{articleId}/view-later": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por salvar a matéria na lista de matérias marcadas para ver depois do usuário.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Matérias"
+                ],
+                "summary": "Salvar matéria para ver depois",
+                "operationId": "SaveArticleToViewLater",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID da matéria",
+                        "name": "articleId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ViewLater"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Requisição realizada com sucesso."
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "403": {
+                        "description": "Acesso negado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "404": {
+                        "description": "Recurso solicitado não encontrado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "description": "Esta requisição é responsável por realizar a atualização dos tokens do usuário na plataforma:",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Atualizar tokens de acesso",
+                "operationId": "Refresh",
+                "parameters": [
+                    {
+                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RefreshTokens"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/sign-in": {
+            "post": {
+                "description": "Esta requisição é responsável por permitir a entrada do usuário em sua conta na plataforma:",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Fazer login",
+                "operationId": "SignIn",
+                "parameters": [
+                    {
+                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SignIn"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "404": {
+                        "description": "Recurso solicitado não encontrado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/sign-out": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por realizar o encerramento do acesso do usuário a plataforma:",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Fazer logout",
+                "operationId": "SignOut",
+                "responses": {
+                    "204": {
+                        "description": "Requisição realizada com sucesso."
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "403": {
+                        "description": "Acesso negado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/sign-up": {
+            "post": {
+                "description": "Esta requisição é responsável por permitir o cadastro do usuário na plataforma:",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Criar conta",
+                "operationId": "SignUp",
+                "parameters": [
+                    {
+                        "description": "JSON com todos os dados necessários para que a criação da conta seja realizada.",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SignUp"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "409": {
+                        "description": "Requisição contém dados já cadastrados no banco de dados que deveriam ser únicos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     }
                 }
@@ -303,7 +970,7 @@ const docTemplate = `{
                 "operationId": "GetResources",
                 "responses": {
                     "200": {
-                        "description": "Requisição bem sucedida",
+                        "description": "Requisição realizada com sucesso.",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -312,9 +979,15 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição",
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerError"
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     }
                 }
@@ -322,17 +995,146 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "request.Rating": {
+            "type": "object",
+            "properties": {
+                "rating": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "request.RefreshTokens": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InByb2YiL..."
+                }
+            }
+        },
+        "request.SignIn": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@email.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "luc@ssantos123"
+                }
+            }
+        },
+        "request.SignUp": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@email.com"
+                },
+                "first_name": {
+                    "type": "string",
+                    "example": "Lucas"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Santos"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "luc@ssantos123"
+                }
+            }
+        },
+        "request.ViewLater": {
+            "type": "object",
+            "properties": {
+                "view_later": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "response.SwaggerArticle": {
+            "type": "object",
+            "properties": {
+                "average_rating": {
+                    "type": "number",
+                    "example": 3.5
+                },
+                "content": {
+                    "type": "string",
+                    "example": "Foi sancionado o projeto de lei que altera a Lei n° 11.033 para prorrogar o Regime Tributário..."
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-01-05T20:25:19Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "b27947d6-3224-4479-8da4-7917ae16b34d"
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://image.url.com/article/b27947d6-3224-4479-8da4-7917ae16b34d/image.png"
+                },
+                "number_of_ratings": {
+                    "type": "integer",
+                    "example": 452
+                },
+                "reference_date_time": {
+                    "type": "string",
+                    "example": "2024-01-05T20:25:19Z"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Novo projeto de lei impulsiona crescimento do setor portuário até 2028"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "Proposição"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2024-01-05T20:25:19Z"
+                },
+                "user_rating": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "view_later": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "response.SwaggerArticlePagination": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerArticle"
+                    }
+                },
+                "items_per_page": {
+                    "type": "integer",
+                    "example": 15
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 4562
+                }
+            }
+        },
         "response.SwaggerDeputy": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 87624
-                },
-                "cpf": {
-                    "type": "string",
-                    "example": "12365478955"
-                },
                 "created_at": {
                     "type": "string",
                     "example": "2022-08-07T15:55:00Z"
@@ -368,14 +1170,6 @@ const docTemplate = `{
         "response.SwaggerDeputyResource": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 87624
-                },
-                "cpf": {
-                    "type": "string",
-                    "example": "12365478955"
-                },
                 "created_at": {
                     "type": "string",
                     "example": "2022-08-07T15:55:00Z"
@@ -405,154 +1199,9 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerError": {
+        "response.SwaggerExternalAuthor": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Parâmetro inválido: ID da Proposição"
-                }
-            }
-        },
-        "response.SwaggerNews": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "example": "Foi sancionado o projeto de lei que altera a Lei n° 11.033 para prorrogar o Regime Tributário..."
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-01-05T20:25:19Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "b27947d6-3224-4479-8da4-7917ae16b34d"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Novo projeto de lei impulsiona crescimento do setor portuário até 2028"
-                },
-                "type": {
-                    "type": "string",
-                    "example": "Proposição"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2024-01-05T20:25:19Z"
-                }
-            }
-        },
-        "response.SwaggerNewsPagination": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerNews"
-                    }
-                },
-                "itens_per_page": {
-                    "type": "integer",
-                    "example": 15
-                },
-                "page": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 4562
-                }
-            }
-        },
-        "response.SwaggerNewsletter": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "example": "O presidente enviou ao Congresso Nacional um projeto de lei que permite a concessão de descontos fiscais..."
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-12-24T19:15:22Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "7963a6dd-f0b8-4065-8e56-6d2a79626db7"
-                },
-                "propositions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerNewsletterProposition"
-                    }
-                },
-                "reference_date": {
-                    "type": "string",
-                    "example": "2023-12-23T16:34:14Z"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Proposta inovadora busca impulsionar o crescimento empresarial"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-12-24T19:15:22Z"
-                }
-            }
-        },
-        "response.SwaggerNewsletterProposition": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 9465723
-                },
-                "content": {
-                    "type": "string",
-                    "example": "O presente requerimento foi elaborado pelos deputados..."
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-08-09T14:55:00Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "9dc67bd9-674f-4e4d-9536-07485335c362"
-                },
-                "image_url": {
-                    "type": "string",
-                    "example": "https://www.vnc.com.br/news/proposition/image/87624.jpg"
-                },
-                "original_text_url": {
-                    "type": "string",
-                    "example": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"
-                },
-                "submitted_at": {
-                    "type": "string",
-                    "example": "2023-08-09T14:25:00Z"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Requerimento de Votação Nominal-Destaque de Emenda"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-08-09T14:55:00Z"
-                }
-            }
-        },
-        "response.SwaggerOrganization": {
-            "type": "object",
-            "properties": {
-                "acronym": {
-                    "type": "string",
-                    "example": "OVNC"
-                },
-                "code": {
-                    "type": "integer",
-                    "example": 73214
-                },
                 "created_at": {
                     "type": "string",
                     "example": "2020-12-13T18:37:00Z"
@@ -565,10 +1214,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Organização Você na Câmara"
                 },
-                "nickname": {
-                    "type": "string",
-                    "example": "VNC"
-                },
                 "type": {
                     "type": "string",
                     "example": "Org da Câmara"
@@ -579,16 +1224,76 @@ const docTemplate = `{
                 }
             }
         },
+        "response.SwaggerHttpError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Algo errado aconteceu..."
+                }
+            }
+        },
+        "response.SwaggerNewsletterArticle": {
+            "type": "object",
+            "properties": {
+                "average_rating": {
+                    "type": "number",
+                    "example": 4.5
+                },
+                "content": {
+                    "type": "string",
+                    "example": "O presidente enviou ao Congresso Nacional um projeto de lei que permite a concessão de descontos fiscais..."
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-12-24T19:15:22Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "7963a6dd-f0b8-4065-8e56-6d2a79626db7"
+                },
+                "number_of_ratings": {
+                    "type": "integer",
+                    "example": 743
+                },
+                "proposition_articles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerArticle"
+                    }
+                },
+                "reference_date": {
+                    "type": "string",
+                    "example": "2023-12-23T16:34:14Z"
+                },
+                "reference_date_time": {
+                    "type": "string",
+                    "example": "2023-12-24T19:15:22Z"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Boletim do dia 26/02/2024"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-12-24T19:15:22Z"
+                },
+                "user_rating": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "view_later": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "response.SwaggerParty": {
             "type": "object",
             "properties": {
                 "acronym": {
                     "type": "string",
                     "example": "PVNC"
-                },
-                "code": {
-                    "type": "integer",
-                    "example": 78965
                 },
                 "created_at": {
                     "type": "string",
@@ -612,12 +1317,12 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerProposition": {
+        "response.SwaggerPropositionArticle": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 9465723
+                "average_rating": {
+                    "type": "number",
+                    "example": 2.5
                 },
                 "content": {
                     "type": "string",
@@ -633,6 +1338,12 @@ const docTemplate = `{
                         "$ref": "#/definitions/response.SwaggerDeputy"
                     }
                 },
+                "external_authors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerExternalAuthor"
+                    }
+                },
                 "id": {
                     "type": "string",
                     "example": "9dc67bd9-674f-4e4d-9536-07485335c362"
@@ -641,18 +1352,19 @@ const docTemplate = `{
                     "type": "string",
                     "example": "https://www.vnc.com.br/news/proposition/image/87624.jpg"
                 },
-                "newsletter": {
-                    "$ref": "#/definitions/response.SwaggerNewsletterProposition"
+                "newsletter_article": {
+                    "$ref": "#/definitions/response.SwaggerArticle"
                 },
-                "organizations": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerOrganization"
-                    }
+                "number_of_ratings": {
+                    "type": "integer",
+                    "example": 249
                 },
                 "original_text_url": {
                     "type": "string",
                     "example": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"
+                },
+                "reference_date_time": {
+                    "type": "string"
                 },
                 "submitted_at": {
                     "type": "string",
@@ -662,9 +1374,84 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Requerimento de Votação Nominal-Destaque de Emenda"
                 },
+                "type": {
+                    "$ref": "#/definitions/response.SwaggerPropositionType"
+                },
                 "updated_at": {
                     "type": "string",
                     "example": "2023-08-09T14:55:00Z"
+                },
+                "user_rating": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "view_later": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "response.SwaggerPropositionType": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#C4170C"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Projeto de Lei"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
+                },
+                "sort_order": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
+                }
+            }
+        },
+        "response.SwaggerPropositionTypeWithPropositions": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#C4170C"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Projeto de Lei"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
+                },
+                "proposition_articles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerArticle"
+                    }
+                },
+                "sort_order": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
                 }
             }
         },
@@ -677,10 +1464,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/response.SwaggerDeputyResource"
                     }
                 },
-                "organizations": {
+                "external_authors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerOrganization"
+                        "$ref": "#/definitions/response.SwaggerExternalAuthor"
                     }
                 },
                 "parties": {
@@ -688,8 +1475,67 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.SwaggerParty"
                     }
+                },
+                "proposition_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerPropositionType"
+                    }
                 }
             }
+        },
+        "response.SwaggerUser": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InByb2YiL..."
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2022-09-23T18:20:00Z"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "example@email.com"
+                },
+                "first_name": {
+                    "type": "string",
+                    "example": "Lucas"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "54b094b23-f426-89d2-843e-1335410b18df"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Santos"
+                },
+                "refresh_token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InByb2YiL..."
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "user"
+                    ]
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2022-09-23T18:20:00Z"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -700,8 +1546,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "VNC Read API",
-	Description:      "Este repositório é responsável pela leitura dos dados nas bases de dados da Plataforma Você na Câmara.",
+	Title:            "API da Plataforma Você na Câmara",
+	Description:      "Conjunto de rotas responsável por gerenciar a manipulação de dados da Plataforma Você na Câmara.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

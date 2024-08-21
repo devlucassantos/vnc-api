@@ -1,14 +1,19 @@
 package main
 
 import (
-	"vnc-read-api/api/config"
-	_ "vnc-read-api/docs"
+	"vnc-api/api/config"
+	_ "vnc-api/docs"
 )
 
-// @Title       VNC Read API
-// @Version     v1
-// @Description Este repositório é responsável pela leitura dos dados nas bases de dados da Plataforma Você na Câmara.
-// @BasePath    /api/v1
+// @title         API da Plataforma Você na Câmara
+// @version       v1
+// @description   Conjunto de rotas responsável por gerenciar a manipulação de dados da Plataforma Você na Câmara.
+// @contact.name  Lucas Santos
+// @contact.email example@email.com
+// @basePath      /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in   header
+// @name Authorization
 func main() {
-	config.NewServer()
+	config.NewApi().Serve()
 }

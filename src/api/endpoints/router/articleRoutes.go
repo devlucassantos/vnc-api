@@ -1,0 +1,21 @@
+package router
+
+import (
+	"github.com/labstack/echo/v4"
+	"vnc-api/api/config/diconteiner"
+)
+
+func loadArticleRoutes(group *echo.Group) {
+	newsHandler := diconteiner.GetArticleHandler()
+
+	group = group.Group("/articles")
+
+	group.GET("", newsHandler.GetArticles)
+	group.GET("/trending", newsHandler.GetTrendingArticles)
+	group.GET("/trending/proposition-type", newsHandler.GetTrendingArticlesByPropositionType)
+	group.GET("/view-later", newsHandler.GetArticlesToViewLater)
+	group.GET("/:articleId/proposition", newsHandler.GetPropositionArticleById)
+	group.GET("/:articleId/newsletter", newsHandler.GetNewsletterArticleById)
+	group.PATCH("/:articleId/rating", newsHandler.SaveArticleRating)
+	group.PATCH("/:articleId/view-later", newsHandler.SaveArticleToViewLater)
+}

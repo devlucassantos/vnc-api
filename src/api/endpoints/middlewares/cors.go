@@ -1,0 +1,23 @@
+package middlewares
+
+import (
+	"strings"
+	"vnc-api/api/utils"
+
+	"github.com/labstack/echo/v4"
+)
+
+func VerifyOrigin(origin string) (bool, error) {
+	allowedOrigins := strings.Split(utils.GetenvWithDefaultValue("SERVER_ALLOWED_HOSTS", "*"), ",")
+	for _, allowedOrigin := range allowedOrigins {
+		if allowedOrigin == "*" || origin == allowedOrigin {
+			return true, nil
+		}
+	}
+
+	return false, &echo.HTTPError{Code: 401, Message: "Acesso não autorizado."}
+}
+
+func OriginInspectSkipper(context echo.Context) bool {
+	return false
+}

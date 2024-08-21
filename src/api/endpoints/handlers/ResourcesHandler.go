@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"net/http"
-	"vnc-read-api/api/endpoints/dto/response"
-	"vnc-read-api/core/interfaces/services"
+	"strings"
+	"vnc-api/api/endpoints/dto/response"
+	"vnc-api/core/interfaces/services"
 )
 
 type Resources struct {
@@ -16,19 +18,26 @@ func NewResourcesHandler(service services.Resources) *Resources {
 }
 
 // GetResources
-// @ID 			GetResources
-// @Summary 	Busca de todos os recursos
-// @Tags 		Recursos
+// @ID          GetResources
+// @Summary     Busca de todos os recursos
+// @Tags        Recursos
 // @Description Esta requisição é responsável por retornar todos os recursos da plataforma.
-// @Produce		json
-// @Success 200 {array}  response.SwaggerResources "Requisição bem sucedida"
-// @Failure 500 {object} response.SwaggerError     "Ocorreu um erro inesperado durante o processamento da requisição"
-// @Router /resources [get]
+// @Produce     json
+// @Success 200 {array}  response.SwaggerResources "Requisição realizada com sucesso."
+// @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
+// @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
+// @Router /resources [GET]
 func (instance Resources) GetResources(context echo.Context) error {
-	parties, deputies, organizations, err := instance.service.GetResources()
+	propositionTypes, parties, deputies, externalAuthors, err := instance.service.GetResources()
 	if err != nil {
-		return context.JSON(http.StatusInternalServerError, response.NewError(err.Error()))
+		if strings.Contains(err.Error(), "connection refused") {
+			log.Error("Banco de dados indisponível: ", err.Error())
+			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
+		}
+
+		log.Error("Erro ao buscar dados dos recursos no banco de dados: ", err.Error())
+		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
-	return context.JSON(http.StatusOK, response.NewResources(parties, deputies, organizations))
+	return context.JSON(http.StatusOK, response.NewResources(propositionTypes, parties, deputies, externalAuthors))
 }
