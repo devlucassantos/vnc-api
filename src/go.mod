@@ -1,10 +1,10 @@
 module vnc-api
 
-go 1.22
+go 1.23
 
 require (
-	github.com/casbin/casbin/v2 v2.98.0
-	github.com/devlucassantos/vnc-domains v1.0.0-tv.1
+	github.com/casbin/casbin/v2 v2.99.0
+	github.com/devlucassantos/vnc-domains v1.0.0-tv.2
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
@@ -20,6 +20,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/casbin/govaluate v1.2.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect

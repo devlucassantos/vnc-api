@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"github.com/devlucassantos/vnc-domains/src/domains/article"
+	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/newsletter"
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
@@ -48,15 +49,28 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 
 	articleBuilder := article.NewBuilder()
 
-	if userArticle.Article.Id != uuid.Nil {
+	if userArticle.Article != nil {
 		articleBuilder.UserRating(userArticle.Rating).ViewLater(userArticle.ViewLater)
+	}
+
+	articleType, err := articletype.NewBuilder().
+		Id(newsletterArticle.ArticleType.Id).
+		Description(newsletterArticle.ArticleType.Description).
+		Color(newsletterArticle.ArticleType.Color).
+		SortOrder(newsletterArticle.ArticleType.SortOrder).
+		CreatedAt(newsletterArticle.ArticleType.CreatedAt).
+		UpdatedAt(newsletterArticle.ArticleType.UpdatedAt).
+		Build()
+	if err != nil {
+		log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleId, err.Error())
+		return nil, err
 	}
 
 	articleDomain, err := articleBuilder.
 		Id(newsletterArticle.Id).
 		AverageRating(newsletterArticle.AverageRating).
 		NumberOfRatings(newsletterArticle.NumberOfRatings).
-		Type("Proposição").
+		Type(*articleType).
 		ReferenceDateTime(newsletterArticle.ReferenceDateTime).
 		CreatedAt(newsletterArticle.CreatedAt).
 		UpdatedAt(newsletterArticle.UpdatedAt).
@@ -81,7 +95,12 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 		return nil, err
 	}
 
-	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), newsletterArticle.Id)
+	var userIdPointer *uuid.UUID
+	if userId != uuid.Nil {
+		userIdPointer = &userId
+	}
+
+	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), newsletterArticle.Id, userIdPointer)
 	if err != nil {
 		log.Errorf("Erro ao registrar a visualização do boletim %s: %s", articleId, err.Error())
 	}

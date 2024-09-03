@@ -25,13 +25,14 @@ func NewAuthenticationHandler(service services.Authentication) *Authentication {
 // @ID          SignUp
 // @Summary     Criar conta
 // @Tags        Autenticação
-// @Description Esta requisição é responsável por permitir o cadastro do usuário na plataforma:
+// @Description Esta requisição é responsável por permitir o cadastro do usuário na plataforma.
 // @Accept      json
 // @Produce     json
 // @Param       body body request.SignUp true "JSON com todos os dados necessários para que a criação da conta seja realizada."
 // @Success 201 {object} response.SwaggerUser      "Requisição realizada com sucesso."
 // @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
-// @Failure 409 {object} response.SwaggerHttpError "Requisição contém dados já cadastrados no banco de dados que deveriam ser únicos."
+// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
+// @Failure 409 {object} response.SwaggerHttpError "Requisição contém dados que já estão cadastrados no banco de dados e que devem ser únicos."
 // @Failure 422 {object} response.SwaggerHttpError "Requisição não processada devido a algum dos dados enviados serem inválidos."
 // @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
@@ -40,14 +41,14 @@ func (instance Authentication) SignUp(context echo.Context) error {
 	var signUpDto request.SignUp
 	err := context.Bind(&signUpDto)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição ao DTO: ", err.Error())
+		log.Error("Erro ao atribuir os dados da requisição de criação da conta do usuário ao DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
 	var roles []role.Role
-	userRole, err := role.NewBuilder().Code("USER").Build()
+	userRole, err := role.NewBuilder().Code(role.InactiveUserRoleCode).Build()
 	if err != nil {
-		log.Errorf("Erro ao definir a role do usuário %s: %s", signUpDto.Email, err.Error())
+		log.Errorf("Erro ao definir a role de criação da conta do usuário %s: %s", signUpDto.Email, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 	roles = append(roles, *userRole)
@@ -87,7 +88,7 @@ func (instance Authentication) SignUp(context echo.Context) error {
 // @ID          SignIn
 // @Summary     Fazer login
 // @Tags        Autenticação
-// @Description Esta requisição é responsável por permitir a entrada do usuário em sua conta na plataforma:
+// @Description Esta requisição é responsável por permitir a entrada do usuário em sua conta na plataforma.
 // @Accept      json
 // @Produce     json
 // @Param       body body request.SignIn true "JSON com todos os dados necessários para que o login seja realizado."
@@ -103,7 +104,7 @@ func (instance Authentication) SignIn(context echo.Context) error {
 	var signInDto request.SignIn
 	err := context.Bind(&signInDto)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição ao DTO: ", err.Error())
+		log.Error("Erro ao atribuir os dados da requisição de login ao DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
@@ -138,72 +139,11 @@ func (instance Authentication) SignIn(context echo.Context) error {
 	return context.JSON(http.StatusOK, response.NewUser(*savedUserData))
 }
 
-// Refresh
-// @ID          Refresh
-// @Summary     Atualizar tokens de acesso
-// @Tags        Autenticação
-// @Description Esta requisição é responsável por realizar a atualização dos tokens do usuário na plataforma:
-// @Accept      json
-// @Produce     json
-// @Param       body body request.RefreshTokens true "JSON com todos os dados necessários para que o login seja realizado."
-// @Success 200 {object} response.SwaggerUser      "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
-// @Failure 422 {object} response.SwaggerHttpError "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
-// @Router /auth/refresh [POST]
-func (instance Authentication) Refresh(context echo.Context) error {
-	var refreshTokensDto request.RefreshTokens
-	err := context.Bind(&refreshTokensDto)
-	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição ao DTO: ", err.Error())
-		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
-	}
-
-	httpError := utils.ValidateRefreshToken(refreshTokensDto.RefreshToken)
-	if httpError != nil {
-		log.Error("Erro ao validar token de atualização: ", httpError.Message)
-		return context.JSON(httpError.Code, httpError)
-	}
-
-	claims, httpError := utils.ExtractTokenClaims(refreshTokensDto.RefreshToken)
-	if httpError != nil {
-		log.Error("Erro ao extrair as claims do token de atualização: ", httpError.Message)
-		return context.JSON(httpError.Code, httpError)
-	}
-
-	userId, httpError := utils.ConvertFromStringToUuid(claims.Subject, "ID do usuário")
-	if httpError != nil {
-		log.Error("Erro ao converter ID do usuário: ", httpError.Message)
-		return context.JSON(httpError.Code, httpError)
-	}
-
-	sessionId, httpError := utils.ConvertFromStringToUuid(claims.SessionId, "ID da sessão do usuário")
-	if httpError != nil {
-		log.Error("Erro ao converter ID da sessão do usuário: ", httpError.Message)
-		return context.JSON(httpError.Code, httpError)
-	}
-
-	savedUserData, err := instance.service.RefreshTokens(userId, sessionId, refreshTokensDto.RefreshToken)
-	if err != nil {
-		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
-			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
-		}
-
-		log.Error("Erro ao atualizar tokens do usuário: ", err.Error())
-		return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
-	}
-
-	return context.JSON(http.StatusOK, response.NewUser(*savedUserData))
-}
-
 // SignOut
 // @ID          SignOut
 // @Summary     Fazer logout
 // @Tags        Autenticação
-// @Description Esta requisição é responsável por realizar o encerramento do acesso do usuário a plataforma:
+// @Description Esta requisição é responsável por realizar o encerramento do acesso do usuário a plataforma.
 // @Security    BearerAuth
 // @Produce     json
 // @Success 204 {object} nil                       "Requisição realizada com sucesso."
@@ -230,7 +170,7 @@ func (instance Authentication) SignOut(context echo.Context) error {
 
 	sessionId, httpError := utils.ConvertFromStringToUuid(claims.SessionId, "ID da sessão do usuário")
 	if httpError != nil {
-		log.Error("Erro ao converter ID da sessão do usuário: ", httpError.Message)
+		log.Error("Erro ao converter ID da sessão do usuário %s: %s", userId, httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
@@ -241,9 +181,70 @@ func (instance Authentication) SignOut(context echo.Context) error {
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Error("Erro ao encerrar acesso do usuário ao sistema: ", err.Error())
+		log.Error("Erro ao encerrar acesso do usuário %s ao sistema: %s", userId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
 	return context.NoContent(http.StatusNoContent)
+}
+
+// Refresh
+// @ID          Refresh
+// @Summary     Atualizar tokens de acesso
+// @Tags        Autenticação
+// @Description Esta requisição é responsável por realizar a atualização dos tokens de acesso do usuário na plataforma.
+// @Accept      json
+// @Produce     json
+// @Param       body body request.RefreshTokens true "JSON com todos os dados necessários para que a atualização dos tokens de acesso seja realizada."
+// @Success 200 {object} response.SwaggerUser      "Requisição realizada com sucesso."
+// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
+// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
+// @Failure 422 {object} response.SwaggerHttpError "Requisição não processada devido a algum dos dados enviados serem inválidos."
+// @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
+// @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
+// @Router /auth/refresh [POST]
+func (instance Authentication) Refresh(context echo.Context) error {
+	var refreshTokensDto request.RefreshTokens
+	err := context.Bind(&refreshTokensDto)
+	if err != nil {
+		log.Error("Erro ao atribuir os dados da requisição de atualização dos tokens ao DTO: ", err.Error())
+		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
+	}
+
+	httpError := utils.ValidateRefreshToken(refreshTokensDto.RefreshToken)
+	if httpError != nil {
+		log.Error("Erro ao validar token de atualização: ", httpError.Message)
+		return context.JSON(httpError.Code, httpError)
+	}
+
+	claims, httpError := utils.ExtractTokenClaims(refreshTokensDto.RefreshToken)
+	if httpError != nil {
+		log.Error("Erro ao extrair as claims do token de atualização: ", httpError.Message)
+		return context.JSON(httpError.Code, httpError)
+	}
+
+	userId, httpError := utils.ConvertFromStringToUuid(claims.Subject, "ID do usuário")
+	if httpError != nil {
+		log.Error("Erro ao converter ID do usuário: ", httpError.Message)
+		return context.JSON(httpError.Code, httpError)
+	}
+
+	sessionId, httpError := utils.ConvertFromStringToUuid(claims.SessionId, "ID da sessão do usuário")
+	if httpError != nil {
+		log.Errorf("Erro ao converter ID da sessão do usuário %s: %s", userId, httpError.Message)
+		return context.JSON(httpError.Code, httpError)
+	}
+
+	savedUserData, err := instance.service.RefreshTokens(userId, sessionId, refreshTokensDto.RefreshToken)
+	if err != nil {
+		if strings.Contains(err.Error(), "connection refused") {
+			log.Error("Banco de dados indisponível: ", err.Error())
+			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
+		}
+
+		log.Errorf("Erro ao atualizar tokens do usuário %s: %s", userId, err.Error())
+		return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
+	}
+
+	return context.JSON(http.StatusOK, response.NewUser(*savedUserData))
 }

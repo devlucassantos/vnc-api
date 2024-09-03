@@ -9,6 +9,10 @@ func GetAuthenticationService() interfaces.Authentication {
 	return services.NewAuthenticationService(GetUserPostgresRepository(), GetSessionRedisRepository())
 }
 
+func GetUserService() interfaces.User {
+	return services.NewUserService(GetUserPostgresRepository(), GetSessionRedisRepository())
+}
+
 func GetResourcesService() interfaces.Resources {
 	return services.NewResourcesService(GetResourcesPostgresRepository())
 }

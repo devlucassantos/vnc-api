@@ -1,10 +1,10 @@
 package services
 
 import (
+	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
 	"github.com/devlucassantos/vnc-domains/src/domains/external"
 	"github.com/devlucassantos/vnc-domains/src/domains/party"
-	"github.com/devlucassantos/vnc-domains/src/domains/proptype"
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"vnc-api/core/interfaces/repositories"
@@ -20,9 +20,9 @@ func NewResourcesService(repository repositories.Resources) *Resources {
 	}
 }
 
-func (instance Resources) GetResources() ([]proptype.PropositionType, []party.Party, []deputy.Deputy,
+func (instance Resources) GetResources() ([]articletype.ArticleType, []party.Party, []deputy.Deputy,
 	[]external.ExternalAuthor, error) {
-	propositionTypes, err := instance.repository.GetPropositionTypes(nil)
+	articleTypes, err := instance.repository.GetArticleTypes(nil)
 	if err != nil {
 		log.Errorf("Erro ao obter os dados dos tipos de proposição no banco de dados: %s", err.Error())
 		return nil, nil, nil, nil, err
@@ -46,9 +46,9 @@ func (instance Resources) GetResources() ([]proptype.PropositionType, []party.Pa
 		return nil, nil, nil, nil, err
 	}
 
-	return propositionTypes, parties, deputies, externalAuthors, nil
+	return articleTypes, parties, deputies, externalAuthors, nil
 }
 
-func (instance Resources) GetPropositionTypes(propositionTypeIds []uuid.UUID) ([]proptype.PropositionType, error) {
-	return instance.repository.GetPropositionTypes(propositionTypeIds)
+func (instance Resources) GetArticleTypes(articleTypeIds []uuid.UUID) ([]articletype.ArticleType, error) {
+	return instance.repository.GetArticleTypes(articleTypeIds)
 }

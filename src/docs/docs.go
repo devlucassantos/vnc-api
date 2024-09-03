@@ -11,8 +11,8 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "Lucas Santos",
-            "email": "example@email.com"
+            "name": "Você na Câmara",
+            "email": "email.vocenacamara@gmail.com"
         },
         "version": "{{.Version}}"
     },
@@ -26,16 +26,22 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por retornar as matérias mais recentes disponíveis na plataforma Você na Câmara.",
+                "description": "Esta requisição é responsável por listar as matérias mais recentes disponíveis na plataforma.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Listagem das matérias mais recentes",
+                "summary": "Listar matérias mais recentes",
                 "operationId": "GetArticles",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do tipo da matéria.",
+                        "name": "typeId",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
@@ -62,20 +68,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "description": "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "description": "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
                         "name": "endDate",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'.",
-                        "name": "type",
                         "in": "query"
                     },
                     {
@@ -100,6 +100,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -132,16 +138,22 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por retornar as matérias em alta disponíveis na plataforma Você na Câmara.",
+                "description": "Esta requisição é responsável por listar as matérias em alta disponíveis na plataforma.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Listagem das matérias em alta",
+                "summary": "Listar matérias em alta",
                 "operationId": "GetTrendingArticles",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do tipo da matéria.",
+                        "name": "typeId",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
@@ -168,20 +180,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "description": "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "description": "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
                         "name": "endDate",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'.",
-                        "name": "type",
                         "in": "query"
                     },
                     {
@@ -210,6 +216,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
                     "422": {
                         "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
                         "schema": {
@@ -231,27 +243,27 @@ const docTemplate = `{
                 }
             }
         },
-        "/articles/trending/proposition-type": {
+        "/articles/trending/type": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por retornar as matérias em alta pelos tipos das proposições.",
+                "description": "Esta requisição é responsável por listar as matérias em alta pelos tipos de matérias.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Listagem das matérias em alta pelos tipos das proposições",
-                "operationId": "GetTrendingArticlesByPropositionType",
+                "summary": "Listar matérias em alta pelos tipos de matérias",
+                "operationId": "GetTrendingArticlesByTypeId",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Lista com os IDs dos tipos das proposições que devem ser retornados (Separados por vírgula). Por padrão retorna todos.",
-                        "name": "propositionTypeIds",
+                        "description": "Lista com os IDs dos tipos de matérias que devem ser retornados (Separados por vírgula). Por padrão retorna todos.",
+                        "name": "ids",
                         "in": "query"
                     },
                     {
@@ -265,11 +277,17 @@ const docTemplate = `{
                     "200": {
                         "description": "Requisição realizada com sucesso.",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerPropositionTypeWithPropositions"
+                            "$ref": "#/definitions/response.SwaggerArticleTypeWithArticles"
                         }
                     },
                     "400": {
                         "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -296,16 +314,22 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por retornar as matérias marcadas para ver depois na plataforma Você na Câmara.",
+                "description": "Esta requisição é responsável por listar as matérias marcadas para ver depois pelo usuário na plataforma. As matérias serão listadas na ordem que o usuário realizou a marcação das matérias.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Listagem das matérias marcadas para ver depois",
+                "summary": "Listar matérias marcadas para ver depois pelo usuário",
                 "operationId": "GetArticlesToViewLater",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID do tipo da matéria.",
+                        "name": "typeId",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
@@ -332,20 +356,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "description": "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD",
+                        "description": "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
                         "name": "endDate",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'.",
-                        "name": "type",
                         "in": "query"
                     },
                     {
@@ -408,14 +426,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por retornar os detalhes da matéria pelo ID do tipo boletim.",
+                "description": "Esta requisição é responsável por buscar os detalhes de uma matéria do tipo boletim pelo ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Busca dos detalhes da matéria pelo ID do tipo boletim",
+                "summary": "Buscar detalhes de uma matéria do tipo boletim pelo ID",
                 "operationId": "GetNewsletterArticleById",
                 "parameters": [
                     {
@@ -435,6 +453,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -473,14 +497,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por retornar os detalhes da matéria pelo ID do tipo proposição.",
+                "description": "Esta requisição é responsável por buscar os detalhes de uma matéria dos tipos de proposições pelo ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Busca dos detalhes da matéria pelo ID do tipo proposição",
+                "summary": "Buscar detalhes de uma matéria dos tipos de proposições pelo ID",
                 "operationId": "GetPropositionArticleById",
                 "parameters": [
                     {
@@ -500,6 +524,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Requisição mal formulada.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -538,7 +568,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável pelo registro da avaliação do usuário sobre uma matéria.",
+                "description": "Esta requisição é responsável pelo registro da avaliação de uma matéria pelo usuário.",
                 "consumes": [
                     "application/json"
                 ],
@@ -559,7 +589,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "description": "JSON com todos os dados necessários para que a avaliação da matéria seja realizada.",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -624,7 +654,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por salvar a matéria na lista de matérias marcadas para ver depois do usuário.",
+                "description": "Esta requisição é responsável por adicionar ou remover a matéria da lista de matérias marcadas para ver depois pelo usuário.",
                 "consumes": [
                     "application/json"
                 ],
@@ -634,7 +664,7 @@ const docTemplate = `{
                 "tags": [
                     "Matérias"
                 ],
-                "summary": "Salvar matéria para ver depois",
+                "summary": "Adicionar ou remover matéria da lista de matérias marcadas para ver depois pelo usuário",
                 "operationId": "SaveArticleToViewLater",
                 "parameters": [
                     {
@@ -645,7 +675,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "description": "JSON com todos os dados necessários para marcar/desmarcar a matéria para ver depois.",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -705,7 +735,7 @@ const docTemplate = `{
         },
         "/auth/refresh": {
             "post": {
-                "description": "Esta requisição é responsável por realizar a atualização dos tokens do usuário na plataforma:",
+                "description": "Esta requisição é responsável por realizar a atualização dos tokens de acesso do usuário na plataforma.",
                 "consumes": [
                     "application/json"
                 ],
@@ -719,7 +749,7 @@ const docTemplate = `{
                 "operationId": "Refresh",
                 "parameters": [
                     {
-                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "description": "JSON com todos os dados necessários para que a atualização dos tokens de acesso seja realizada.",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -770,7 +800,7 @@ const docTemplate = `{
         },
         "/auth/sign-in": {
             "post": {
-                "description": "Esta requisição é responsável por permitir a entrada do usuário em sua conta na plataforma:",
+                "description": "Esta requisição é responsável por permitir a entrada do usuário em sua conta na plataforma.",
                 "consumes": [
                     "application/json"
                 ],
@@ -846,7 +876,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por realizar o encerramento do acesso do usuário a plataforma:",
+                "description": "Esta requisição é responsável por realizar o encerramento do acesso do usuário a plataforma.",
                 "produces": [
                     "application/json"
                 ],
@@ -894,7 +924,7 @@ const docTemplate = `{
         },
         "/auth/sign-up": {
             "post": {
-                "description": "Esta requisição é responsável por permitir o cadastro do usuário na plataforma:",
+                "description": "Esta requisição é responsável por permitir o cadastro do usuário na plataforma.",
                 "consumes": [
                     "application/json"
                 ],
@@ -930,8 +960,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
                     "409": {
-                        "description": "Requisição contém dados já cadastrados no banco de dados que deveriam ser únicos.",
+                        "description": "Requisição contém dados que já estão cadastrados no banco de dados e que devem ser únicos.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -959,14 +995,14 @@ const docTemplate = `{
         },
         "/resources": {
             "get": {
-                "description": "Esta requisição é responsável por retornar todos os recursos da plataforma.",
+                "description": "Esta requisição é responsável por listar todos os recursos da plataforma.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Recursos"
                 ],
-                "summary": "Busca de todos os recursos",
+                "summary": "Listar todos os recursos",
                 "operationId": "GetResources",
                 "responses": {
                     "200": {
@@ -976,6 +1012,138 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/response.SwaggerResources"
                             }
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/activate-account": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por ativar a conta do usuário, comprovando que o endereço de email fornecido no cadastro realmente existe e pertence ao usuário.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Usuário"
+                ],
+                "summary": "Ativar conta do usuário",
+                "operationId": "ActivateAccount",
+                "parameters": [
+                    {
+                        "description": "JSON com todos os dados necessários para que a ativação da conta seja realizada.",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UserAccountActivation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requisição realizada com sucesso.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.SwaggerUser"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada, a conta do usuário já está ativa ou o código de ativação informado é inválido.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "403": {
+                        "description": "Acesso negado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/resend-activation-email": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Esta requisição é responsável por reenviar o email de ativação da conta do usuário. A cada envio, um novo código é gerado, invalidando o código anterior.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Usuário"
+                ],
+                "summary": "Reenviar email de ativação da conta do usuário",
+                "operationId": "ResendActivationEmail",
+                "responses": {
+                    "204": {
+                        "description": "Requisição realizada com sucesso."
+                    },
+                    "400": {
+                        "description": "Requisição mal formulada ou a conta do usuário já está ativa.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Acesso não autorizado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "403": {
+                        "description": "Acesso negado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
@@ -1047,6 +1215,15 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UserAccountActivation": {
+            "type": "object",
+            "properties": {
+                "activation_code": {
+                    "type": "string",
+                    "example": "NJBJQ3"
+                }
+            }
+        },
         "request.ViewLater": {
             "type": "object",
             "properties": {
@@ -1092,8 +1269,7 @@ const docTemplate = `{
                     "example": "Novo projeto de lei impulsiona crescimento do setor portuário até 2028"
                 },
                 "type": {
-                    "type": "string",
-                    "example": "Proposição"
+                    "$ref": "#/definitions/response.SwaggerArticleType"
                 },
                 "updated_at": {
                     "type": "string",
@@ -1129,6 +1305,70 @@ const docTemplate = `{
                 "total": {
                     "type": "integer",
                     "example": 4562
+                }
+            }
+        },
+        "response.SwaggerArticleType": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#C4170C"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Projeto de Lei"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
+                },
+                "sort_order": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
+                }
+            }
+        },
+        "response.SwaggerArticleTypeWithArticles": {
+            "type": "object",
+            "properties": {
+                "articles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerArticle"
+                    }
+                },
+                "color": {
+                    "type": "string",
+                    "example": "#C4170C"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Projeto de Lei"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
+                },
+                "sort_order": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2020-08-14T12:22:00Z"
                 }
             }
         },
@@ -1274,6 +1514,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Boletim do dia 26/02/2024"
                 },
+                "type": {
+                    "$ref": "#/definitions/response.SwaggerArticleType"
+                },
                 "updated_at": {
                     "type": "string",
                     "example": "2023-12-24T19:15:22Z"
@@ -1375,7 +1618,7 @@ const docTemplate = `{
                     "example": "Requerimento de Votação Nominal-Destaque de Emenda"
                 },
                 "type": {
-                    "$ref": "#/definitions/response.SwaggerPropositionType"
+                    "$ref": "#/definitions/response.SwaggerArticleType"
                 },
                 "updated_at": {
                     "type": "string",
@@ -1391,73 +1634,15 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerPropositionType": {
-            "type": "object",
-            "properties": {
-                "color": {
-                    "type": "string",
-                    "example": "#C4170C"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "Projeto de Lei"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
-                },
-                "sort_order": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
-                }
-            }
-        },
-        "response.SwaggerPropositionTypeWithPropositions": {
-            "type": "object",
-            "properties": {
-                "color": {
-                    "type": "string",
-                    "example": "#C4170C"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "Projeto de Lei"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
-                },
-                "proposition_articles": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerArticle"
-                    }
-                },
-                "sort_order": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
-                }
-            }
-        },
         "response.SwaggerResources": {
             "type": "object",
             "properties": {
+                "article_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SwaggerArticleType"
+                    }
+                },
                 "deputies": {
                     "type": "array",
                     "items": {
@@ -1474,12 +1659,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.SwaggerParty"
-                    }
-                },
-                "proposition_types": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SwaggerPropositionType"
                     }
                 }
             }

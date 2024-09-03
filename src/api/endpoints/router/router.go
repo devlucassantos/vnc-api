@@ -16,6 +16,7 @@ func New() Router {
 func (instance *router) Load(group *echo.Group) {
 	loadDocumentationRoutes(group)
 	loadAuthenticationRoutes(group)
+	loadUserRoutes(group)
 	loadResourcesRoutes(group)
 	loadArticleRoutes(group)
 }

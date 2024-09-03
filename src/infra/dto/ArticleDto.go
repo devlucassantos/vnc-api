@@ -13,6 +13,7 @@ type Article struct {
 	ReferenceDateTime time.Time `db:"article_reference_date_time"`
 	CreatedAt         time.Time `db:"article_created_at"`
 	UpdatedAt         time.Time `db:"article_updated_at"`
+	*ArticleType
 	*Proposition
 	*Newsletter
 }

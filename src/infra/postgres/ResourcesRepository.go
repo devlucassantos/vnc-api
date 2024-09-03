@@ -1,10 +1,10 @@
 package postgres
 
 import (
+	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
 	"github.com/devlucassantos/vnc-domains/src/domains/external"
 	"github.com/devlucassantos/vnc-domains/src/domains/party"
-	"github.com/devlucassantos/vnc-domains/src/domains/proptype"
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"vnc-api/infra/dto"
@@ -21,7 +21,7 @@ func NewResourcesRepository(connectionManager connectionManagerInterface) *Resou
 	}
 }
 
-func (instance Resources) GetPropositionTypes(propositionTypeIds []uuid.UUID) ([]proptype.PropositionType, error) {
+func (instance Resources) GetArticleTypes(articleTypeIds []uuid.UUID) ([]articletype.ArticleType, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
 		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
@@ -29,41 +29,41 @@ func (instance Resources) GetPropositionTypes(propositionTypeIds []uuid.UUID) ([
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
 
-	var propositionTypeIdsAsInterfaceSlice []interface{}
-	for _, propositionTypeId := range propositionTypeIds {
-		propositionTypeIdsAsInterfaceSlice = append(propositionTypeIdsAsInterfaceSlice, propositionTypeId)
+	var articleTypeIdsAsInterfaceSlice []interface{}
+	for _, articleTypeId := range articleTypeIds {
+		articleTypeIdsAsInterfaceSlice = append(articleTypeIdsAsInterfaceSlice, articleTypeId)
 	}
 
-	var propositionTypeData []dto.PropositionType
-	if propositionTypeIdsAsInterfaceSlice != nil {
-		err = postgresConnection.Select(&propositionTypeData, queries.PropositionType().Select().In(
-			len(propositionTypeIdsAsInterfaceSlice)), propositionTypeIdsAsInterfaceSlice...)
+	var articleTypeData []dto.ArticleType
+	if articleTypeIdsAsInterfaceSlice != nil {
+		err = postgresConnection.Select(&articleTypeData, queries.ArticleType().Select().In(
+			len(articleTypeIdsAsInterfaceSlice)), articleTypeIdsAsInterfaceSlice...)
 	} else {
-		err = postgresConnection.Select(&propositionTypeData, queries.PropositionType().Select().All())
+		err = postgresConnection.Select(&articleTypeData, queries.ArticleType().Select().All())
 	}
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos tipos de proposição no banco de dados: %s", err.Error())
+		log.Errorf("Erro ao obter os dados dos tipos de matéria no banco de dados: %s", err.Error())
 		return nil, err
 	}
 
-	var propositionTypes []proptype.PropositionType
-	for _, propositionType := range propositionTypeData {
-		propositionTypeDomain, err := proptype.NewBuilder().
-			Id(propositionType.Id).
-			Description(propositionType.Description).
-			Color(propositionType.Color).
-			SortOrder(propositionType.SortOrder).
-			CreatedAt(propositionType.CreatedAt).
-			UpdatedAt(propositionType.UpdatedAt).
+	var articleTypes []articletype.ArticleType
+	for _, articleType := range articleTypeData {
+		articleTypeDomain, err := articletype.NewBuilder().
+			Id(articleType.Id).
+			Description(articleType.Description).
+			Color(articleType.Color).
+			SortOrder(articleType.SortOrder).
+			CreatedAt(articleType.CreatedAt).
+			UpdatedAt(articleType.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do tipo de proposição %s: %s", propositionType.Id, err.Error())
+			log.Errorf("Erro ao validar os dados do tipo de matéria %s: %s", articleType.Id, err.Error())
 		}
 
-		propositionTypes = append(propositionTypes, *propositionTypeDomain)
+		articleTypes = append(articleTypes, *articleTypeDomain)
 	}
 
-	return propositionTypes, nil
+	return articleTypes, nil
 }
 
 func (instance Resources) GetParties() ([]party.Party, error) {

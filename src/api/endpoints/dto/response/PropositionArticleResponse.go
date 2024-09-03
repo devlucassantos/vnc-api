@@ -13,9 +13,9 @@ type PropositionArticle struct {
 	Content           string           `json:"content"`
 	SubmittedAt       time.Time        `json:"submitted_at"`
 	ImageUrl          string           `json:"image_url"`
-	Type              *PropositionType `json:"type"`
 	Deputies          []Deputy         `json:"deputies,omitempty"`
-	ExternalAuthors   []ExternalAuthor `json:"externalAuthors,omitempty"`
+	ExternalAuthors   []ExternalAuthor `json:"external_authors,omitempty"`
+	Type              *ArticleType     `json:"type"`
 	AverageRating     float64          `json:"average_rating,omitempty"`
 	NumberOfRatings   int              `json:"number_of_ratings,omitempty"`
 	UserRating        int              `json:"user_rating,omitempty"`
@@ -46,9 +46,9 @@ func NewPropositionArticle(proposition proposition.Proposition) *PropositionArti
 		Content:           proposition.Content(),
 		SubmittedAt:       proposition.SubmittedAt(),
 		ImageUrl:          proposition.ImageUrl(),
-		Type:              NewPropositionType(proposition.Type()),
 		Deputies:          deputies,
 		ExternalAuthors:   externalAuthors,
+		Type:              NewArticleType(propositionArticle.Type()),
 		AverageRating:     propositionArticle.AverageRating(),
 		NumberOfRatings:   propositionArticle.NumberOfRatings(),
 		UserRating:        propositionArticle.UserRating(),

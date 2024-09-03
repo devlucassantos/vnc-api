@@ -12,7 +12,7 @@ func loadArticleRoutes(group *echo.Group) {
 
 	group.GET("", newsHandler.GetArticles)
 	group.GET("/trending", newsHandler.GetTrendingArticles)
-	group.GET("/trending/proposition-type", newsHandler.GetTrendingArticlesByPropositionType)
+	group.GET("/trending/type", newsHandler.GetTrendingArticlesByTypeId)
 	group.GET("/view-later", newsHandler.GetArticlesToViewLater)
 	group.GET("/:articleId/proposition", newsHandler.GetPropositionArticleById)
 	group.GET("/:articleId/newsletter", newsHandler.GetNewsletterArticleById)

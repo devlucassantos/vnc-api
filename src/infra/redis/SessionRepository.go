@@ -104,10 +104,37 @@ func (instance Session) DeleteSession(userId uuid.UUID, sessionId uuid.UUID) err
 	}
 	defer instance.connectionManager.closeConnection(redisConnection)
 
-	result := redisConnection.Del(fmt.Sprintf("access:%s:%s", userId, sessionId),
-		fmt.Sprintf("refresh:%s:%s", userId, sessionId))
-	if result.Err() != nil {
-		log.Errorf("Erro ao deletar sessão do usuário %s: %s", userId, err)
+	err = redisConnection.Del(fmt.Sprintf("access:%s:%s", userId, sessionId),
+		fmt.Sprintf("refresh:%s:%s", userId, sessionId)).Err()
+	if err != nil {
+		log.Errorf("Erro ao excluir a sessão do usuário %s: %s", userId, err)
+		return err
+	}
+
+	return nil
+}
+
+func (instance Session) DeleteSessionsByUserId(userId uuid.UUID) error {
+	redisConnection, err := instance.connectionManager.createConnection()
+	if err != nil {
+		log.Error("Erro ao tentar se conectar com o Redis: ", err.Error())
+		return err
+	}
+	defer instance.connectionManager.closeConnection(redisConnection)
+
+	iterator := redisConnection.Scan(0, fmt.Sprintf("*:%s:*", userId), 0).Iterator()
+
+	for iterator.Next() {
+		err = redisConnection.Del(iterator.Val()).Err()
+		if err != nil {
+			log.Errorf("Erro ao excluir as sessões do usuário %s: %s", userId, err)
+			return err
+		}
+	}
+
+	err = iterator.Err()
+	if err != nil {
+		log.Errorf("Erro durante a iteração responsável por excluir as sessões do usuário %s: %s", userId, err)
 		return err
 	}
 

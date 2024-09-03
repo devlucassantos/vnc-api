@@ -8,8 +8,8 @@ import (
 // @title         API da Plataforma Você na Câmara
 // @version       v1
 // @description   Conjunto de rotas responsável por gerenciar a manipulação de dados da Plataforma Você na Câmara.
-// @contact.name  Lucas Santos
-// @contact.email example@email.com
+// @contact.name  Você na Câmara
+// @contact.email email.vocenacamara@gmail.com
 // @basePath      /api/v1
 // @securityDefinitions.apikey BearerAuth
 // @in   header

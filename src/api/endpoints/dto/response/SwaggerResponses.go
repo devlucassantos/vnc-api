@@ -17,33 +17,43 @@ type SwaggerArticlePagination struct {
 }
 
 type SwaggerArticle struct {
-	Id                uuid.UUID `json:"id"                  example:"b27947d6-3224-4479-8da4-7917ae16b34d"`
-	Title             string    `json:"title"               example:"Novo projeto de lei impulsiona crescimento do setor portuário até 2028"`
-	Content           string    `json:"content"             example:"Foi sancionado o projeto de lei que altera a Lei n° 11.033 para prorrogar o Regime Tributário..."`
-	ImageUrl          string    `json:"image_url"           example:"https://image.url.com/article/b27947d6-3224-4479-8da4-7917ae16b34d/image.png"`
-	AverageRating     float64   `json:"average_rating"      example:"3.5"`
-	NumberOfRatings   int       `json:"number_of_ratings"   example:"452"`
-	UserRating        int       `json:"user_rating"         example:"3"`
-	ViewLater         bool      `json:"view_later"          example:"true"`
-	Type              string    `json:"type"                example:"Proposição"`
-	ReferenceDateTime time.Time `json:"reference_date_time" example:"2024-01-05T20:25:19Z"`
-	CreatedAt         time.Time `json:"created_at"          example:"2024-01-05T20:25:19Z"`
-	UpdatedAt         time.Time `json:"updated_at"          example:"2024-01-05T20:25:19Z"`
+	Id                uuid.UUID          `json:"id"                  example:"b27947d6-3224-4479-8da4-7917ae16b34d"`
+	Title             string             `json:"title"               example:"Novo projeto de lei impulsiona crescimento do setor portuário até 2028"`
+	Content           string             `json:"content"             example:"Foi sancionado o projeto de lei que altera a Lei n° 11.033 para prorrogar o Regime Tributário..."`
+	ImageUrl          string             `json:"image_url"           example:"https://image.url.com/article/b27947d6-3224-4479-8da4-7917ae16b34d/image.png"`
+	AverageRating     float64            `json:"average_rating"      example:"3.5"`
+	NumberOfRatings   int                `json:"number_of_ratings"   example:"452"`
+	UserRating        int                `json:"user_rating"         example:"3"`
+	ViewLater         bool               `json:"view_later"          example:"true"`
+	Type              SwaggerArticleType `json:"type"`
+	ReferenceDateTime time.Time          `json:"reference_date_time" example:"2024-01-05T20:25:19Z"`
+	CreatedAt         time.Time          `json:"created_at"          example:"2024-01-05T20:25:19Z"`
+	UpdatedAt         time.Time          `json:"updated_at"          example:"2024-01-05T20:25:19Z"`
+}
+
+type SwaggerArticleType struct {
+	Id          uuid.UUID `json:"id"          example:"560206f4-7360-4e21-8e45-33026f7e0953"`
+	Description string    `json:"description" example:"Projeto de Lei"`
+	Color       string    `json:"color"       example:"#C4170C"`
+	SortOrder   int       `json:"sort_order"  example:"1"`
+	CreatedAt   time.Time `json:"created_at"  example:"2020-08-14T12:22:00Z"`
+	UpdatedAt   time.Time `json:"updated_at"  example:"2020-08-14T12:22:00Z"`
 }
 
 type SwaggerNewsletterArticle struct {
-	Id                  uuid.UUID        `json:"id"                   example:"7963a6dd-f0b8-4065-8e56-6d2a79626db7"`
-	Title               string           `json:"title"                example:"Boletim do dia 26/02/2024"`
-	Content             string           `json:"content"              example:"O presidente enviou ao Congresso Nacional um projeto de lei que permite a concessão de descontos fiscais..."`
-	ReferenceDate       time.Time        `json:"reference_date"       example:"2023-12-23T16:34:14Z"`
-	AverageRating       float64          `json:"average_rating"       example:"4.5"`
-	NumberOfRatings     int              `json:"number_of_ratings"    example:"743"`
-	UserRating          int              `json:"user_rating"          example:"5"`
-	ViewLater           bool             `json:"view_later"           example:"true"`
-	PropositionArticles []SwaggerArticle `json:"proposition_articles"`
-	ReferenceDateTime   time.Time        `json:"reference_date_time"  example:"2023-12-24T19:15:22Z"`
-	CreatedAt           time.Time        `json:"created_at"           example:"2023-12-24T19:15:22Z"`
-	UpdatedAt           time.Time        `json:"updated_at"           example:"2023-12-24T19:15:22Z"`
+	Id                  uuid.UUID          `json:"id"                   example:"7963a6dd-f0b8-4065-8e56-6d2a79626db7"`
+	Title               string             `json:"title"                example:"Boletim do dia 26/02/2024"`
+	Content             string             `json:"content"              example:"O presidente enviou ao Congresso Nacional um projeto de lei que permite a concessão de descontos fiscais..."`
+	ReferenceDate       time.Time          `json:"reference_date"       example:"2023-12-23T16:34:14Z"`
+	Type                SwaggerArticleType `json:"type"`
+	AverageRating       float64            `json:"average_rating"       example:"4.5"`
+	NumberOfRatings     int                `json:"number_of_ratings"    example:"743"`
+	UserRating          int                `json:"user_rating"          example:"5"`
+	ViewLater           bool               `json:"view_later"           example:"true"`
+	PropositionArticles []SwaggerArticle   `json:"proposition_articles"`
+	ReferenceDateTime   time.Time          `json:"reference_date_time"  example:"2023-12-24T19:15:22Z"`
+	CreatedAt           time.Time          `json:"created_at"           example:"2023-12-24T19:15:22Z"`
+	UpdatedAt           time.Time          `json:"updated_at"           example:"2023-12-24T19:15:22Z"`
 }
 
 type SwaggerPropositionArticle struct {
@@ -53,9 +63,9 @@ type SwaggerPropositionArticle struct {
 	Content           string                  `json:"content"             example:"O presente requerimento foi elaborado pelos deputados..."`
 	SubmittedAt       time.Time               `json:"submitted_at"        example:"2023-08-09T14:25:00Z"`
 	ImageUrl          string                  `json:"image_url"           example:"https://www.vnc.com.br/news/proposition/image/87624.jpg"`
-	Type              SwaggerPropositionType  `json:"type"`
 	Deputies          []SwaggerDeputy         `json:"deputies"`
 	ExternalAuthors   []SwaggerExternalAuthor `json:"external_authors"`
+	Type              SwaggerArticleType      `json:"type"`
 	AverageRating     float64                 `json:"average_rating"      example:"2.5"`
 	NumberOfRatings   int                     `json:"number_of_ratings"   example:"249"`
 	UserRating        int                     `json:"user_rating"         example:"5"`
@@ -64,15 +74,6 @@ type SwaggerPropositionArticle struct {
 	ReferenceDateTime time.Time               `json:"reference_date_time"`
 	CreatedAt         time.Time               `json:"created_at"          example:"2023-08-09T14:55:00Z"`
 	UpdatedAt         time.Time               `json:"updated_at"          example:"2023-08-09T14:55:00Z"`
-}
-
-type SwaggerPropositionType struct {
-	Id          uuid.UUID `json:"id"          example:"560206f4-7360-4e21-8e45-33026f7e0953"`
-	Description string    `json:"description" example:"Projeto de Lei"`
-	Color       string    `json:"color"       example:"#C4170C"`
-	SortOrder   int       `json:"sort_order"  example:"1"`
-	CreatedAt   time.Time `json:"created_at"  example:"2020-08-14T12:22:00Z"`
-	UpdatedAt   time.Time `json:"updated_at"  example:"2020-08-14T12:22:00Z"`
 }
 
 type SwaggerDeputy struct {
@@ -113,21 +114,21 @@ type SwaggerDeputyResource struct {
 	Party         SwaggerParty `json:"party"`
 }
 
-type SwaggerPropositionTypeWithPropositions struct {
-	Id                   uuid.UUID        `json:"id"          example:"560206f4-7360-4e21-8e45-33026f7e0953"`
-	Description          string           `json:"description" example:"Projeto de Lei"`
-	Color                string           `json:"color"       example:"#C4170C"`
-	SortOrder            int              `json:"sort_order"  example:"1"`
-	CreatedAt            time.Time        `json:"created_at"  example:"2020-08-14T12:22:00Z"`
-	UpdatedAt            time.Time        `json:"updated_at"  example:"2020-08-14T12:22:00Z"`
-	PropositionsArticles []SwaggerArticle `json:"proposition_articles"`
+type SwaggerArticleTypeWithArticles struct {
+	Id          uuid.UUID        `json:"id"          example:"560206f4-7360-4e21-8e45-33026f7e0953"`
+	Description string           `json:"description" example:"Projeto de Lei"`
+	Color       string           `json:"color"       example:"#C4170C"`
+	SortOrder   int              `json:"sort_order"  example:"1"`
+	CreatedAt   time.Time        `json:"created_at"  example:"2020-08-14T12:22:00Z"`
+	UpdatedAt   time.Time        `json:"updated_at"  example:"2020-08-14T12:22:00Z"`
+	Articles    []SwaggerArticle `json:"articles"`
 }
 
 type SwaggerResources struct {
-	PropositionTypes []SwaggerPropositionType `json:"proposition_types"`
-	Parties          []SwaggerParty           `json:"parties"`
-	Deputies         []SwaggerDeputyResource  `json:"deputies"`
-	ExternalAuthors  []SwaggerExternalAuthor  `json:"external_authors"`
+	ArticleTypes    []SwaggerArticleType    `json:"article_types"`
+	Parties         []SwaggerParty          `json:"parties"`
+	Deputies        []SwaggerDeputyResource `json:"deputies"`
+	ExternalAuthors []SwaggerExternalAuthor `json:"external_authors"`
 }
 
 type SwaggerUser struct {

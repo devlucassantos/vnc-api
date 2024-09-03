@@ -7,6 +7,7 @@ import (
 
 type User interface {
 	CreateUser(userData user.User) (*user.User, error)
+	UpdateUser(userData user.User) (*user.User, error)
 	GetUserById(id uuid.UUID) (*user.User, error)
 	GetUserByEmail(email string) (*user.User, error)
 }

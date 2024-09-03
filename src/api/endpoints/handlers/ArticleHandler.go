@@ -33,22 +33,23 @@ func NewArticleHandler(articleService services.Article, resourceService services
 
 // GetArticles
 // @ID          GetArticles
-// @Summary     Listagem das matérias mais recentes
+// @Summary     Listar matérias mais recentes
 // @Tags        Matérias
-// @Description Esta requisição é responsável por retornar as matérias mais recentes disponíveis na plataforma Você na Câmara.
+// @Description Esta requisição é responsável por listar as matérias mais recentes disponíveis na plataforma.
 // @Security    BearerAuth
 // @Produce     json
+// @Param       typeId           query string false "ID do tipo da matéria."
 // @Param       content          query string false "Parte do conteúdo das matérias, no título ou conteúdo."
 // @Param       deputyId         query string false "ID do deputado que elaborou a proposição."
 // @Param       partyId          query string false "ID do partido que elaborou a proposição."
 // @Param       externalAuthorId query string false "ID do autor externo que elaborou a proposição."
-// @Param       startDate        query string false "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD"
-// @Param       endDate          query string false "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD"
-// @Param       type             query string false "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'."
+// @Param       startDate        query string false "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
+// @Param       endDate          query string false "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
 // @Param       page             query int    false "Número da página. Por padrão é 1."
 // @Param       itemsPerPage     query int    false "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100."
 // @Success 200 {object} response.SwaggerArticlePagination "Requisição realizada com sucesso."
 // @Failure 400 {object} response.SwaggerHttpError         "Requisição mal formulada."
+// @Failure 401 {object} response.SwaggerHttpError         "Acesso não autorizado."
 // @Failure 422 {object} response.SwaggerHttpError         "Requisição não processada devido a algum dos dados enviados serem inválidos."
 // @Failure 500 {object} response.SwaggerHttpError         "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError         "Algum dos serviços/recursos está temporariamente indisponível."
@@ -57,6 +58,16 @@ func (instance Article) GetArticles(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
 	var articleFilter filters.ArticleFilter
+
+	typeIdParam := context.QueryParam("typeId")
+	if typeIdParam != "" {
+		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "ID do tipo da matéria")
+		if httpError != nil {
+			log.Error("Erro ao converter o parâmetro typeId: ", httpError.Message)
+			return context.JSON(httpError.Code, httpError)
+		}
+		articleFilter.TypeId = &typeId
+	}
 
 	articleFilter.Content = context.QueryParam("content")
 
@@ -116,22 +127,6 @@ func (instance Article) GetArticles(context echo.Context) error {
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
 	}
 
-	typeParam := context.QueryParam("type")
-	if typeParam != "" {
-		if typeParam != "Proposição" && typeParam != "Boletim" {
-			errorMessage := fmt.Sprintf("Parâmetro inválido: type")
-			log.Errorf("Requisição mal formulada: %s (Valor: %s)", errorMessage, typeParam)
-			return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
-		} else if typeParam == "Boletim" && (articleFilter.DeputyId != nil || articleFilter.PartyId != nil ||
-			articleFilter.ExternalAuthorId != nil) {
-			errorMessage := fmt.Sprintf("Parâmetros inválidos: O parâmetro type quando igual a 'Boletim' não " +
-				"permite o uso dos demais parâmetros query deputyId, partyId e externalAuthorId.")
-			log.Error(errorMessage)
-			return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
-		}
-		articleFilter.Type = typeParam
-	}
-
 	pageParam := context.QueryParam("page")
 	if pageParam != "" {
 		page, httpError := utils.ConvertFromStringToInt(pageParam, "Página")
@@ -159,7 +154,7 @@ func (instance Article) GetArticles(context echo.Context) error {
 		articleFilter.PaginationFilter.ItemsPerPage = &itemsPerPage
 	}
 
-	articleList, totalNumberOfArticles, err := instance.articleService.GetArticles(articleFilter, userId)
+	articleSlice, totalNumberOfArticles, err := instance.articleService.GetArticles(articleFilter, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
 			log.Error("Banco de dados indisponível: ", err.Error())
@@ -170,8 +165,8 @@ func (instance Article) GetArticles(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
-	var articles []response.Article
-	for _, articleData := range articleList {
+	articles := []response.Article{}
+	for _, articleData := range articleSlice {
 		articles = append(articles, *response.NewArticle(articleData))
 	}
 
@@ -187,22 +182,23 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 // GetTrendingArticles
 // @ID          GetTrendingArticles
-// @Summary     Listagem das matérias em alta
+// @Summary     Listar matérias em alta
 // @Tags        Matérias
-// @Description Esta requisição é responsável por retornar as matérias em alta disponíveis na plataforma Você na Câmara.
+// @Description Esta requisição é responsável por listar as matérias em alta disponíveis na plataforma.
 // @Security    BearerAuth
 // @Produce     json
+// @Param       typeId           query string false "ID do tipo da matéria."
 // @Param       content          query string false "Parte do conteúdo das matérias, no título ou conteúdo."
 // @Param       deputyId         query string false "ID do deputado que elaborou a proposição."
 // @Param       partyId          query string false "ID do partido que elaborou a proposição."
 // @Param       externalAuthorId query string false "ID do autor externo que elaborou a proposição."
-// @Param       startDate        query string false "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD"
-// @Param       endDate          query string false "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD"
-// @Param       type             query string false "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'."
+// @Param       startDate        query string false "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
+// @Param       endDate          query string false "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
 // @Param       page             query int    false "Número da página. Por padrão é 1."
 // @Param       itemsPerPage     query int    false "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100."
 // @Success 200 {object} response.SwaggerArticlePagination "Requisição realizada com sucesso."
 // @Failure 400 {object} response.SwaggerHttpError         "Requisição mal formulada."
+// @Failure 401 {object} response.SwaggerHttpError         "Acesso não autorizado."
 // @Failure 422 {object} response.SwaggerHttpError         "Requisição não processada devido a algum dos dados enviados serem inválidos."
 // @Failure 500 {object} response.SwaggerHttpError         "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError         "Algum dos serviços/recursos está temporariamente indisponível."
@@ -211,6 +207,16 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
 	var articleFilter filters.ArticleFilter
+
+	typeIdParam := context.QueryParam("typeId")
+	if typeIdParam != "" {
+		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "ID do tipo da matéria")
+		if httpError != nil {
+			log.Error("Erro ao converter o parâmetro typeId: ", httpError.Message)
+			return context.JSON(httpError.Code, httpError)
+		}
+		articleFilter.TypeId = &typeId
+	}
 
 	articleFilter.Content = context.QueryParam("content")
 
@@ -270,22 +276,6 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
 	}
 
-	typeParam := context.QueryParam("type")
-	if typeParam != "" {
-		if typeParam != "Proposição" && typeParam != "Boletim" {
-			errorMessage := fmt.Sprintf("Parâmetro inválido: type")
-			log.Errorf("Requisição mal formulada: %s (Valor: %s)", errorMessage, typeParam)
-			return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
-		} else if typeParam == "Boletim" && (articleFilter.DeputyId != nil || articleFilter.PartyId != nil ||
-			articleFilter.ExternalAuthorId != nil) {
-			errorMessage := fmt.Sprintf("Parâmetros inválidos: O parâmetro type quando igual a 'Boletim' não " +
-				"permite o uso dos demais parâmetros query deputyId, partyId e externalAuthorId.")
-			log.Error(errorMessage)
-			return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
-		}
-		articleFilter.Type = typeParam
-	}
-
 	pageParam := context.QueryParam("page")
 	if pageParam != "" {
 		page, httpError := utils.ConvertFromStringToInt(pageParam, "Página")
@@ -313,7 +303,7 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 		articleFilter.PaginationFilter.ItemsPerPage = &itemsPerPage
 	}
 
-	articleList, totalNumberOfArticles, err := instance.articleService.GetTrendingArticles(articleFilter, userId)
+	articleSlice, totalNumberOfArticles, err := instance.articleService.GetTrendingArticles(articleFilter, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
 			log.Error("Banco de dados indisponível: ", err.Error())
@@ -324,8 +314,8 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
-	var articles []response.Article
-	for _, articleData := range articleList {
+	articles := []response.Article{}
+	for _, articleData := range articleSlice {
 		articles = append(articles, *response.NewArticle(articleData))
 	}
 
@@ -339,35 +329,36 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 	return context.JSON(http.StatusOK, requestResult)
 }
 
-// GetTrendingArticlesByPropositionType
-// @ID          GetTrendingArticlesByPropositionType
-// @Summary     Listagem das matérias em alta pelos tipos das proposições
+// GetTrendingArticlesByTypeId
+// @ID          GetTrendingArticlesByTypeId
+// @Summary     Listar matérias em alta pelos tipos de matérias
 // @Tags        Matérias
-// @Description Esta requisição é responsável por retornar as matérias em alta pelos tipos das proposições.
+// @Description Esta requisição é responsável por listar as matérias em alta pelos tipos de matérias.
 // @Security    BearerAuth
 // @Produce     json
-// @Param       propositionTypeIds query string false "Lista com os IDs dos tipos das proposições que devem ser retornados (Separados por vírgula). Por padrão retorna todos."
-// @Param       itemsPerType       query int    false "Quantidade de matérias retornadas por tipo. Por padrão é 5 e os valores permitidos são entre 1 e 20."
-// @Success 200 {object} response.SwaggerPropositionTypeWithPropositions "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError                       "Requisição mal formulada."
-// @Failure 500 {object} response.SwaggerHttpError                       "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError                       "Algum dos serviços/recursos está temporariamente indisponível."
-// @Router /articles/trending/proposition-type [GET]
-func (instance Article) GetTrendingArticlesByPropositionType(context echo.Context) error {
+// @Param       ids          query string false "Lista com os IDs dos tipos de matérias que devem ser retornados (Separados por vírgula). Por padrão retorna todos."
+// @Param       itemsPerType query int    false "Quantidade de matérias retornadas por tipo. Por padrão é 5 e os valores permitidos são entre 1 e 20."
+// @Success 200 {object} response.SwaggerArticleTypeWithArticles "Requisição realizada com sucesso."
+// @Failure 400 {object} response.SwaggerHttpError               "Requisição mal formulada."
+// @Failure 401 {object} response.SwaggerHttpError               "Acesso não autorizado."
+// @Failure 500 {object} response.SwaggerHttpError               "Ocorreu um erro inesperado durante o processamento da requisição."
+// @Failure 503 {object} response.SwaggerHttpError               "Algum dos serviços/recursos está temporariamente indisponível."
+// @Router /articles/trending/type [GET]
+func (instance Article) GetTrendingArticlesByTypeId(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
-	var propositionTypeIds []uuid.UUID
-	propositionTypeIdsParam := context.QueryParam("propositionTypeIds")
-	if propositionTypeIdsParam != "" {
-		propositionTypeIdsAsStringSlice := strings.Split(propositionTypeIdsParam, ",")
-		for index, propositionTypeIdAsString := range propositionTypeIdsAsStringSlice {
-			propositionTypeId, httpError := utils.ConvertFromStringToUuid(propositionTypeIdAsString,
-				fmt.Sprintf("Id do %d° tipo de proposição", index))
+	var articleTypeIds []uuid.UUID
+	idsParam := context.QueryParam("ids")
+	if idsParam != "" {
+		articleTypeIdsAsStringSlice := strings.Split(idsParam, ",")
+		for index, articleTypeIdAsString := range articleTypeIdsAsStringSlice {
+			articleTypeId, httpError := utils.ConvertFromStringToUuid(articleTypeIdAsString,
+				fmt.Sprintf("Id do %d° tipo de matéria", index+1))
 			if httpError != nil {
-				log.Error("Erro ao converter o parâmetro propositionTypeIds: ", httpError.Message)
+				log.Error("Erro ao converter o parâmetro ids: ", httpError.Message)
 				return context.JSON(httpError.Code, httpError)
 			}
-			propositionTypeIds = append(propositionTypeIds, propositionTypeId)
+			articleTypeIds = append(articleTypeIds, articleTypeId)
 		}
 	}
 
@@ -388,60 +379,59 @@ func (instance Article) GetTrendingArticlesByPropositionType(context echo.Contex
 		}
 	}
 
-	propositionTypes, err := instance.resourceService.GetPropositionTypes(propositionTypeIds)
+	articleTypes, err := instance.resourceService.GetArticleTypes(articleTypeIds)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
 			log.Error("Banco de dados indisponível: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Error("Erro ao buscar os detalhes dos tipos de proposições no banco de dados: ", err.Error())
+		log.Error("Erro ao buscar os detalhes dos tipos de matéria no banco de dados: ", err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
-	var propositionTypeList []response.PropositionType
-	for _, propositionType := range propositionTypes {
-		articles, err := instance.articleService.GetTrendingArticlesByPropositionType(
-			propositionType.Id(), itemsPerType, userId)
+	var articleTypeSlice []response.ArticleType
+	for _, articleType := range articleTypes {
+		articles, err := instance.articleService.GetTrendingArticlesByTypeId(articleType.Id(), itemsPerType, userId)
 		if err != nil {
 			if strings.Contains(err.Error(), "connection refused") {
 				log.Error("Banco de dados indisponível: ", err.Error())
 				return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 			}
 
-			log.Errorf("Erro ao buscar as matérias do tipo de proposição %s: %s", propositionType.Id(), err.Error())
+			log.Errorf("Erro ao buscar as matérias do tipo de matéria %s: %s", articleType.Id(), err.Error())
 			return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 		}
 
-		propositionTypeResponse := response.NewPropositionType(propositionType)
+		articleTypeResponse := response.NewArticleType(articleType)
 
-		var propositionArticles []response.Article
+		var articleSlice []response.Article
 		for _, articleData := range articles {
-			propositionArticles = append(propositionArticles, *response.NewArticle(articleData))
+			articleSlice = append(articleSlice, *response.NewArticle(articleData))
 		}
 
-		propositionTypeResponse.PropositionsArticles = propositionArticles
+		articleTypeResponse.Articles = articleSlice
 
-		propositionTypeList = append(propositionTypeList, *propositionTypeResponse)
+		articleTypeSlice = append(articleTypeSlice, *articleTypeResponse)
 	}
 
-	return context.JSON(http.StatusOK, propositionTypeList)
+	return context.JSON(http.StatusOK, articleTypeSlice)
 }
 
 // GetArticlesToViewLater
 // @ID          GetArticlesToViewLater
-// @Summary     Listagem das matérias marcadas para ver depois
+// @Summary     Listar matérias marcadas para ver depois pelo usuário
 // @Tags        Matérias
-// @Description Esta requisição é responsável por retornar as matérias marcadas para ver depois na plataforma Você na Câmara.
+// @Description Esta requisição é responsável por listar as matérias marcadas para ver depois pelo usuário na plataforma. As matérias serão listadas na ordem que o usuário realizou a marcação das matérias.
 // @Security    BearerAuth
 // @Produce     json
+// @Param       typeId           query string false "ID do tipo da matéria."
 // @Param       content          query string false "Parte do conteúdo das matérias, no título ou conteúdo."
 // @Param       deputyId         query string false "ID do deputado que elaborou a proposição."
 // @Param       partyId          query string false "ID do partido que elaborou a proposição."
 // @Param       externalAuthorId query string false "ID do autor externo que elaborou a proposição."
-// @Param       startDate        query string false "Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD"
-// @Param       endDate          query string false "Data final para submissão da proposta. Formato aceito: YYYY-MM-DD"
-// @Param       type             query string false "Tipo das matérias. Por padrão retorna todos os tipos. Valores permitidos: 'Proposição', 'Boletim'."
+// @Param       startDate        query string false "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
+// @Param       endDate          query string false "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
 // @Param       page             query int    false "Número da página. Por padrão é 1."
 // @Param       itemsPerPage     query int    false "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100."
 // @Success 200 {object} response.SwaggerArticlePagination "Requisição realizada com sucesso."
@@ -455,6 +445,16 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
 	var articleFilter filters.ArticleFilter
+
+	typeIdParam := context.QueryParam("typeId")
+	if typeIdParam != "" {
+		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "ID do tipo da matéria")
+		if httpError != nil {
+			log.Error("Erro ao converter o parâmetro typeId: ", httpError.Message)
+			return context.JSON(httpError.Code, httpError)
+		}
+		articleFilter.TypeId = &typeId
+	}
 
 	articleFilter.Content = context.QueryParam("content")
 
@@ -514,22 +514,6 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
 	}
 
-	typeParam := context.QueryParam("type")
-	if typeParam != "" {
-		if typeParam != "Proposição" && typeParam != "Boletim" {
-			errorMessage := fmt.Sprintf("Parâmetro inválido: type")
-			log.Errorf("Requisição mal formulada: %s (Valor: %s)", errorMessage, typeParam)
-			return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
-		} else if typeParam == "Boletim" && (articleFilter.DeputyId != nil || articleFilter.PartyId != nil ||
-			articleFilter.ExternalAuthorId != nil) {
-			errorMessage := fmt.Sprintf("Parâmetros inválidos: O parâmetro type quando igual a 'Boletim' não " +
-				"permite o uso dos demais parâmetros query deputyId, partyId e externalAuthorId.")
-			log.Error(errorMessage)
-			return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
-		}
-		articleFilter.Type = typeParam
-	}
-
 	pageParam := context.QueryParam("page")
 	if pageParam != "" {
 		page, httpError := utils.ConvertFromStringToInt(pageParam, "Página")
@@ -557,7 +541,7 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 		articleFilter.PaginationFilter.ItemsPerPage = &itemsPerPage
 	}
 
-	articleList, totalNumberOfArticles, err := instance.articleService.GetArticlesToViewLater(articleFilter, userId)
+	articleSlice, totalNumberOfArticles, err := instance.articleService.GetArticlesToViewLater(articleFilter, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
 			log.Error("Banco de dados indisponível: ", err.Error())
@@ -568,8 +552,8 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
-	var articles []response.Article
-	for _, articleData := range articleList {
+	articles := []response.Article{}
+	for _, articleData := range articleSlice {
 		articles = append(articles, *response.NewArticle(articleData))
 	}
 
@@ -585,14 +569,15 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 // GetPropositionArticleById
 // @ID          GetPropositionArticleById
-// @Summary     Busca dos detalhes da matéria pelo ID do tipo proposição
+// @Summary     Buscar detalhes de uma matéria dos tipos de proposições pelo ID
 // @Tags        Matérias
-// @Description Esta requisição é responsável por retornar os detalhes da matéria pelo ID do tipo proposição.
+// @Description Esta requisição é responsável por buscar os detalhes de uma matéria dos tipos de proposições pelo ID.
 // @Security    BearerAuth
 // @Produce     json
 // @Param       articleId path string true "ID da matéria"
 // @Success 200 {object} response.SwaggerPropositionArticle "Requisição realizada com sucesso."
 // @Failure 400 {object} response.SwaggerHttpError          "Requisição mal formulada."
+// @Failure 401 {object} response.SwaggerHttpError          "Acesso não autorizado."
 // @Failure 404 {object} response.SwaggerHttpError          "Recurso solicitado não encontrado."
 // @Failure 422 {object} response.SwaggerHttpError          "Requisição não processada devido a algum dos dados enviados serem inválidos."
 // @Failure 500 {object} response.SwaggerHttpError          "Ocorreu um erro inesperado durante o processamento da requisição."
@@ -643,14 +628,15 @@ func (instance Article) GetPropositionArticleById(context echo.Context) error {
 
 // GetNewsletterArticleById
 // @ID          GetNewsletterArticleById
-// @Summary     Busca dos detalhes da matéria pelo ID do tipo boletim
+// @Summary     Buscar detalhes de uma matéria do tipo boletim pelo ID
 // @Tags        Matérias
-// @Description Esta requisição é responsável por retornar os detalhes da matéria pelo ID do tipo boletim.
+// @Description Esta requisição é responsável por buscar os detalhes de uma matéria do tipo boletim pelo ID.
 // @Security    BearerAuth
 // @Produce     json
 // @Param       articleId path string true "ID da matéria"
 // @Success 200 {object} response.SwaggerNewsletterArticle "Requisição realizada com sucesso."
 // @Failure 400 {object} response.SwaggerHttpError         "Requisição mal formulada."
+// @Failure 401 {object} response.SwaggerHttpError         "Acesso não autorizado."
 // @Failure 404 {object} response.SwaggerHttpError         "Recurso solicitado não encontrado."
 // @Failure 422 {object} response.SwaggerHttpError         "Requisição não processada devido a algum dos dados enviados serem inválidos."
 // @Failure 500 {object} response.SwaggerHttpError         "Ocorreu um erro inesperado durante o processamento da requisição."
@@ -705,12 +691,12 @@ func (instance Article) GetNewsletterArticleById(context echo.Context) error {
 // @ID          SaveArticleRating
 // @Summary     Avaliar matéria
 // @Tags        Matérias
-// @Description Esta requisição é responsável pelo registro da avaliação do usuário sobre uma matéria.
+// @Description Esta requisição é responsável pelo registro da avaliação de uma matéria pelo usuário.
 // @Security    BearerAuth
 // @Accept      json
 // @Produce     json
 // @Param       articleId path string         true "ID da matéria"
-// @Param       body      body request.Rating true "JSON com todos os dados necessários para que o login seja realizado."
+// @Param       body      body request.Rating true "JSON com todos os dados necessários para que a avaliação da matéria seja realizada."
 // @Success 204 {object} nil                       "Requisição realizada com sucesso."
 // @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
 // @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
@@ -732,7 +718,7 @@ func (instance Article) SaveArticleRating(context echo.Context) error {
 	var rating request.Rating
 	err := context.Bind(&rating)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição ao DTO: ", err.Error())
+		log.Error("Erro ao atribuir os dados da requisição de avaliação da matéria ao DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
@@ -766,14 +752,14 @@ func (instance Article) SaveArticleRating(context echo.Context) error {
 
 // SaveArticleToViewLater
 // @ID          SaveArticleToViewLater
-// @Summary     Salvar matéria para ver depois
+// @Summary     Adicionar ou remover matéria da lista de matérias marcadas para ver depois pelo usuário
 // @Tags        Matérias
-// @Description Esta requisição é responsável por salvar a matéria na lista de matérias marcadas para ver depois do usuário.
+// @Description Esta requisição é responsável por adicionar ou remover a matéria da lista de matérias marcadas para ver depois pelo usuário.
 // @Security    BearerAuth
 // @Accept      json
 // @Produce     json
 // @Param       articleId path string            true "ID da matéria"
-// @Param       body      body request.ViewLater true "JSON com todos os dados necessários para que o login seja realizado."
+// @Param       body      body request.ViewLater true "JSON com todos os dados necessários para marcar/desmarcar a matéria para ver depois."
 // @Success 204 {object} nil                       "Requisição realizada com sucesso."
 // @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
 // @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
@@ -795,7 +781,8 @@ func (instance Article) SaveArticleToViewLater(context echo.Context) error {
 	var viewLater request.ViewLater
 	err := context.Bind(&viewLater)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição ao DTO: ", err.Error())
+		log.Error("Erro ao atribuir os dados da requisição de marcação da matéria para ver depois ao DTO: ",
+			err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 

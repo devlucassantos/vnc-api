@@ -14,5 +14,4 @@ type Proposition struct {
 	ImageUrl        string    `db:"proposition_image_url"`
 	CreatedAt       time.Time `db:"proposition_created_at"`
 	UpdatedAt       time.Time `db:"proposition_updated_at"`
-	*PropositionType
 }

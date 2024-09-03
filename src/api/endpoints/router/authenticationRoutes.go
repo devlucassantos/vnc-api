@@ -12,6 +12,6 @@ func loadAuthenticationRoutes(group *echo.Group) {
 
 	group.POST("/sign-up", authenticationHandler.SignUp)
 	group.POST("/sign-in", authenticationHandler.SignIn)
-	group.POST("/refresh", authenticationHandler.Refresh)
 	group.POST("/sign-out", authenticationHandler.SignOut)
+	group.POST("/refresh", authenticationHandler.Refresh)
 }

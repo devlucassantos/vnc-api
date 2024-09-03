@@ -36,6 +36,12 @@ definitions:
         example: luc@ssantos123
         type: string
     type: object
+  request.UserAccountActivation:
+    properties:
+      activation_code:
+        example: NJBJQ3
+        type: string
+    type: object
   request.ViewLater:
     properties:
       view_later:
@@ -71,8 +77,7 @@ definitions:
           2028
         type: string
       type:
-        example: Proposição
-        type: string
+        $ref: '#/definitions/response.SwaggerArticleType'
       updated_at:
         example: "2024-01-05T20:25:19Z"
         type: string
@@ -98,6 +103,52 @@ definitions:
       total:
         example: 4562
         type: integer
+    type: object
+  response.SwaggerArticleType:
+    properties:
+      color:
+        example: '#C4170C'
+        type: string
+      created_at:
+        example: "2020-08-14T12:22:00Z"
+        type: string
+      description:
+        example: Projeto de Lei
+        type: string
+      id:
+        example: 560206f4-7360-4e21-8e45-33026f7e0953
+        type: string
+      sort_order:
+        example: 1
+        type: integer
+      updated_at:
+        example: "2020-08-14T12:22:00Z"
+        type: string
+    type: object
+  response.SwaggerArticleTypeWithArticles:
+    properties:
+      articles:
+        items:
+          $ref: '#/definitions/response.SwaggerArticle'
+        type: array
+      color:
+        example: '#C4170C'
+        type: string
+      created_at:
+        example: "2020-08-14T12:22:00Z"
+        type: string
+      description:
+        example: Projeto de Lei
+        type: string
+      id:
+        example: 560206f4-7360-4e21-8e45-33026f7e0953
+        type: string
+      sort_order:
+        example: 1
+        type: integer
+      updated_at:
+        example: "2020-08-14T12:22:00Z"
+        type: string
     type: object
   response.SwaggerDeputy:
     properties:
@@ -202,6 +253,8 @@ definitions:
       title:
         example: Boletim do dia 26/02/2024
         type: string
+      type:
+        $ref: '#/definitions/response.SwaggerArticleType'
       updated_at:
         example: "2023-12-24T19:15:22Z"
         type: string
@@ -275,7 +328,7 @@ definitions:
         example: Requerimento de Votação Nominal-Destaque de Emenda
         type: string
       type:
-        $ref: '#/definitions/response.SwaggerPropositionType'
+        $ref: '#/definitions/response.SwaggerArticleType'
       updated_at:
         example: "2023-08-09T14:55:00Z"
         type: string
@@ -286,54 +339,12 @@ definitions:
         example: true
         type: boolean
     type: object
-  response.SwaggerPropositionType:
-    properties:
-      color:
-        example: '#C4170C'
-        type: string
-      created_at:
-        example: "2020-08-14T12:22:00Z"
-        type: string
-      description:
-        example: Projeto de Lei
-        type: string
-      id:
-        example: 560206f4-7360-4e21-8e45-33026f7e0953
-        type: string
-      sort_order:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2020-08-14T12:22:00Z"
-        type: string
-    type: object
-  response.SwaggerPropositionTypeWithPropositions:
-    properties:
-      color:
-        example: '#C4170C'
-        type: string
-      created_at:
-        example: "2020-08-14T12:22:00Z"
-        type: string
-      description:
-        example: Projeto de Lei
-        type: string
-      id:
-        example: 560206f4-7360-4e21-8e45-33026f7e0953
-        type: string
-      proposition_articles:
-        items:
-          $ref: '#/definitions/response.SwaggerArticle'
-        type: array
-      sort_order:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2020-08-14T12:22:00Z"
-        type: string
-    type: object
   response.SwaggerResources:
     properties:
+      article_types:
+        items:
+          $ref: '#/definitions/response.SwaggerArticleType'
+        type: array
       deputies:
         items:
           $ref: '#/definitions/response.SwaggerDeputyResource'
@@ -345,10 +356,6 @@ definitions:
       parties:
         items:
           $ref: '#/definitions/response.SwaggerParty'
-        type: array
-      proposition_types:
-        items:
-          $ref: '#/definitions/response.SwaggerPropositionType'
         type: array
     type: object
   response.SwaggerUser:
@@ -386,8 +393,8 @@ definitions:
     type: object
 info:
   contact:
-    email: example@email.com
-    name: Lucas Santos
+    email: email.vocenacamara@gmail.com
+    name: Você na Câmara
   description: Conjunto de rotas responsável por gerenciar a manipulação de dados
     da Plataforma Você na Câmara.
   title: API da Plataforma Você na Câmara
@@ -395,10 +402,14 @@ info:
 paths:
   /articles:
     get:
-      description: Esta requisição é responsável por retornar as matérias mais recentes
-        disponíveis na plataforma Você na Câmara.
+      description: Esta requisição é responsável por listar as matérias mais recentes
+        disponíveis na plataforma.
       operationId: GetArticles
       parameters:
+      - description: ID do tipo da matéria.
+        in: query
+        name: typeId
+        type: string
       - description: Parte do conteúdo das matérias, no título ou conteúdo.
         in: query
         name: content
@@ -415,18 +426,15 @@ paths:
         in: query
         name: externalAuthorId
         type: string
-      - description: 'Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD'
+      - description: 'Data a partir da qual as matérias podem ter sido criadas. Formato
+          aceito: YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Data final para submissão da proposta. Formato aceito: YYYY-MM-DD'
+      - description: 'Data até a qual as matérias podem ter sido criadas. Formato
+          aceito: YYYY-MM-DD'
         in: query
         name: endDate
-        type: string
-      - description: 'Tipo das matérias. Por padrão retorna todos os tipos. Valores
-          permitidos: ''Proposição'', ''Boletim''.'
-        in: query
-        name: type
         type: string
       - description: Número da página. Por padrão é 1.
         in: query
@@ -448,6 +456,10 @@ paths:
           description: Requisição mal formulada.
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
         "422":
           description: Requisição não processada devido a algum dos dados enviados
             serem inválidos.
@@ -463,13 +475,13 @@ paths:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Listagem das matérias mais recentes
+      summary: Listar matérias mais recentes
       tags:
       - Matérias
   /articles/{articleId}/newsletter:
     get:
-      description: Esta requisição é responsável por retornar os detalhes da matéria
-        pelo ID do tipo boletim.
+      description: Esta requisição é responsável por buscar os detalhes de uma matéria
+        do tipo boletim pelo ID.
       operationId: GetNewsletterArticleById
       parameters:
       - description: ID da matéria
@@ -488,6 +500,10 @@ paths:
           description: Requisição mal formulada.
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
         "404":
           description: Recurso solicitado não encontrado.
           schema:
@@ -507,13 +523,13 @@ paths:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Busca dos detalhes da matéria pelo ID do tipo boletim
+      summary: Buscar detalhes de uma matéria do tipo boletim pelo ID
       tags:
       - Matérias
   /articles/{articleId}/proposition:
     get:
-      description: Esta requisição é responsável por retornar os detalhes da matéria
-        pelo ID do tipo proposição.
+      description: Esta requisição é responsável por buscar os detalhes de uma matéria
+        dos tipos de proposições pelo ID.
       operationId: GetPropositionArticleById
       parameters:
       - description: ID da matéria
@@ -532,6 +548,10 @@ paths:
           description: Requisição mal formulada.
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
         "404":
           description: Recurso solicitado não encontrado.
           schema:
@@ -551,15 +571,15 @@ paths:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Busca dos detalhes da matéria pelo ID do tipo proposição
+      summary: Buscar detalhes de uma matéria dos tipos de proposições pelo ID
       tags:
       - Matérias
   /articles/{articleId}/rating:
     patch:
       consumes:
       - application/json
-      description: Esta requisição é responsável pelo registro da avaliação do usuário
-        sobre uma matéria.
+      description: Esta requisição é responsável pelo registro da avaliação de uma
+        matéria pelo usuário.
       operationId: SaveArticleRating
       parameters:
       - description: ID da matéria
@@ -567,7 +587,8 @@ paths:
         name: articleId
         required: true
         type: string
-      - description: JSON com todos os dados necessários para que o login seja realizado.
+      - description: JSON com todos os dados necessários para que a avaliação da matéria
+          seja realizada.
         in: body
         name: body
         required: true
@@ -616,8 +637,8 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Esta requisição é responsável por salvar a matéria na lista de
-        matérias marcadas para ver depois do usuário.
+      description: Esta requisição é responsável por adicionar ou remover a matéria
+        da lista de matérias marcadas para ver depois pelo usuário.
       operationId: SaveArticleToViewLater
       parameters:
       - description: ID da matéria
@@ -625,7 +646,8 @@ paths:
         name: articleId
         required: true
         type: string
-      - description: JSON com todos os dados necessários para que o login seja realizado.
+      - description: JSON com todos os dados necessários para marcar/desmarcar a matéria
+          para ver depois.
         in: body
         name: body
         required: true
@@ -667,15 +689,20 @@ paths:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Salvar matéria para ver depois
+      summary: Adicionar ou remover matéria da lista de matérias marcadas para ver
+        depois pelo usuário
       tags:
       - Matérias
   /articles/trending:
     get:
-      description: Esta requisição é responsável por retornar as matérias em alta
-        disponíveis na plataforma Você na Câmara.
+      description: Esta requisição é responsável por listar as matérias em alta disponíveis
+        na plataforma.
       operationId: GetTrendingArticles
       parameters:
+      - description: ID do tipo da matéria.
+        in: query
+        name: typeId
+        type: string
       - description: Parte do conteúdo das matérias, no título ou conteúdo.
         in: query
         name: content
@@ -692,131 +719,15 @@ paths:
         in: query
         name: externalAuthorId
         type: string
-      - description: 'Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD'
+      - description: 'Data a partir da qual as matérias podem ter sido criadas. Formato
+          aceito: YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Data final para submissão da proposta. Formato aceito: YYYY-MM-DD'
+      - description: 'Data até a qual as matérias podem ter sido criadas. Formato
+          aceito: YYYY-MM-DD'
         in: query
         name: endDate
-        type: string
-      - description: 'Tipo das matérias. Por padrão retorna todos os tipos. Valores
-          permitidos: ''Proposição'', ''Boletim''.'
-        in: query
-        name: type
-        type: string
-      - description: Número da página. Por padrão é 1.
-        in: query
-        name: page
-        type: integer
-      - description: Quantidade de matérias retornadas por página. Por padrão é 15
-          e os valores permitidos são entre 1 e 100.
-        in: query
-        name: itemsPerPage
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Requisição realizada com sucesso.
-          schema:
-            $ref: '#/definitions/response.SwaggerArticlePagination'
-        "400":
-          description: Requisição mal formulada.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-        "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-        "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-        "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-      security:
-      - BearerAuth: []
-      summary: Listagem das matérias em alta
-      tags:
-      - Matérias
-  /articles/trending/proposition-type:
-    get:
-      description: Esta requisição é responsável por retornar as matérias em alta
-        pelos tipos das proposições.
-      operationId: GetTrendingArticlesByPropositionType
-      parameters:
-      - description: Lista com os IDs dos tipos das proposições que devem ser retornados
-          (Separados por vírgula). Por padrão retorna todos.
-        in: query
-        name: propositionTypeIds
-        type: string
-      - description: Quantidade de matérias retornadas por tipo. Por padrão é 5 e
-          os valores permitidos são entre 1 e 20.
-        in: query
-        name: itemsPerType
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Requisição realizada com sucesso.
-          schema:
-            $ref: '#/definitions/response.SwaggerPropositionTypeWithPropositions'
-        "400":
-          description: Requisição mal formulada.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-        "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-        "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-      security:
-      - BearerAuth: []
-      summary: Listagem das matérias em alta pelos tipos das proposições
-      tags:
-      - Matérias
-  /articles/view-later:
-    get:
-      description: Esta requisição é responsável por retornar as matérias marcadas
-        para ver depois na plataforma Você na Câmara.
-      operationId: GetArticlesToViewLater
-      parameters:
-      - description: Parte do conteúdo das matérias, no título ou conteúdo.
-        in: query
-        name: content
-        type: string
-      - description: ID do deputado que elaborou a proposição.
-        in: query
-        name: deputyId
-        type: string
-      - description: ID do partido que elaborou a proposição.
-        in: query
-        name: partyId
-        type: string
-      - description: ID do autor externo que elaborou a proposição.
-        in: query
-        name: externalAuthorId
-        type: string
-      - description: 'Data inicial para submissão da proposta. Formato aceito: YYYY-MM-DD'
-        in: query
-        name: startDate
-        type: string
-      - description: 'Data final para submissão da proposta. Formato aceito: YYYY-MM-DD'
-        in: query
-        name: endDate
-        type: string
-      - description: 'Tipo das matérias. Por padrão retorna todos os tipos. Valores
-          permitidos: ''Proposição'', ''Boletim''.'
-        in: query
-        name: type
         type: string
       - description: Número da página. Por padrão é 1.
         in: query
@@ -857,18 +768,142 @@ paths:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Listagem das matérias marcadas para ver depois
+      summary: Listar matérias em alta
+      tags:
+      - Matérias
+  /articles/trending/type:
+    get:
+      description: Esta requisição é responsável por listar as matérias em alta pelos
+        tipos de matérias.
+      operationId: GetTrendingArticlesByTypeId
+      parameters:
+      - description: Lista com os IDs dos tipos de matérias que devem ser retornados
+          (Separados por vírgula). Por padrão retorna todos.
+        in: query
+        name: ids
+        type: string
+      - description: Quantidade de matérias retornadas por tipo. Por padrão é 5 e
+          os valores permitidos são entre 1 e 20.
+        in: query
+        name: itemsPerType
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requisição realizada com sucesso.
+          schema:
+            $ref: '#/definitions/response.SwaggerArticleTypeWithArticles'
+        "400":
+          description: Requisição mal formulada.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "503":
+          description: Algum dos serviços/recursos está temporariamente indisponível.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+      security:
+      - BearerAuth: []
+      summary: Listar matérias em alta pelos tipos de matérias
+      tags:
+      - Matérias
+  /articles/view-later:
+    get:
+      description: Esta requisição é responsável por listar as matérias marcadas para
+        ver depois pelo usuário na plataforma. As matérias serão listadas na ordem
+        que o usuário realizou a marcação das matérias.
+      operationId: GetArticlesToViewLater
+      parameters:
+      - description: ID do tipo da matéria.
+        in: query
+        name: typeId
+        type: string
+      - description: Parte do conteúdo das matérias, no título ou conteúdo.
+        in: query
+        name: content
+        type: string
+      - description: ID do deputado que elaborou a proposição.
+        in: query
+        name: deputyId
+        type: string
+      - description: ID do partido que elaborou a proposição.
+        in: query
+        name: partyId
+        type: string
+      - description: ID do autor externo que elaborou a proposição.
+        in: query
+        name: externalAuthorId
+        type: string
+      - description: 'Data a partir da qual as matérias podem ter sido criadas. Formato
+          aceito: YYYY-MM-DD'
+        in: query
+        name: startDate
+        type: string
+      - description: 'Data até a qual as matérias podem ter sido criadas. Formato
+          aceito: YYYY-MM-DD'
+        in: query
+        name: endDate
+        type: string
+      - description: Número da página. Por padrão é 1.
+        in: query
+        name: page
+        type: integer
+      - description: Quantidade de matérias retornadas por página. Por padrão é 15
+          e os valores permitidos são entre 1 e 100.
+        in: query
+        name: itemsPerPage
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requisição realizada com sucesso.
+          schema:
+            $ref: '#/definitions/response.SwaggerArticlePagination'
+        "400":
+          description: Requisição mal formulada.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "422":
+          description: Requisição não processada devido a algum dos dados enviados
+            serem inválidos.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "503":
+          description: Algum dos serviços/recursos está temporariamente indisponível.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+      security:
+      - BearerAuth: []
+      summary: Listar matérias marcadas para ver depois pelo usuário
       tags:
       - Matérias
   /auth/refresh:
     post:
       consumes:
       - application/json
-      description: 'Esta requisição é responsável por realizar a atualização dos tokens
-        do usuário na plataforma:'
+      description: Esta requisição é responsável por realizar a atualização dos tokens
+        de acesso do usuário na plataforma.
       operationId: Refresh
       parameters:
-      - description: JSON com todos os dados necessários para que o login seja realizado.
+      - description: JSON com todos os dados necessários para que a atualização dos
+          tokens de acesso seja realizada.
         in: body
         name: body
         required: true
@@ -909,8 +944,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: 'Esta requisição é responsável por permitir a entrada do usuário
-        em sua conta na plataforma:'
+      description: Esta requisição é responsável por permitir a entrada do usuário
+        em sua conta na plataforma.
       operationId: SignIn
       parameters:
       - description: JSON com todos os dados necessários para que o login seja realizado.
@@ -956,8 +991,8 @@ paths:
       - Autenticação
   /auth/sign-out:
     post:
-      description: 'Esta requisição é responsável por realizar o encerramento do acesso
-        do usuário a plataforma:'
+      description: Esta requisição é responsável por realizar o encerramento do acesso
+        do usuário a plataforma.
       operationId: SignOut
       produces:
       - application/json
@@ -993,8 +1028,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: 'Esta requisição é responsável por permitir o cadastro do usuário
-        na plataforma:'
+      description: Esta requisição é responsável por permitir o cadastro do usuário
+        na plataforma.
       operationId: SignUp
       parameters:
       - description: JSON com todos os dados necessários para que a criação da conta
@@ -1015,9 +1050,13 @@ paths:
           description: Requisição mal formulada.
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
         "409":
-          description: Requisição contém dados já cadastrados no banco de dados que
-            deveriam ser únicos.
+          description: Requisição contém dados que já estão cadastrados no banco de
+            dados e que devem ser únicos.
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
@@ -1038,8 +1077,7 @@ paths:
       - Autenticação
   /resources:
     get:
-      description: Esta requisição é responsável por retornar todos os recursos da
-        plataforma.
+      description: Esta requisição é responsável por listar todos os recursos da plataforma.
       operationId: GetResources
       produces:
       - application/json
@@ -1050,6 +1088,10 @@ paths:
             items:
               $ref: '#/definitions/response.SwaggerResources'
             type: array
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
         "500":
           description: Ocorreu um erro inesperado durante o processamento da requisição.
           schema:
@@ -1058,9 +1100,96 @@ paths:
           description: Algum dos serviços/recursos está temporariamente indisponível.
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
-      summary: Busca de todos os recursos
+      summary: Listar todos os recursos
       tags:
       - Recursos
+  /user/activate-account:
+    patch:
+      consumes:
+      - application/json
+      description: Esta requisição é responsável por ativar a conta do usuário, comprovando
+        que o endereço de email fornecido no cadastro realmente existe e pertence
+        ao usuário.
+      operationId: ActivateAccount
+      parameters:
+      - description: JSON com todos os dados necessários para que a ativação da conta
+          seja realizada.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserAccountActivation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requisição realizada com sucesso.
+          schema:
+            items:
+              $ref: '#/definitions/response.SwaggerUser'
+            type: array
+        "400":
+          description: Requisição mal formulada, a conta do usuário já está ativa
+            ou o código de ativação informado é inválido.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "403":
+          description: Acesso negado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "503":
+          description: Algum dos serviços/recursos está temporariamente indisponível.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+      security:
+      - BearerAuth: []
+      summary: Ativar conta do usuário
+      tags:
+      - Usuário
+  /user/resend-activation-email:
+    patch:
+      description: Esta requisição é responsável por reenviar o email de ativação
+        da conta do usuário. A cada envio, um novo código é gerado, invalidando o
+        código anterior.
+      operationId: ResendActivationEmail
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Requisição realizada com sucesso.
+        "400":
+          description: Requisição mal formulada ou a conta do usuário já está ativa.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "401":
+          description: Acesso não autorizado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "403":
+          description: Acesso negado.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "500":
+          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+        "503":
+          description: Algum dos serviços/recursos está temporariamente indisponível.
+          schema:
+            $ref: '#/definitions/response.SwaggerHttpError'
+      security:
+      - BearerAuth: []
+      summary: Reenviar email de ativação da conta do usuário
+      tags:
+      - Usuário
 securityDefinitions:
   BearerAuth:
     in: header

@@ -39,7 +39,8 @@ func (userArticleUpdateSqlManager) Rating() string {
 
 func (userArticleUpdateSqlManager) ViewLater() string {
 	return `UPDATE user_article
-			SET view_later = $1, updated_at = TIMEZONE('America/Sao_Paulo'::TEXT, NOW())
+			SET view_later = $1, view_later_set_at = TIMEZONE('America/Sao_Paulo'::TEXT, NOW()),
+				updated_at = TIMEZONE('America/Sao_Paulo'::TEXT, NOW())
 			WHERE active = true AND user_id = $2 AND article_id = $3`
 }
 
@@ -56,7 +57,8 @@ func (userArticleSelectSqlManager) RatingsAndArticlesSavedForLaterViewing(number
 	}
 
 	return fmt.Sprintf(`SELECT article.id AS article_id,
-							COALESCE(user_article.rating, 0) AS user_article_rating, user_article.view_later AS user_article_view_later
+							COALESCE(user_article.rating, 0) AS user_article_rating,
+							COALESCE(user_article.view_later, false) AS user_article_view_later
 						FROM article
 							LEFT JOIN proposition ON proposition.id = article.proposition_id
 							LEFT JOIN newsletter ON newsletter.id = article.newsletter_id
@@ -70,19 +72,23 @@ func (userArticleSelectSqlManager) RatingsAndArticlesSavedForLaterViewing(number
 func (userArticleSelectSqlManager) NumberOfArticlesSavedToViewLater() string {
 	return `SELECT COUNT(DISTINCT article.id)
 			FROM article
+			    INNER JOIN article_type ON article_type.id = article.article_type_id
 			    LEFT JOIN proposition ON proposition.id = article.proposition_id
 			    LEFT JOIN newsletter ON newsletter.id = article.newsletter_id
 				LEFT JOIN user_article ON user_article.article_id = article.id
 			WHERE article.active = true AND (proposition.active = true OR newsletter.active = true) AND
-				user_article.active = true AND ((proposition.title ILIKE $1 OR proposition.content ILIKE $1) OR
-				(newsletter.title ILIKE $1 OR newsletter.description ILIKE $1)) AND
-				DATE(article.created_at) >= DATE(COALESCE($2, article.created_at)) AND
-				DATE(article.created_at) <= DATE(COALESCE($3, article.created_at)) AND user_id = $4`
+				user_article.active = true AND user_article.view_later = true AND
+				article_type.id = COALESCE($1, article_type.id) AND
+				((proposition.title ILIKE $2 OR proposition.content ILIKE $2) OR
+				(newsletter.title ILIKE $2 OR newsletter.description ILIKE $2)) AND
+				DATE(article.created_at) >= DATE(COALESCE($3, article.created_at)) AND
+				DATE(article.created_at) <= DATE(COALESCE($4, article.created_at)) AND user_id = $5`
 }
 
 func (userArticleSelectSqlManager) NumberOfPropositionsSavedToViewLater() string {
 	return `SELECT COUNT(DISTINCT article.id)
 			FROM article
+			    INNER JOIN article_type ON article_type.id = article.article_type_id
 			    LEFT JOIN proposition prop ON prop.id = article.proposition_id
 			    LEFT JOIN proposition_author ON proposition_author.proposition_id = prop.id
 			    LEFT JOIN deputy ON deputy.id = proposition_author.deputy_id
@@ -90,63 +96,58 @@ func (userArticleSelectSqlManager) NumberOfPropositionsSavedToViewLater() string
 				LEFT JOIN external_author ON external_author.id = proposition_author.external_author_id
 				LEFT JOIN user_article ON user_article.article_id = article.id
 			WHERE article.active = true AND prop.active = true AND proposition_author.active = true AND
-				user_article.active = true AND (prop.title ILIKE $1 OR prop.content ILIKE $1) AND
-				((deputy.id IS NULL AND ($2::uuid IS NULL AND $4::uuid IS NOT NULL))
-	    			OR $2::uuid IS NULL
+				user_article.view_later = true AND
+			    article_type.id = COALESCE($1, article_type.id) AND
+				user_article.active = true AND (prop.title ILIKE $2 OR prop.content ILIKE $2) AND
+				((deputy.id IS NULL AND ($3::uuid IS NULL AND $5::uuid IS NOT NULL))
+	    			OR $3::uuid IS NULL
 					OR (SELECT EXISTS(SELECT 1 FROM article
 							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
 							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-						WHERE proposition_author.deputy_id = $2 AND article.proposition_id = prop.id))) AND
-				((party_in_the_proposal.id IS NULL AND ($3::uuid IS NULL AND $4::uuid IS NOT NULL))
-					OR $3::uuid IS NULL
-					OR (SELECT EXISTS(SELECT 1 FROM article
-							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
-							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-	                	WHERE proposition_author.party_id = $3 AND article.proposition_id = prop.id))) AND
-				((external_author.id IS NULL AND (($2::uuid IS NOT NULL OR $3::uuid IS NOT NULL) AND $4::uuid IS NULL))
+						WHERE proposition_author.deputy_id = $3 AND article.proposition_id = prop.id))) AND
+				((party_in_the_proposal.id IS NULL AND ($4::uuid IS NULL AND $5::uuid IS NOT NULL))
 					OR $4::uuid IS NULL
 					OR (SELECT EXISTS(SELECT 1 FROM article
 							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
 							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-					WHERE proposition_author.external_author_id = $4 AND article.proposition_id = prop.id))) AND
+	                	WHERE proposition_author.party_id = $4 AND article.proposition_id = prop.id))) AND
+				((external_author.id IS NULL AND (($3::uuid IS NOT NULL OR $4::uuid IS NOT NULL) AND $5::uuid IS NULL))
+					OR $5::uuid IS NULL
+					OR (SELECT EXISTS(SELECT 1 FROM article
+							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
+							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
+					WHERE proposition_author.external_author_id = $5 AND article.proposition_id = prop.id))) AND
 			    article.newsletter_id IS NULL AND
-				DATE(article.created_at) >= DATE(COALESCE($5, article.created_at)) AND
-				DATE(article.created_at) <= DATE(COALESCE($6, article.created_at)) AND user_id = $7`
-}
-
-func (userArticleSelectSqlManager) NumberOfNewslettersSavedToViewLater() string {
-	return `SELECT COUNT(*)
-			FROM article
-				LEFT JOIN newsletter ON newsletter.id = article.newsletter_id
-				LEFT JOIN user_article ON user_article.article_id = article.id
-    		WHERE article.active = true AND newsletter.active = true AND user_article.active = true AND
-    			(newsletter.title ILIKE $1 OR newsletter.description ILIKE $1) AND
-    			DATE(article.created_at) >= DATE(COALESCE($2, article.created_at)) AND
-				DATE(article.created_at) <= DATE(COALESCE($3, article.created_at)) AND user_id = $4`
+				DATE(article.created_at) >= DATE(COALESCE($6, article.created_at)) AND
+				DATE(article.created_at) <= DATE(COALESCE($7, article.created_at)) AND user_id = $8`
 }
 
 func (userArticleSelectSqlManager) ArticlesSavedToViewLater() string {
 	return `SELECT article.id AS article_id,
-    			COALESCE(user_article.rating, 0) AS user_article_rating, user_article.view_later AS user_article_view_later
+    			COALESCE(user_article.rating, 0) AS user_article_rating,
+				COALESCE(user_article.view_later, false) AS user_article_view_later
 			FROM article
+			    INNER JOIN article_type ON article_type.id = article.article_type_id
 			    LEFT JOIN proposition ON proposition.id = article.proposition_id
 			    LEFT JOIN newsletter ON newsletter.id = article.newsletter_id
 				LEFT JOIN user_article ON user_article.article_id = article.id
 			WHERE article.active = true AND (proposition.active = true OR newsletter.active = true) AND
-				user_article.active =true AND
-				((proposition.title ILIKE $1 OR proposition.content ILIKE $1) OR
-				(newsletter.title ILIKE $1 OR newsletter.description ILIKE $1)) AND
-				DATE(article.created_at) >= DATE(COALESCE($2, article.created_at)) AND
-				DATE(article.created_at) <= DATE(COALESCE($3, article.created_at)) AND
-				user_article.user_id = $4 AND user_article.view_later = true
-			ORDER BY article.reference_date_time DESC
-			OFFSET $5 LIMIT $6`
+				article_type.id = COALESCE($1, article_type.id) AND user_article.active = true AND
+				((proposition.title ILIKE $2 OR proposition.content ILIKE $2) OR
+				(newsletter.title ILIKE $2 OR newsletter.description ILIKE $2)) AND
+				DATE(article.created_at) >= DATE(COALESCE($3, article.created_at)) AND
+				DATE(article.created_at) <= DATE(COALESCE($4, article.created_at)) AND
+				user_article.user_id = $5 AND user_article.view_later = true
+			ORDER BY user_article.view_later_set_at DESC
+			OFFSET $6 LIMIT $7`
 }
 
 func (userArticleSelectSqlManager) PropositionsSavedToViewLater() string {
 	return `SELECT article.id AS article_id,
-				COALESCE(user_article.rating, 0) AS user_article_rating, user_article.view_later AS user_article_view_later
+				COALESCE(user_article.rating, 0) AS user_article_rating,
+				COALESCE(user_article.view_later, false) AS user_article_view_later
 			FROM article
+			    INNER JOIN article_type ON article_type.id = article.article_type_id
 			    LEFT JOIN proposition prop ON prop.id = article.proposition_id
 			    LEFT JOIN proposition_author ON proposition_author.proposition_id = prop.id
 			    LEFT JOIN deputy ON deputy.id = proposition_author.deputy_id
@@ -154,43 +155,32 @@ func (userArticleSelectSqlManager) PropositionsSavedToViewLater() string {
 				LEFT JOIN external_author ON external_author.id = proposition_author.external_author_id
 				LEFT JOIN user_article ON user_article.article_id = article.id
 			WHERE article.active = true AND prop.active = true AND proposition_author.active = true AND
-				user_article.active = true AND (prop.title ILIKE $1 OR prop.content ILIKE $1) AND 
-				((deputy.id IS NULL AND ($2::uuid IS NULL AND $4::uuid IS NOT NULL))
-	    			OR $2::uuid IS NULL
+			    article_type.id = COALESCE($1, article_type.id) AND
+				user_article.active = true AND (prop.title ILIKE $2 OR prop.content ILIKE $2) AND 
+				((deputy.id IS NULL AND ($3::uuid IS NULL AND $5::uuid IS NOT NULL))
+	    			OR $3::uuid IS NULL
 					OR (SELECT EXISTS(SELECT 1 FROM article
 							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
 							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-						WHERE proposition_author.deputy_id = $2 AND article.proposition_id = prop.id))) AND
-				((party_in_the_proposal.id IS NULL AND ($3::uuid IS NULL AND $4::uuid IS NOT NULL))
-					OR $3::uuid IS NULL
-					OR (SELECT EXISTS(SELECT 1 FROM article
-							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
-							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-	                	WHERE proposition_author.party_id = $3 AND article.proposition_id = prop.id))) AND
-				((external_author.id IS NULL AND (($2::uuid IS NOT NULL OR $3::uuid IS NOT NULL) AND $4::uuid IS NULL))
+						WHERE proposition_author.deputy_id = $3 AND article.proposition_id = prop.id))) AND
+				((party_in_the_proposal.id IS NULL AND ($4::uuid IS NULL AND $5::uuid IS NOT NULL))
 					OR $4::uuid IS NULL
 					OR (SELECT EXISTS(SELECT 1 FROM article
 							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
 							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-					WHERE proposition_author.external_author_id = $4 AND article.proposition_id = prop.id))) AND
+	                	WHERE proposition_author.party_id = $4 AND article.proposition_id = prop.id))) AND
+				((external_author.id IS NULL AND (($3::uuid IS NOT NULL OR $4::uuid IS NOT NULL) AND $5::uuid IS NULL))
+					OR $5::uuid IS NULL
+					OR (SELECT EXISTS(SELECT 1 FROM article
+							LEFT JOIN proposition prop2 ON prop2.id = article.proposition_id
+							LEFT JOIN proposition_author ON proposition_author.proposition_id = prop2.id
+					WHERE proposition_author.external_author_id = $5 AND article.proposition_id = prop.id))) AND
 			    article.newsletter_id IS NULL AND
-				DATE(article.created_at) >= DATE(COALESCE($5, article.created_at)) AND
-				DATE(article.created_at) <= DATE(COALESCE($6, article.created_at)) AND
-				user_article.user_id = $7 AND user_article.view_later = true
-			GROUP BY article.id, article.reference_date_time, prop.id, user_article.rating, user_article.view_later
-			ORDER BY article.reference_date_time DESC OFFSET $8 LIMIT $9`
-}
-
-func (userArticleSelectSqlManager) NewslettersSavedToViewLater() string {
-	return `SELECT article.id AS article_id,
-				COALESCE(user_article.rating, 0) AS user_article_rating, user_article.view_later AS user_article_view_later
-			FROM article
-				LEFT JOIN newsletter ON newsletter.id = article.newsletter_id
-    			LEFT JOIN user_article ON user_article.article_id = article.id
-			WHERE article.active = true AND newsletter.active = true AND user_article.active = true AND 
-				(newsletter.title ILIKE $1 OR newsletter.description ILIKE $1) AND
-				DATE(article.created_at) >= DATE(COALESCE($2, article.created_at)) AND
-				DATE(article.created_at) <= DATE(COALESCE($3, article.created_at)) AND
-				user_article.user_id = $7 AND user_article.view_later = true
-			ORDER BY article.reference_date_time DESC OFFSET $4 LIMIT $5`
+				DATE(article.created_at) >= DATE(COALESCE($6, article.created_at)) AND
+				DATE(article.created_at) <= DATE(COALESCE($7, article.created_at)) AND
+				user_article.user_id = $8 AND user_article.view_later = true
+			GROUP BY article.id, article.reference_date_time, prop.id, user_article.rating, user_article.view_later,
+			         user_article.view_later_set_at
+			ORDER BY user_article.view_later_set_at DESC
+			OFFSET $9 LIMIT $10`
 }

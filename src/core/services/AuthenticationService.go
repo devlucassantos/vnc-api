@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
 	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/services/utils"
 )
 
 type Authentication struct {
@@ -29,9 +30,20 @@ func (instance Authentication) SignUp(signUpData user.User) (*user.User, error) 
 		return nil, err
 	}
 
-	userData, err := signUpData.NewUpdater().HashedPassword(hex.EncodeToString(hashedPassword)).Build()
+	userActivationCode, err := utils.GenerateUserActivationCode()
 	if err != nil {
-		log.Errorf("Erro ao definir a senha com hash do usuário %s: %s", signUpData.Email(), err.Error())
+		log.Errorf("Erro ao gerar código de ativação durante a criação da conta do usuário %s: %s",
+			signUpData.Email(), err.Error())
+		return nil, err
+	}
+
+	userData, err := signUpData.NewUpdater().
+		HashedPassword(hex.EncodeToString(hashedPassword)).
+		ActivationCode(userActivationCode).
+		Build()
+	if err != nil {
+		log.Errorf("Erro ao definir a senha com hash e o código de ativação da conta do usuário %s: %s",
+			signUpData.Email(), err.Error())
 		return nil, err
 	}
 
@@ -53,6 +65,14 @@ func (instance Authentication) SignUp(signUpData user.User) (*user.User, error) 
 		log.Errorf("Erro durante a criação da sessão do usuário %s: %s", userData.Email(), err.Error())
 		return nil, err
 	}
+
+	go func() {
+		err = utils.SendActivationEmail(*userData)
+		if err != nil {
+			log.Error("Erro ao enviar email de ativação da conta do usuário %s durante a criação da conta: %s",
+				userData.Email(), err)
+		}
+	}()
 
 	return userData, nil
 }

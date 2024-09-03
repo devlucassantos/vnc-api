@@ -19,16 +19,17 @@ func NewResourcesHandler(service services.Resources) *Resources {
 
 // GetResources
 // @ID          GetResources
-// @Summary     Busca de todos os recursos
+// @Summary     Listar todos os recursos
 // @Tags        Recursos
-// @Description Esta requisição é responsável por retornar todos os recursos da plataforma.
+// @Description Esta requisição é responsável por listar todos os recursos da plataforma.
 // @Produce     json
 // @Success 200 {array}  response.SwaggerResources "Requisição realizada com sucesso."
+// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
 // @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
 // @Router /resources [GET]
 func (instance Resources) GetResources(context echo.Context) error {
-	propositionTypes, parties, deputies, externalAuthors, err := instance.service.GetResources()
+	articleTypes, parties, deputies, externalAuthors, err := instance.service.GetResources()
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
 			log.Error("Banco de dados indisponível: ", err.Error())
@@ -39,5 +40,5 @@ func (instance Resources) GetResources(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
-	return context.JSON(http.StatusOK, response.NewResources(propositionTypes, parties, deputies, externalAuthors))
+	return context.JSON(http.StatusOK, response.NewResources(articleTypes, parties, deputies, externalAuthors))
 }

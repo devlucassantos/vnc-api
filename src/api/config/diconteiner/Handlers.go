@@ -6,6 +6,10 @@ func GetAuthenticationHandler() *handlers.Authentication {
 	return handlers.NewAuthenticationHandler(GetAuthenticationService())
 }
 
+func GetUserHandler() *handlers.User {
+	return handlers.NewUserHandler(GetUserService())
+}
+
 func GetResourcesHandler() *handlers.Resources {
 	return handlers.NewResourcesHandler(GetResourcesService())
 }

@@ -7,5 +7,6 @@ func ArticleView() *articleViewSqlManager {
 }
 
 func (articleViewSqlManager) Insert() string {
-	return `INSERT INTO article_view(article_id) VALUES ($1)`
+	return `INSERT INTO article_view(article_id, user_id)
+			VALUES ($1, $2)`
 }

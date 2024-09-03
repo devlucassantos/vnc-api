@@ -3,11 +3,11 @@ package postgres
 import (
 	"database/sql"
 	"github.com/devlucassantos/vnc-domains/src/domains/article"
+	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
 	"github.com/devlucassantos/vnc-domains/src/domains/external"
 	"github.com/devlucassantos/vnc-domains/src/domains/party"
 	"github.com/devlucassantos/vnc-domains/src/domains/proposition"
-	"github.com/devlucassantos/vnc-domains/src/domains/proptype"
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"vnc-api/infra/dto"
@@ -35,20 +35,6 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 	err = postgresConnection.Get(&propositionArticle, queries.Proposition().Select().ByArticleId(), articleId)
 	if err != nil {
 		log.Errorf("Erro ao obter os dados da proposição pela matéria %s no banco de dados: %s", articleId, err.Error())
-		return nil, err
-	}
-
-	propositionType, err := proptype.NewBuilder().
-		Id(propositionArticle.Proposition.PropositionType.Id).
-		Description(propositionArticle.Proposition.PropositionType.Description).
-		Color(propositionArticle.Proposition.PropositionType.Color).
-		SortOrder(propositionArticle.Proposition.PropositionType.SortOrder).
-		CreatedAt(propositionArticle.Proposition.PropositionType.CreatedAt).
-		UpdatedAt(propositionArticle.Proposition.PropositionType.UpdatedAt).
-		Build()
-	if err != nil {
-		log.Errorf("Erro ao validar os dados do tipo da proposição %s da matéria %s: %s",
-			propositionArticle.Proposition.Id, articleId, err.Error())
 		return nil, err
 	}
 
@@ -140,15 +126,28 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 
 	articleBuilder := article.NewBuilder()
 
-	if userArticle.Article.Id != uuid.Nil {
+	if userArticle.Article != nil {
 		articleBuilder.UserRating(userArticle.Rating).ViewLater(userArticle.ViewLater)
+	}
+
+	articleType, err := articletype.NewBuilder().
+		Id(propositionArticle.ArticleType.Id).
+		Description(propositionArticle.ArticleType.Description).
+		Color(propositionArticle.ArticleType.Color).
+		SortOrder(propositionArticle.ArticleType.SortOrder).
+		CreatedAt(propositionArticle.ArticleType.CreatedAt).
+		UpdatedAt(propositionArticle.ArticleType.UpdatedAt).
+		Build()
+	if err != nil {
+		log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleId, err.Error())
+		return nil, err
 	}
 
 	articleDomain, err := articleBuilder.
 		Id(propositionArticle.Id).
 		AverageRating(propositionArticle.AverageRating).
 		NumberOfRatings(propositionArticle.NumberOfRatings).
-		Type("Proposição").
+		Type(*articleType).
 		ReferenceDateTime(propositionArticle.ReferenceDateTime).
 		CreatedAt(propositionArticle.CreatedAt).
 		UpdatedAt(propositionArticle.UpdatedAt).
@@ -165,7 +164,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 		Title(propositionArticle.Proposition.Title).
 		Content(propositionArticle.Proposition.Content).
 		SubmittedAt(propositionArticle.Proposition.SubmittedAt).
-		Type(*propositionType).
+		ImageUrl(propositionArticle.Proposition.ImageUrl).
 		Deputies(deputies).
 		ExternalAuthors(externalAuthors).
 		Article(*articleDomain).
@@ -177,7 +176,12 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 		return nil, err
 	}
 
-	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), propositionArticle.Id)
+	var userIdPointer *uuid.UUID
+	if userId != uuid.Nil {
+		userIdPointer = &userId
+	}
+
+	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), propositionArticle.Id, userIdPointer)
 	if err != nil {
 		log.Errorf("Erro ao registrar a visualização da proposição %s: %s", articleId, err.Error())
 	}

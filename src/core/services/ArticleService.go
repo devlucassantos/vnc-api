@@ -25,9 +25,9 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 	return instance.repository.GetTrendingArticles(filter, userId)
 }
 
-func (instance Article) GetTrendingArticlesByPropositionType(propositionTypeId uuid.UUID, itemsPerType int,
+func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, itemsPerType int,
 	userId uuid.UUID) ([]article.Article, error) {
-	return instance.repository.GetTrendingArticlesByPropositionType(propositionTypeId, itemsPerType, userId)
+	return instance.repository.GetTrendingArticlesByTypeId(articleTypeId, itemsPerType, userId)
 }
 
 func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error) {
