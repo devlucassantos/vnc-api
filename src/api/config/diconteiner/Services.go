@@ -6,11 +6,11 @@ import (
 )
 
 func GetAuthenticationService() interfaces.Authentication {
-	return services.NewAuthenticationService(GetUserPostgresRepository(), GetSessionRedisRepository())
+	return services.NewAuthenticationService(GetUserPostgresRepository(), GetSessionRedisRepository(), GetEmailService())
 }
 
 func GetUserService() interfaces.User {
-	return services.NewUserService(GetUserPostgresRepository(), GetSessionRedisRepository())
+	return services.NewUserService(GetUserPostgresRepository(), GetSessionRedisRepository(), GetEmailService())
 }
 
 func GetResourcesService() interfaces.Resources {
@@ -27,4 +27,8 @@ func GetPropositionService() interfaces.Proposition {
 
 func GetNewsletterService() interfaces.Newsletter {
 	return services.NewNewsletterService(GetNewsletterPostgresRepository())
+}
+
+func GetEmailService() interfaces.Email {
+	return services.NewEmailService()
 }

@@ -28,9 +28,10 @@ func NewUserHandler(service services.User) *User {
 // @Security    BearerAuth
 // @Produce     json
 // @Success 204 {object} nil                       "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada ou a conta do usuário já está ativa."
+// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
 // @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
 // @Failure 403 {object} response.SwaggerHttpError "Acesso negado."
+// @Failure 409 {object} response.SwaggerHttpError "A conta do usuário já está ativa."
 // @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
 // @Router /user/resend-activation-email [PATCH]
@@ -44,7 +45,7 @@ func (instance User) ResendActivationEmail(context echo.Context) error {
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		} else if strings.Contains(err.Error(), "conta ativa") {
 			log.Errorf("A conta do usuário %s já está ativa: %s", userId, err.Error())
-			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest,
+			return context.JSON(http.StatusConflict, response.NewHttpError(http.StatusConflict,
 				"Conta ativa, não foi possível reenviar o email."))
 		}
 
@@ -65,9 +66,10 @@ func (instance User) ResendActivationEmail(context echo.Context) error {
 // @Produce     json
 // @Param       body body request.UserAccountActivation true "JSON com todos os dados necessários para que a ativação da conta seja realizada."
 // @Success 200 {array}  response.SwaggerUser      "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada, a conta do usuário já está ativa ou o código de ativação informado é inválido."
+// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada ou o código de ativação informado é inválido."
 // @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
 // @Failure 403 {object} response.SwaggerHttpError "Acesso negado."
+// @Failure 409 {object} response.SwaggerHttpError "A conta do usuário já está ativa."
 // @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
 // @Router /user/activate-account [PATCH]
@@ -94,10 +96,10 @@ func (instance User) ActivateAccount(context echo.Context) error {
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		} else if strings.Contains(err.Error(), "conta ativa") {
 			log.Errorf("A conta do usuário %s já está ativa: %s", userId, err.Error())
-			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest,
+			return context.JSON(http.StatusConflict, response.NewHttpError(http.StatusConflict,
 				"Conta ativa, não foi possível prosseguir."))
 		} else if strings.Contains(err.Error(), "código de ativação inválido") {
-			log.Errorf("O código de ativação informado para o usuário %s é inválido: %s", userId, err.Error())
+			log.Errorf("O código de ativação informado para a conta do usuário %s é inválido: %s", userId, err.Error())
 			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest,
 				"O código de ativação da conta informado é inválido."))
 		}

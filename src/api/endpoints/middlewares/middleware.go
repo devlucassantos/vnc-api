@@ -50,7 +50,7 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 					continue
 				}
 
-				log.Errorf("Usuário não autorizado para acessar o recurso: Método: %s; Path: %s; Roles: %s)",
+				log.Errorf("Usuário não autorizado para acessar o recurso (Método: %s; Path: %s; Roles: %s)",
 					method, path, roles)
 				return context.JSON(http.StatusForbidden, response.NewForbiddenError())
 			}

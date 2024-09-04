@@ -1076,7 +1076,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada, a conta do usuário já está ativa ou o código de ativação informado é inválido.",
+                        "description": "Requisição mal formulada ou o código de ativação informado é inválido.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -1089,6 +1089,12 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Acesso negado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "409": {
+                        "description": "A conta do usuário já está ativa.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -1129,7 +1135,7 @@ const docTemplate = `{
                         "description": "Requisição realizada com sucesso."
                     },
                     "400": {
-                        "description": "Requisição mal formulada ou a conta do usuário já está ativa.",
+                        "description": "Requisição mal formulada.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -1142,6 +1148,12 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Acesso negado.",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerHttpError"
+                        }
+                    },
+                    "409": {
+                        "description": "A conta do usuário já está ativa.",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }

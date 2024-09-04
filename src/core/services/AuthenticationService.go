@@ -8,18 +8,22 @@ import (
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
 	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/services"
 	"vnc-api/core/services/utils"
 )
 
 type Authentication struct {
 	userRepository    repositories.User
 	sessionRepository repositories.Session
+	emailService      services.Email
 }
 
-func NewAuthenticationService(userRepository repositories.User, sessionRepository repositories.Session) *Authentication {
+func NewAuthenticationService(userRepository repositories.User, sessionRepository repositories.Session,
+	emailService services.Email) *Authentication {
 	return &Authentication{
 		userRepository:    userRepository,
 		sessionRepository: sessionRepository,
+		emailService:      emailService,
 	}
 }
 
@@ -67,7 +71,7 @@ func (instance Authentication) SignUp(signUpData user.User) (*user.User, error) 
 	}
 
 	go func() {
-		err = utils.SendActivationEmail(*userData)
+		err = instance.emailService.SendUserAccountActivationEmail(*userData)
 		if err != nil {
 			log.Error("Erro ao enviar email de ativação da conta do usuário %s durante a criação da conta: %s",
 				userData.Email(), err)

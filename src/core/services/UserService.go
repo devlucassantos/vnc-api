@@ -6,19 +6,24 @@ import (
 	"github.com/devlucassantos/vnc-domains/src/domains/user"
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
+	"strings"
 	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/services"
 	"vnc-api/core/services/utils"
 )
 
 type User struct {
 	userRepository    repositories.User
 	sessionRepository repositories.Session
+	emailService      services.Email
 }
 
-func NewUserService(userRepository repositories.User, sessionRepository repositories.Session) *User {
+func NewUserService(userRepository repositories.User, sessionRepository repositories.Session,
+	emailService services.Email) *User {
 	return &User{
 		userRepository:    userRepository,
 		sessionRepository: sessionRepository,
+		emailService:      emailService,
 	}
 }
 
@@ -56,7 +61,7 @@ func (instance User) ResendUserAccountActivationEmail(userId uuid.UUID) error {
 		return err
 	}
 
-	err = utils.SendActivationEmail(*userData)
+	err = instance.emailService.SendUserAccountActivationEmail(*userData)
 	if err != nil {
 		log.Error("Erro ao reenviar email de ativação da conta do usuário %s: %s", userData.Id(), err)
 	}
@@ -74,12 +79,12 @@ func (instance User) ActivateUserAccount(userAccountActivationData user.User) (*
 
 	if len(userData.Roles()) != 1 || userData.Roles()[0].Code() != role.InactiveUserRoleCode {
 		errorMessage := "conta ativa"
-		log.Errorf("Erro ao reenviar email de ativação da conta do usuário %s: ",
+		log.Errorf("Erro ao ativar conta do usuário %s: ",
 			userAccountActivationData.Id(), errorMessage)
 		return nil, errors.New(errorMessage)
 	}
 
-	if userData.ActivationCode() != userAccountActivationData.ActivationCode() {
+	if userData.ActivationCode() != strings.ToUpper(userAccountActivationData.ActivationCode()) {
 		errorMessage := "código de ativação inválido"
 		log.Errorf("O código de ativação informado para a conta do usuário %s é inválido: %s",
 			userData.Id(), errorMessage)

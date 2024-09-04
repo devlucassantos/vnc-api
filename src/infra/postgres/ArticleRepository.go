@@ -293,7 +293,8 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 
 		err = postgresConnection.Select(&articles, queries.Article().Select().In(len(trendingArticles)), articleIds...)
 		if err != nil {
-			log.Error("Erro ao obter os dados das matérias do tipo de matéria %s em alta no banco de dados: ", err.Error())
+			log.Errorf("Erro ao obter os dados das matérias em alta do tipo de matéria %s no banco de dados: %s",
+				articleTypeId, err.Error())
 			return nil, err
 		}
 	}
