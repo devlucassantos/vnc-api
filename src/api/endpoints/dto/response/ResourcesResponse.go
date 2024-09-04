@@ -1,36 +1,45 @@
 package response
 
 import (
+	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
-	"github.com/devlucassantos/vnc-domains/src/domains/organization"
+	"github.com/devlucassantos/vnc-domains/src/domains/external"
 	"github.com/devlucassantos/vnc-domains/src/domains/party"
 )
 
 type Resources struct {
-	Parties       []Party        `json:"parties,omitempty"`
-	Deputies      []Deputy       `json:"deputies,omitempty"`
-	Organizations []Organization `json:"organizations,omitempty"`
+	ArticleTypes    []ArticleType    `json:"article_types"`
+	Parties         []Party          `json:"parties"`
+	Deputies        []Deputy         `json:"deputies"`
+	ExternalAuthors []ExternalAuthor `json:"external_authors"`
 }
 
-func NewResources(parties []party.Party, deputies []deputy.Deputy, organizations []organization.Organization) *Resources {
-	var partyList []Party
+func NewResources(articleTypes []articletype.ArticleType, parties []party.Party, deputies []deputy.Deputy,
+	externalAuthors []external.ExternalAuthor) *Resources {
+	articleTypeSlice := []ArticleType{}
+	for _, articleTypeData := range articleTypes {
+		articleTypeSlice = append(articleTypeSlice, *NewArticleType(articleTypeData))
+	}
+
+	partySlice := []Party{}
 	for _, partyData := range parties {
-		partyList = append(partyList, *NewParty(partyData))
+		partySlice = append(partySlice, *NewParty(partyData))
 	}
 
-	var deputyList []Deputy
+	deputySlice := []Deputy{}
 	for _, deputyData := range deputies {
-		deputyList = append(deputyList, *NewDeputy(deputyData))
+		deputySlice = append(deputySlice, *NewDeputy(deputyData))
 	}
 
-	var organizationList []Organization
-	for _, organizationData := range organizations {
-		organizationList = append(organizationList, *NewOrganization(organizationData))
+	externalAuthorSlice := []ExternalAuthor{}
+	for _, externalAuthorData := range externalAuthors {
+		externalAuthorSlice = append(externalAuthorSlice, *NewExternalAuthor(externalAuthorData))
 	}
 
 	return &Resources{
-		Parties:       partyList,
-		Deputies:      deputyList,
-		Organizations: organizationList,
+		ArticleTypes:    articleTypeSlice,
+		Parties:         partySlice,
+		Deputies:        deputySlice,
+		ExternalAuthors: externalAuthorSlice,
 	}
 }

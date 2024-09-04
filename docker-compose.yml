@@ -1,9 +1,7 @@
-version: '3'
-
 services:
-  vnc_read_api:
-    image: golang:alpine
-    container_name: vnc_read_api
+  vnc_api:
+    image: golang:1.23
+    container_name: vnc_api
     restart: always
     working_dir: /app
     volumes:

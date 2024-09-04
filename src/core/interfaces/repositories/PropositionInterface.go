@@ -6,5 +6,5 @@ import (
 )
 
 type Proposition interface {
-	GetPropositionById(id uuid.UUID) (*proposition.Proposition, error)
+	GetPropositionByArticleId(articleId uuid.UUID, userId uuid.UUID) (*proposition.Proposition, error)
 }

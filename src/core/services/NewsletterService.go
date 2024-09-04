@@ -3,7 +3,7 @@ package services
 import (
 	"github.com/devlucassantos/vnc-domains/src/domains/newsletter"
 	"github.com/google/uuid"
-	"vnc-read-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/repositories"
 )
 
 type Newsletter struct {
@@ -16,10 +16,6 @@ func NewNewsletterService(repository repositories.Newsletter) *Newsletter {
 	}
 }
 
-func (instance Newsletter) GetNewsletterById(id uuid.UUID) (*newsletter.Newsletter, error) {
-	return instance.repository.GetNewsletterById(id)
-}
-
-func (instance Newsletter) GetNewsletterByPropositionId(propositionId uuid.UUID) (*newsletter.Newsletter, error) {
-	return instance.repository.GetNewsletterByPropositionId(propositionId)
+func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId uuid.UUID) (*newsletter.Newsletter, error) {
+	return instance.repository.GetNewsletterByArticleId(articleId, userId)
 }

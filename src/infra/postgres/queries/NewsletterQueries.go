@@ -12,31 +12,21 @@ func (newsletterSqlManager) Select() *newsletterSelectSqlManager {
 	return &newsletterSelectSqlManager{}
 }
 
-func (newsletterSelectSqlManager) ById() string {
-	return `SELECT COALESCE(newsletter.id, '00000000-0000-0000-0000-000000000000') AS newsletter_id,
-       			COALESCE(newsletter.title, '') AS newsletter_title,
-    			COALESCE(newsletter.content, '') AS newsletter_content,
-    			COALESCE(newsletter.reference_date, '1970-01-01 00:00:00') AS newsletter_reference_date,
-       			COALESCE(newsletter.active, true) AS newsletter_active,
-    			COALESCE(newsletter.created_at, '1970-01-01 00:00:00') AS newsletter_created_at,
-    			COALESCE(newsletter.updated_at, '1970-01-01 00:00:00') AS newsletter_updated_at,
-    			
-				COALESCE(news.id, '00000000-0000-0000-0000-000000000000') AS news_id
-    		FROM newsletter
-    			INNER JOIN news ON news.newsletter_id = newsletter.id
-    		WHERE newsletter.active = true AND news.active = true AND newsletter.id = $1`
-}
-
-func (newsletterSelectSqlManager) ByPropositionId() string {
-	return `SELECT COALESCE(newsletter.id, '00000000-0000-0000-0000-000000000000') AS newsletter_id,
-	   			COALESCE(newsletter.title, '') AS newsletter_title,
-				COALESCE(newsletter.content, '') AS newsletter_content,
-				COALESCE(newsletter.reference_date, '1970-01-01 00:00:00') AS newsletter_reference_date,
-	   			COALESCE(newsletter.active, true) AS newsletter_active,
-				COALESCE(newsletter.created_at, '1970-01-01 00:00:00') AS newsletter_created_at,
-				COALESCE(newsletter.updated_at, '1970-01-01 00:00:00') AS newsletter_updated_at
-			FROM newsletter
-				INNER JOIN news ON news.newsletter_id = newsletter.id
-				INNER JOIN newsletter_proposition ON newsletter_proposition.newsletter_id = newsletter.id
-			WHERE newsletter.active = true AND news.active = true AND newsletter_proposition.proposition_id = $1`
+func (newsletterSelectSqlManager) ByArticleId() string {
+	return `SELECT article.id AS article_id, article.reference_date_time AS article_reference_date_time,
+				article.created_at AS article_created_at, article.updated_at AS article_updated_at,
+				COALESCE(AVG(user_article.rating), 0) AS article_average_rating,
+				COUNT(user_article.rating) AS article_number_of_ratings,
+				article_type.id AS article_type_id, article_type.description AS article_type_description,
+       			article_type.color AS article_type_color, article_type.sort_order AS article_type_sort_order,
+       			article_type.created_at AS article_type_created_at, article_type.updated_at AS article_type_updated_at,
+				newsletter.id AS newsletter_id, newsletter.reference_date AS newsletter_reference_date,
+				newsletter.title AS newsletter_title, newsletter.description AS newsletter_description,
+				newsletter.created_at AS newsletter_created_at, newsletter.updated_at AS newsletter_updated_at
+			FROM article
+			    INNER JOIN article_type ON article_type.id = article.article_type_id
+				LEFT JOIN newsletter ON newsletter.id = article.newsletter_id
+				LEFT JOIN user_article ON user_article.article_id = article.id
+			WHERE article.active = true AND newsletter.active = true AND article.id = $1
+			GROUP BY article.id, article_type.id, newsletter.id`
 }
