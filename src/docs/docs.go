@@ -562,7 +562,7 @@ const docTemplate = `{
             }
         },
         "/articles/{articleId}/rating": {
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -648,7 +648,7 @@ const docTemplate = `{
             }
         },
         "/articles/{articleId}/view-later": {
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []

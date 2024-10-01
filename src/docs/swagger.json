@@ -554,7 +554,7 @@
             }
         },
         "/articles/{articleId}/rating": {
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -640,7 +640,7 @@
             }
         },
         "/articles/{articleId}/view-later": {
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []

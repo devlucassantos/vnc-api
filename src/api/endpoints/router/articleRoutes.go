@@ -16,6 +16,6 @@ func loadArticleRoutes(group *echo.Group) {
 	group.GET("/view-later", newsHandler.GetArticlesToViewLater)
 	group.GET("/:articleId/proposition", newsHandler.GetPropositionArticleById)
 	group.GET("/:articleId/newsletter", newsHandler.GetNewsletterArticleById)
-	group.PATCH("/:articleId/rating", newsHandler.SaveArticleRating)
-	group.PATCH("/:articleId/view-later", newsHandler.SaveArticleToViewLater)
+	group.PUT("/:articleId/rating", newsHandler.SaveArticleRating)
+	group.PUT("/:articleId/view-later", newsHandler.SaveArticleToViewLater)
 }
