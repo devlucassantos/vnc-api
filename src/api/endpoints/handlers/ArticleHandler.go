@@ -705,7 +705,7 @@ func (instance Article) GetNewsletterArticleById(context echo.Context) error {
 // @Failure 422 {object} response.SwaggerHttpError "Requisição não processada devido a algum dos dados enviados serem inválidos."
 // @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
-// @Router /articles/{articleId}/rating [PATCH]
+// @Router /articles/{articleId}/rating [PUT]
 func (instance Article) SaveArticleRating(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
@@ -768,7 +768,7 @@ func (instance Article) SaveArticleRating(context echo.Context) error {
 // @Failure 422 {object} response.SwaggerHttpError "Requisição não processada devido a algum dos dados enviados serem inválidos."
 // @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
 // @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
-// @Router /articles/{articleId}/view-later [PATCH]
+// @Router /articles/{articleId}/view-later [PUT]
 func (instance Article) SaveArticleToViewLater(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 

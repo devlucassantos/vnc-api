@@ -575,7 +575,7 @@ paths:
       tags:
       - Matérias
   /articles/{articleId}/rating:
-    patch:
+    put:
       consumes:
       - application/json
       description: Esta requisição é responsável pelo registro da avaliação de uma
@@ -634,7 +634,7 @@ paths:
       tags:
       - Matérias
   /articles/{articleId}/view-later:
-    patch:
+    put:
       consumes:
       - application/json
       description: Esta requisição é responsável por adicionar ou remover a matéria
