@@ -24,25 +24,25 @@ func (instance Resources) GetResources() ([]articletype.ArticleType, []party.Par
 	[]external.ExternalAuthor, error) {
 	articleTypes, err := instance.repository.GetArticleTypes(nil)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos tipos de proposição no banco de dados: %s", err.Error())
+		log.Errorf("Error fetching article type data from the database: %s", err.Error())
 		return nil, nil, nil, nil, err
 	}
 
 	parties, err := instance.repository.GetParties()
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos partidos no banco de dados: %s", err.Error())
+		log.Errorf("Error fetching party data from the database: %s", err.Error())
 		return nil, nil, nil, nil, err
 	}
 
 	deputies, err := instance.repository.GetDeputies()
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos deputados no banco de dados: %s", err.Error())
+		log.Errorf("Error fetching deputy data from the database: %s", err.Error())
 		return nil, nil, nil, nil, err
 	}
 
 	externalAuthors, err := instance.repository.GetExternalAuthors()
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos autores externos no banco de dados: %s", err.Error())
+		log.Errorf("Error fetching external author data from the database: %s", err.Error())
 		return nil, nil, nil, nil, err
 	}
 

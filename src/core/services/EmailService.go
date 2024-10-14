@@ -30,7 +30,7 @@ func (instance Email) SendUserAccountActivationEmail(userData user.User) error {
 
 	err := sendEmail(subject, userData.Email(), templatePath, emailData)
 	if err != nil {
-		log.Errorf("Erro ao enviar email de ativação da conta do usuário %s: %s", userData.Email(), err)
+		log.Errorf("Error sending account activation email for user %s: %s", userData.Email(), err.Error())
 		return err
 	}
 
@@ -46,7 +46,7 @@ func sendEmail(subject string, to string, templatePath string, emailData interfa
 
 	emailTemplate, err := template.ParseFiles(templatePath)
 	if err != nil {
-		log.Errorf("Erro ao carregar o template do email '%s' com o caminho %s: %s", subject, templatePath, err)
+		log.Errorf("Error loading the \"%s\" email template from the path %s: %s", subject, templatePath, err.Error())
 		return err
 	}
 
@@ -58,17 +58,17 @@ func sendEmail(subject string, to string, templatePath string, emailData interfa
 
 	err = emailTemplate.Execute(&body, emailData)
 	if err != nil {
-		log.Errorf("Erro ao executar o template do email '%s': %s", subject, err)
+		log.Errorf("Error executing the \"%s\" email template: %s", subject, err.Error())
 		return err
 	}
 
 	smtpAddress := fmt.Sprint(smtpHost, ":", smtpPort)
 	err = smtp.SendMail(smtpAddress, auth, smtpUserEmail, []string{to}, body.Bytes())
 	if err != nil {
-		log.Errorf("Erro ao enviar email '%s' para o usuário %s: %s", subject, to, err.Error())
+		log.Errorf("Error sending \"%s\" email to user %s: %s", subject, to, err.Error())
 		return err
 	}
 
-	log.Infof("Email '%s' enviado para o usuário %s", subject, to)
+	log.Infof("\"%s\" email sent to user %s", subject, to)
 	return nil
 }

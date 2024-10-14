@@ -20,7 +20,7 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 	enforcer, err := casbin.NewEnforcer(authModel, authPolicy)
 	if err != nil {
-		log.Error("Erro ao construir o enforcer: ", err)
+		log.Error("Error building the enforcer: ", err.Error())
 	}
 
 	authService := diconteiner.GetAuthenticationService()
@@ -36,7 +36,7 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		for index, userRole := range roles {
 			hasAccess, err := enforcer.Enforce(userRole, path, method)
 			if err != nil {
-				log.Errorf("Erro ao verificar a permissão do usuário ao recurso: Método: %s; Path: %s; Roles: %s)",
+				log.Errorf("Error checking user permission to resource: [Method: %s; Path: %s; Roles: %s]",
 					method, path, roles)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			} else if userRole == role.AnonymousRoleCode {
@@ -44,13 +44,15 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 					return next(context)
 				}
 
+				log.Errorf("User not authorized to access the resource: [Method: %s; Path: %s; Roles: %s]",
+					method, path, roles)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			} else if !hasAccess {
 				if index+1 != len(roles) {
 					continue
 				}
 
-				log.Errorf("Usuário não autorizado para acessar o recurso (Método: %s; Path: %s; Roles: %s)",
+				log.Errorf("User not authorized to access the resource: [Method: %s; Path: %s; Roles: %s]",
 					method, path, roles)
 				return context.JSON(http.StatusForbidden, response.NewForbiddenError())
 			}
@@ -59,31 +61,34 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 			claims, httpError := utils.ExtractTokenClaims(accessToken)
 			if httpError != nil {
-				log.Error("Erro ao extrair as claims do token de acesso: " + httpError.Message)
+				log.Error("Error extracting claims from access token: " + httpError.Message)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 
 			userId, err := uuid.Parse(claims.Subject)
 			if err != nil {
-				log.Error("Erro ao converter ID do usuário do token de acesso: " + err.Error())
+				log.Error("Error converting user ID from access token: " + err.Error())
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 
 			sessionId, err := uuid.Parse(claims.SessionId)
 			if err != nil {
-				log.Error("Erro ao converter ID da sessão do usuário do token de acesso: " + err.Error())
+				log.Errorf("Error converting session ID of user %s from the access token: %s",
+					userId, err.Error())
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 
 			exists, err := authService.SessionExists(userId, sessionId, accessToken)
 			if err != nil {
 				if strings.Contains(err.Error(), "connection refused") {
-					log.Error("Banco de dados indisponível: ", err.Error())
+					log.Error("Database unavailable: ", err.Error())
 					return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 				}
 
+				log.Infof("Error checking if the session of user %s exists", userId)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			} else if !exists {
+				log.Infof("User %s not authorized, the provided session does not exist", userId)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 		}

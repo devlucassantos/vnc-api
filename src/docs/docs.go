@@ -26,104 +26,104 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por listar as matérias mais recentes disponíveis na plataforma.",
+                "description": "This request is responsible for listing the most recent articles available on the platform.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Listar matérias mais recentes",
+                "summary": "List most recent articles",
                 "operationId": "GetArticles",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID do tipo da matéria.",
+                        "description": "Article type ID",
                         "name": "typeId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
+                        "description": "Part of the content of the articles, in the title or content",
                         "name": "content",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do deputado que elaborou a proposição.",
+                        "description": "ID of the deputy who drafted the proposition",
                         "name": "deputyId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do partido que elaborou a proposição.",
+                        "description": "ID of the party that drafted the proposition",
                         "name": "partyId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do autor externo que elaborou a proposição.",
+                        "description": "ID of the external author who drafted the proposition",
                         "name": "externalAuthorId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
+                        "description": "Date from which the articles may have been created. Accepted format: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
+                        "description": "Date until which the articles may have been created. Accepted format: YYYY-MM-DD",
                         "name": "endDate",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Número da página. Por padrão é 1.",
+                        "description": "Page number. By default, it is 1",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100.",
+                        "description": "Number of articles returned per page. The default is 15 and the allowed values are between 1 and 100",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerArticlePagination"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -138,104 +138,104 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por listar as matérias em alta disponíveis na plataforma.",
+                "description": "This request is responsible for listing trending articles on the platform.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Listar matérias em alta",
+                "summary": "List trending articles",
                 "operationId": "GetTrendingArticles",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID do tipo da matéria.",
+                        "description": "Article type ID",
                         "name": "typeId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
+                        "description": "Part of the content of the articles, in the title or content",
                         "name": "content",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do deputado que elaborou a proposição.",
+                        "description": "ID of the deputy who drafted the proposition",
                         "name": "deputyId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do partido que elaborou a proposição.",
+                        "description": "ID of the party that drafted the proposition",
                         "name": "partyId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do autor externo que elaborou a proposição.",
+                        "description": "ID of the external author who drafted the proposition",
                         "name": "externalAuthorId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
+                        "description": "Date from which the articles may have been created. Accepted format: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
+                        "description": "Date until which the articles may have been created. Accepted format: YYYY-MM-DD",
                         "name": "endDate",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Número da página. Por padrão é 1.",
+                        "description": "Page number. By default, it is 1",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100.",
+                        "description": "Number of articles returned per page. The default is 15 and the allowed values are between 1 and 100",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerArticlePagination"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -250,56 +250,56 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por listar as matérias em alta pelos tipos de matérias.",
+                "description": "This request is responsible for listing the trending articles by article types.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Listar matérias em alta pelos tipos de matérias",
+                "summary": "List trending articles by article types",
                 "operationId": "GetTrendingArticlesByTypeId",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Lista com os IDs dos tipos de matérias que devem ser retornados (Separados por vírgula). Por padrão retorna todos.",
-                        "name": "ids",
+                        "description": "List of IDs of the types of articles that should be returned (separated by commas). By default, it returns all types",
+                        "name": "articleTypeIds",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por tipo. Por padrão é 5 e os valores permitidos são entre 1 e 20.",
+                        "description": "Number of articles returned by type. The default is 5 and the allowed values are between 1 and 20",
                         "name": "itemsPerType",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerArticleTypeWithArticles"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -314,104 +314,104 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por listar as matérias marcadas para ver depois pelo usuário na plataforma. As matérias serão listadas na ordem que o usuário realizou a marcação das matérias.",
+                "description": "This request is responsible for listing the articles bookmarked for later viewing by the user on the platform. The articles will be listed in the order in which the user bookmarked the articles.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Listar matérias marcadas para ver depois pelo usuário",
+                "summary": "List articles bookmarked for later viewing by the user",
                 "operationId": "GetArticlesToViewLater",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID do tipo da matéria.",
+                        "description": "Article type ID",
                         "name": "typeId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Parte do conteúdo das matérias, no título ou conteúdo.",
+                        "description": "Part of the content of the articles, in the title or content",
                         "name": "content",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do deputado que elaborou a proposição.",
+                        "description": "ID of the deputy who drafted the proposition",
                         "name": "deputyId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do partido que elaborou a proposição.",
+                        "description": "ID of the party that drafted the proposition",
                         "name": "partyId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID do autor externo que elaborou a proposição.",
+                        "description": "ID of the external author who drafted the proposition",
                         "name": "externalAuthorId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
+                        "description": "Date from which the articles may have been created. Accepted format: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD",
+                        "description": "Date until which the articles may have been created. Accepted format: YYYY-MM-DD",
                         "name": "endDate",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Número da página. Por padrão é 1.",
+                        "description": "Page number. By default, it is 1",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100.",
+                        "description": "Number of articles returned per page. The default is 15 and the allowed values are between 1 and 100",
                         "name": "itemsPerPage",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerArticlePagination"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -426,19 +426,19 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por buscar os detalhes de uma matéria do tipo boletim pelo ID.",
+                "description": "This request is responsible for looking up the details of an article of a newsletter by the article ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Buscar detalhes de uma matéria do tipo boletim pelo ID",
+                "summary": "Get article details by ID (Only for newsletter articles)",
                 "operationId": "GetNewsletterArticleById",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID da matéria",
+                        "description": "Article ID",
                         "name": "articleId",
                         "in": "path",
                         "required": true
@@ -446,43 +446,43 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerNewsletterArticle"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "404": {
-                        "description": "Recurso solicitado não encontrado.",
+                        "description": "Requested resource not found",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -497,19 +497,19 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por buscar os detalhes de uma matéria dos tipos de proposições pelo ID.",
+                "description": "This request is responsible for looking up the details of an article of a proposition by the article ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Buscar detalhes de uma matéria dos tipos de proposições pelo ID",
+                "summary": "Get article details by ID (Only for proposition articles)",
                 "operationId": "GetPropositionArticleById",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID da matéria",
+                        "description": "Article ID",
                         "name": "articleId",
                         "in": "path",
                         "required": true
@@ -517,43 +517,43 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerPropositionArticle"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "404": {
-                        "description": "Recurso solicitado não encontrado.",
+                        "description": "Requested resource not found",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -568,7 +568,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável pelo registro da avaliação de uma matéria pelo usuário.",
+                "description": "This request is responsible for recording the user's rating of an article.",
                 "consumes": [
                     "application/json"
                 ],
@@ -576,20 +576,20 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Avaliar matéria",
+                "summary": "Rate article",
                 "operationId": "SaveArticleRating",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID da matéria",
+                        "description": "Article ID",
                         "name": "articleId",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "JSON com todos os dados necessários para que a avaliação da matéria seja realizada.",
+                        "description": "Request body",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -600,46 +600,46 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Requisição realizada com sucesso."
+                        "description": "Successful request"
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "403": {
-                        "description": "Acesso negado.",
+                        "description": "Access denied",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "404": {
-                        "description": "Recurso solicitado não encontrado.",
+                        "description": "Requested resource not found",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -654,7 +654,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por adicionar ou remover a matéria da lista de matérias marcadas para ver depois pelo usuário.",
+                "description": "This request is responsible for adding or removing the article from the list of articles bookmarked for later viewing by the user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -662,20 +662,20 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Matérias"
+                    "Articles"
                 ],
-                "summary": "Adicionar ou remover matéria da lista de matérias marcadas para ver depois pelo usuário",
+                "summary": "Add or remove an article from the list of articles bookmarked for later viewing by the user",
                 "operationId": "SaveArticleToViewLater",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID da matéria",
+                        "description": "Article ID",
                         "name": "articleId",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "JSON com todos os dados necessários para marcar/desmarcar a matéria para ver depois.",
+                        "description": "Request body",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -686,46 +686,46 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "Requisição realizada com sucesso."
+                        "description": "Successful request"
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "403": {
-                        "description": "Acesso negado.",
+                        "description": "Access denied",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "404": {
-                        "description": "Recurso solicitado não encontrado.",
+                        "description": "Requested resource not found",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -735,7 +735,7 @@ const docTemplate = `{
         },
         "/auth/refresh": {
             "post": {
-                "description": "Esta requisição é responsável por realizar a atualização dos tokens de acesso do usuário na plataforma.",
+                "description": "This request is responsible for refreshing the user's access tokens on the platform.",
                 "consumes": [
                     "application/json"
                 ],
@@ -743,13 +743,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Autenticação"
+                    "Authentication"
                 ],
-                "summary": "Atualizar tokens de acesso",
+                "summary": "Refresh access tokens",
                 "operationId": "Refresh",
                 "parameters": [
                     {
-                        "description": "JSON com todos os dados necessários para que a atualização dos tokens de acesso seja realizada.",
+                        "description": "Request body",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -760,37 +760,37 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerUser"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -800,7 +800,7 @@ const docTemplate = `{
         },
         "/auth/sign-in": {
             "post": {
-                "description": "Esta requisição é responsável por permitir a entrada do usuário em sua conta na plataforma.",
+                "description": "This request is responsible for signing the user into the platform.",
                 "consumes": [
                     "application/json"
                 ],
@@ -808,13 +808,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Autenticação"
+                    "Authentication"
                 ],
-                "summary": "Fazer login",
+                "summary": "Sign In",
                 "operationId": "SignIn",
                 "parameters": [
                     {
-                        "description": "JSON com todos os dados necessários para que o login seja realizado.",
+                        "description": "Request body",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -825,43 +825,37 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerUser"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
-                        }
-                    },
-                    "404": {
-                        "description": "Recurso solicitado não encontrado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -876,45 +870,45 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por realizar o encerramento do acesso do usuário a plataforma.",
+                "description": "This request is responsible for signing the user out of the platform.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Autenticação"
+                    "Authentication"
                 ],
-                "summary": "Fazer logout",
+                "summary": "Sign Out",
                 "operationId": "SignOut",
                 "responses": {
                     "204": {
-                        "description": "Requisição realizada com sucesso."
+                        "description": "Successful request"
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "403": {
-                        "description": "Acesso negado.",
+                        "description": "Access denied",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -924,7 +918,7 @@ const docTemplate = `{
         },
         "/auth/sign-up": {
             "post": {
-                "description": "Esta requisição é responsável por permitir o cadastro do usuário na plataforma.",
+                "description": "This request is responsible for signing the user up to the platform.",
                 "consumes": [
                     "application/json"
                 ],
@@ -932,13 +926,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Autenticação"
+                    "Authentication"
                 ],
-                "summary": "Criar conta",
+                "summary": "Sign Up",
                 "operationId": "SignUp",
                 "parameters": [
                     {
-                        "description": "JSON com todos os dados necessários para que a criação da conta seja realizada.",
+                        "description": "Request body",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -949,43 +943,43 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerUser"
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "409": {
-                        "description": "Requisição contém dados que já estão cadastrados no banco de dados e que devem ser únicos.",
+                        "description": "Some of the data provided is conflicting",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "422": {
-                        "description": "Requisição não processada devido a algum dos dados enviados serem inválidos.",
+                        "description": "Some of the data provided is invalid",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -995,18 +989,18 @@ const docTemplate = `{
         },
         "/resources": {
             "get": {
-                "description": "Esta requisição é responsável por listar todos os recursos da plataforma.",
+                "description": "This request is responsible for listing all the platform resources.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Recursos"
+                    "Resources"
                 ],
-                "summary": "Listar todos os recursos",
+                "summary": "List all resources",
                 "operationId": "GetResources",
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -1015,19 +1009,19 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -1042,7 +1036,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por ativar a conta do usuário, comprovando que o endereço de email fornecido no cadastro realmente existe e pertence ao usuário.",
+                "description": "This request is responsible for activating the user's account, proving that the email address provided during registration really exists and belongs to the user.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1050,13 +1044,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Usuário"
+                    "Users"
                 ],
-                "summary": "Ativar conta do usuário",
+                "summary": "Activate user account",
                 "operationId": "ActivateAccount",
                 "parameters": [
                     {
-                        "description": "JSON com todos os dados necessários para que a ativação da conta seja realizada.",
+                        "description": "Request body",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -1067,7 +1061,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requisição realizada com sucesso.",
+                        "description": "Successful request",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -1076,37 +1070,37 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Requisição mal formulada ou o código de ativação informado é inválido.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "403": {
-                        "description": "Acesso negado.",
+                        "description": "Access denied",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "409": {
-                        "description": "A conta do usuário já está ativa.",
+                        "description": "Some of the data provided is conflicting",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -1121,51 +1115,51 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Esta requisição é responsável por reenviar o email de ativação da conta do usuário. A cada envio, um novo código é gerado, invalidando o código anterior.",
+                "description": "This request is responsible for resending the user account activation email. Each time it is sent, a new code is generated, invalidating the previous code.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Usuário"
+                    "Users"
                 ],
-                "summary": "Reenviar email de ativação da conta do usuário",
+                "summary": "Resend user account activation email",
                 "operationId": "ResendActivationEmail",
                 "responses": {
                     "204": {
-                        "description": "Requisição realizada com sucesso."
+                        "description": "Successful request"
                     },
                     "400": {
-                        "description": "Requisição mal formulada.",
+                        "description": "Badly formatted request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "401": {
-                        "description": "Acesso não autorizado.",
+                        "description": "Unauthorized access",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "403": {
-                        "description": "Acesso negado.",
+                        "description": "Access denied",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "409": {
-                        "description": "A conta do usuário já está ativa.",
+                        "description": "Some of the data provided is conflicting",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "500": {
-                        "description": "Ocorreu um erro inesperado durante o processamento da requisição.",
+                        "description": "An unexpected error occurred while processing the request",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
                     },
                     "503": {
-                        "description": "Algum dos serviços/recursos está temporariamente indisponível.",
+                        "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
                             "$ref": "#/definitions/response.SwaggerHttpError"
                         }
@@ -1481,7 +1475,7 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string",
-                    "example": "Algo errado aconteceu..."
+                    "example": "Something went wrong..."
                 }
             }
         },
@@ -1737,8 +1731,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "API da Plataforma Você na Câmara",
-	Description:      "Conjunto de rotas responsável por gerenciar a manipulação de dados da Plataforma Você na Câmara.",
+	Title:            "Você na Câmara API",
+	Description:      "Set of routes responsible for managing data manipulation in Você na Câmara applications.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

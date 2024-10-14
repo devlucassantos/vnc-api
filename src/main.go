@@ -5,9 +5,9 @@ import (
 	_ "vnc-api/docs"
 )
 
-// @title         API da Plataforma Você na Câmara
+// @title         Você na Câmara API
 // @version       v1
-// @description   Conjunto de rotas responsável por gerenciar a manipulação de dados da Plataforma Você na Câmara.
+// @description   Set of routes responsible for managing data manipulation in Você na Câmara applications.
 // @contact.name  Você na Câmara
 // @contact.email email.vocenacamara@gmail.com
 // @basePath      /api/v1

@@ -15,7 +15,7 @@ func VerifyOrigin(origin string) (bool, error) {
 		}
 	}
 
-	return false, &echo.HTTPError{Code: 401, Message: "Acesso não autorizado."}
+	return false, &echo.HTTPError{Code: 401, Message: "Unauthorized access"}
 }
 
 func OriginInspectSkipper(context echo.Context) bool {

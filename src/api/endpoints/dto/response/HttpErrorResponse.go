@@ -17,34 +17,34 @@ func NewHttpError(code int, errorMessage string) *HttpError {
 func NewBadRequestError() *HttpError {
 	return &HttpError{
 		Code:    http.StatusBadRequest,
-		Message: "Requisição mal formulada, verifique as informações enviadas e tente novamente.",
+		Message: "Badly formatted request, check the data sent and try again",
 	}
 }
 
 func NewUnauthorizedError() *HttpError {
 	return &HttpError{
 		Code:    http.StatusUnauthorized,
-		Message: "Acesso não autorizado.",
+		Message: "Unauthorized access",
 	}
 }
 
 func NewForbiddenError() *HttpError {
 	return &HttpError{
 		Code:    http.StatusForbidden,
-		Message: "Acesso negado.",
+		Message: "Access denied",
 	}
 }
 
 func NewInternalServerError() *HttpError {
 	return &HttpError{
 		Code:    http.StatusInternalServerError,
-		Message: "Ocorreu um erro inesperado no servidor. Por favor, tente novamente.",
+		Message: "An unexpected server error has occurred. Please try again",
 	}
 }
 
 func NewServiceUnavailableError() *HttpError {
 	return &HttpError{
 		Code:    http.StatusServiceUnavailable,
-		Message: "Este serviço está temporariamente indisponível. Por favor, tente novamente em alguns minutos.",
+		Message: "This service is temporarily unavailable. Please try again in a few minutes",
 	}
 }

@@ -22,18 +22,18 @@ func GetUserIdFromAuthorizationHeader(context echo.Context) uuid.UUID {
 
 	claims, httpError := getAuthorizationClaims(context.Request().Header.Get("Authorization"))
 	if httpError != nil {
-		log.Error("Erro ao extrair token de autorização da requisição: ", httpError.Message)
+		log.Error("Error extracting authorization token from request: ", httpError.Message)
 		return uuid.Nil
 	}
 
 	if claims.Subject == "" {
-		log.Error("Token inválido: O token informador não possui o ID do usuário")
+		log.Error("Invalid token: The provided token does not contain the user ID")
 		return uuid.Nil
 	}
 
 	userId, err := uuid.Parse(claims.Subject)
 	if err != nil || userId == uuid.Nil {
-		log.Error("Token inválido: O ID do usuário do token informado é inválido")
+		log.Error("Invalid Token: The user ID contained in the provided token is invalid")
 		return uuid.Nil
 	}
 
@@ -44,7 +44,7 @@ func getAuthorizationClaims(authorizationHeader string) (*user.Claims, *response
 	_, token := ExtractToken(authorizationHeader)
 	authenticationClaims, err := ExtractTokenClaims(token)
 	if err != nil {
-		log.Error("Erro ao extrair as claims do token de acesso: " + err.Message)
+		log.Error("Error extracting claims from access token: " + err.Message)
 		return nil, err
 	}
 
@@ -63,21 +63,21 @@ func ExtractToken(authorizationHeader string) (tokenType string, accessToken str
 func ExtractTokenClaims(token string) (*user.Claims, *response.HttpError) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		log.Error("Erro ao separar as partes do token de acesso: A quantidade de partes do token é inválida.")
+		log.Error("Error separating the access token parts: The number of token parts is invalid")
 		return nil, response.NewUnauthorizedError()
 	}
 
 	payload := parts[1]
 	payloadBytes, err := jwt.DecodeSegment(payload)
 	if err != nil {
-		log.Error("Erro ao decodificar token: " + err.Error())
+		log.Error("Error decoding token: " + err.Error())
 		return nil, response.NewUnauthorizedError()
 	}
 
 	var claims user.Claims
 	err = json.Unmarshal(payloadBytes, &claims)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados do token a entidade de claims: " + err.Error())
+		log.Error("Error assigning token data to user claims: " + err.Error())
 		return nil, response.NewUnauthorizedError()
 	}
 
@@ -88,25 +88,25 @@ func ValidateRefreshToken(refreshToken string) *response.HttpError {
 	publicKey := os.Getenv("SERVER_REFRESH_TOKEN_PUBLIC_KEY")
 	publicKeyBytes, err := base64.StdEncoding.DecodeString(publicKey)
 	if err != nil {
-		log.Error("Erro durante a decodificação da chave pública do servidor: ", err.Error())
+		log.Error("Error decoding server refresh token public key: ", err.Error())
 		return response.NewInternalServerError()
 	}
 
 	rsaPublicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKeyBytes)
 	if err != nil {
-		log.Error("Erro durante a construção da chave pública do servidor: ", err.Error())
+		log.Error("Error building the server refresh token public key: ", err.Error())
 		return response.NewInternalServerError()
 	}
 
 	splitToken := strings.Split(refreshToken, ".")
 	if len(splitToken) != 3 {
-		log.Error("Erro ao separar as partes do token de atualização: A quantidade de partes do token é inválida.")
+		log.Error("Error splitting the refresh token parts: The number of token parts is invalid")
 		return response.NewUnauthorizedError()
 	}
 
 	err = jwt.SigningMethodRS256.Verify(strings.Join(splitToken[0:2], "."), splitToken[2], rsaPublicKey)
 	if err != nil {
-		log.Error("O token de atualização não é autêntico.")
+		log.Error("The refresh token provided is not authentic")
 		return response.NewUnauthorizedError()
 	}
 
@@ -126,7 +126,7 @@ func ExtractUserAuthorizationRoles(authorizationHeader string) []string {
 
 	claims, httpError := ExtractTokenClaims(accessToken)
 	if httpError != nil {
-		log.Error("Erro ao extrair claims do token de acesso: ", httpError.Message)
+		log.Error("Error extracting claims from access token: ", httpError.Message)
 		return nil
 	}
 
@@ -136,13 +136,13 @@ func ExtractUserAuthorizationRoles(authorizationHeader string) []string {
 func authorizationIsValid(tokenType, accessToken string) bool {
 	publicKeyBytes, err := base64.StdEncoding.DecodeString(os.Getenv("SERVER_ACCESS_TOKEN_PUBLIC_KEY"))
 	if err != nil {
-		log.Error("Erro durante a decodificação da chave pública de acesso: ", err.Error())
+		log.Error("Error decoding the server access token public key: ", err.Error())
 		return false
 	}
 
 	rsaPublicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKeyBytes)
 	if err != nil {
-		log.Error("Erro durante a construção da chave pública de acesso: ", err.Error())
+		log.Error("Error building the server access token public key: ", err.Error())
 		return false
 	}
 
@@ -150,17 +150,17 @@ func authorizationIsValid(tokenType, accessToken string) bool {
 		return rsaPublicKey, nil
 	})
 	if err != nil {
-		log.Error("Erro durante a conversão do token: ", err.Error())
+		log.Error("Error converting the provided token: ", err.Error())
 		return false
 	}
 
 	if !token.Valid || token.Claims.Valid() != nil {
-		log.Error("O token informado é inválido ou está expirado.")
+		log.Error("The token provided is invalid or expired")
 		return false
 	}
 
 	if strings.ToLower(tokenType) != "bearer" {
-		log.Error("O tipo do token utilizado não é suportado: ", tokenType)
+		log.Error("The token type used is not supported: ", tokenType)
 		return false
 	}
 

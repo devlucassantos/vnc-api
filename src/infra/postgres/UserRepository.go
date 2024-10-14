@@ -23,14 +23,14 @@ func NewUserRepository(connectionManager connectionManagerInterface) *User {
 func (instance User) CreateUser(userData user.User) (*user.User, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
 
 	transaction, err := postgresConnection.Beginx()
 	if err != nil {
-		log.Errorf("Erro ao iniciar transação para o cadastro do usuário %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error starting transaction to register user %s: %s", userData.Email(), err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.rollbackTransaction(transaction)
@@ -41,7 +41,7 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 		userData.FirstName(), userData.LastName(), userData.Email(), userData.Password(), userData.ActivationCode()).
 		Scan(&userId, &userCreationDateAndTime)
 	if err != nil {
-		log.Errorf("Erro ao cadastrar usuário %s no banco de dados: %s", userData.Email(), err.Error())
+		log.Errorf("Error registering user %s in the database: %s", userData.Email(), err.Error())
 		return nil, err
 	}
 
@@ -53,7 +53,7 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 
 	err = transaction.Select(&roleSlice, queries.Role().Select().ByCodes(len(userRoles)), userRoles...)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos papeis do usuário %s no banco de dados: %s", userData.Email(),
+		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Email(),
 			err.Error())
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 	for _, roleData := range roleSlice {
 		_, err = transaction.Exec(queries.UserRole().Insert(), userId, roleData.Id)
 		if err != nil {
-			log.Errorf("Erro ao cadastrar o papel %s para o usuário %s no banco de dados: %s", roleData.Id,
+			log.Errorf("Error registering role %s for user %s: %s", roleData.Id,
 				userData.Email(), err.Error())
 			return nil, err
 		}
@@ -76,7 +76,7 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do papel %s: %s", roleData.Id, err.Error())
+			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userId, err.Error())
 		}
 
 		roles = append(roles, *roleDomain)
@@ -94,13 +94,13 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 		Roles(roles).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do usuário %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error validating data for user %s: %s", userData.Email(), err.Error())
 		return nil, err
 	}
 
 	err = transaction.Commit()
 	if err != nil {
-		log.Errorf("Erro ao confirmar transação para o cadastro do usuário %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error confirming transaction to register user %s: %s", userData.Email(), err.Error())
 		return nil, err
 	}
 
@@ -110,14 +110,14 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
 
 	transaction, err := postgresConnection.Beginx()
 	if err != nil {
-		log.Errorf("Erro ao iniciar transação para a atualização do usuário %s: %s", userData.Id(), err.Error())
+		log.Errorf("Error starting transaction to update user %s: %s", userData.Id(), err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.rollbackTransaction(transaction)
@@ -127,7 +127,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 		userData.FirstName(), userData.LastName(), userData.Email(), userData.Password(), userData.ActivationCode(),
 		userData.Id()).Scan(&userUpdateDateAndTime)
 	if err != nil {
-		log.Errorf("Erro ao atualizar usuário %s no banco de dados: %s", userData.Id(), err.Error())
+		log.Errorf("Error updating user %s in the database: %s", userData.Id(), err.Error())
 		return nil, err
 	}
 
@@ -139,7 +139,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 	var roleSlice []dto.Role
 	err = transaction.Select(&roleSlice, queries.Role().Select().ByCodes(len(userRoles)), userRoles...)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos novos papeis do usuário %s no banco de dados: %s", userData.Id(),
+		log.Errorf("Error fetching the data for the new roles of user %s from the database: %s", userData.Id(),
 			err.Error())
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 	var userRolesSlice []dto.Role
 	err = transaction.Select(&userRolesSlice, queries.UserRole().Select().ByUserId(), userData.Id())
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos papeis do usuário %s no banco de dados: %s", userData.Id(),
+		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Id(),
 			err.Error())
 		return nil, err
 	}
@@ -185,8 +185,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 	for _, roleData := range rolesRemoved {
 		_, err = transaction.Exec(queries.UserRole().Delete(), userData.Id(), roleData.Id)
 		if err != nil {
-			log.Errorf("Erro ao remover o papel %s para o usuário %s no banco de dados: %s", roleData.Id,
-				userData.Id(), err.Error())
+			log.Errorf("Error deleting role %s for user %s: %s", roleData.Id, userData.Id(), err.Error())
 			return nil, err
 		}
 	}
@@ -194,8 +193,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 	for _, roleData := range newRoles {
 		sqlResult, err := transaction.Exec(queries.UserRole().Update(), userData.Id(), roleData.Id)
 		if err != nil {
-			log.Errorf("Erro ao ativar o papel %s para o usuário %s no banco de dados: %s", roleData.Id,
-				userData.Id(), err.Error())
+			log.Errorf("Error activating role %s for user %s: %s", roleData.Id, userData.Id(), err.Error())
 			return nil, err
 		}
 
@@ -203,13 +201,12 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 		if err == nil && rowsAffected == 0 {
 			_, err = transaction.Exec(queries.UserRole().Insert(), userData.Id(), roleData.Id)
 			if err != nil {
-				log.Errorf("Erro ao cadastrar o papel %s para o usuário %s no banco de dados: %s", roleData.Id,
-					userData.Id(), err.Error())
+				log.Errorf("Error registering role %s for user %s: %s", roleData.Id, userData.Id(), err.Error())
 				return nil, err
 			}
 		} else if err != nil {
-			log.Errorf("Erro ao extrair a quantidade de linhas afetadas pela ativação do papel %s para o "+
-				"usuário %s no banco de dados: %s", roleData.Id, userData.Id(), err)
+			log.Errorf("Error fetching the number of rows affected by the activation of role %s for user %s "+
+				"in the database: %s", roleData.Id, userData.Id(), err.Error())
 			return nil, err
 		}
 	}
@@ -223,7 +220,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do papel %s: %s", roleData.Id, err.Error())
+			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userData.Id(), err.Error())
 		}
 
 		roles = append(roles, *roleDomain)
@@ -241,13 +238,13 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 		Roles(roles).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do usuário %s: %s", userData.Id(), err.Error())
+		log.Errorf("Error validating data for user %s: %s", userData.Id(), err.Error())
 		return nil, err
 	}
 
 	err = transaction.Commit()
 	if err != nil {
-		log.Errorf("Erro ao confirmar transação para a atualização do usuário %s: %s", userData.Id(), err.Error())
+		log.Errorf("Error confirming transaction to update user %s: %s", userData.Id(), err.Error())
 		return nil, err
 	}
 
@@ -257,7 +254,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 func (instance User) GetUserById(id uuid.UUID) (*user.User, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -265,14 +262,14 @@ func (instance User) GetUserById(id uuid.UUID) (*user.User, error) {
 	var userData dto.User
 	err = postgresConnection.Get(&userData, queries.User().Select().ById(), id)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados do usuário %s no banco de dados: %s", id, err.Error())
+		log.Errorf("Error fetching data for user %s from the database: %s", id, err.Error())
 		return nil, err
 	}
 
 	var roleSlice []dto.Role
 	err = postgresConnection.Select(&roleSlice, queries.UserRole().Select().ByUserId(), userData.Id)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos papeis do usuário %s no banco de dados: %s", userData.Id, err.Error())
+		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Id, err.Error())
 		return nil, err
 	}
 
@@ -285,7 +282,7 @@ func (instance User) GetUserById(id uuid.UUID) (*user.User, error) {
 			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do papel %s: %s", roleData.Id, err.Error())
+			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userData.Id, err.Error())
 		}
 
 		roles = append(roles, *roleDomain)
@@ -303,7 +300,7 @@ func (instance User) GetUserById(id uuid.UUID) (*user.User, error) {
 		Roles(roles).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do usuário %s: %s", userData.Id, err.Error())
+		log.Errorf("Error validating data for user %s: %s", userData.Id, err.Error())
 		return nil, err
 	}
 
@@ -313,7 +310,7 @@ func (instance User) GetUserById(id uuid.UUID) (*user.User, error) {
 func (instance User) GetUserByEmail(email string) (*user.User, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -321,14 +318,14 @@ func (instance User) GetUserByEmail(email string) (*user.User, error) {
 	var userData dto.User
 	err = postgresConnection.Get(&userData, queries.User().Select().ByEmail(), email)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados do usuário %s no banco de dados: %s", email, err.Error())
+		log.Errorf("Error fetching data for user %s from the database: %s", email, err.Error())
 		return nil, err
 	}
 
 	var roleSlice []dto.Role
 	err = postgresConnection.Select(&roleSlice, queries.UserRole().Select().ByUserId(), userData.Id)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos papeis do usuário %s no banco de dados: %s", userData.Email,
+		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Email,
 			err.Error())
 		return nil, err
 	}
@@ -342,7 +339,7 @@ func (instance User) GetUserByEmail(email string) (*user.User, error) {
 			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do papel %s: %s", roleData.Id, err.Error())
+			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userData.Id, err.Error())
 		}
 
 		roles = append(roles, *roleDomain)
@@ -360,7 +357,7 @@ func (instance User) GetUserByEmail(email string) (*user.User, error) {
 		Roles(roles).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do usuário %s: %s", userData.Id, err.Error())
+		log.Errorf("Error validating data for user %s: %s", userData.Id, err.Error())
 		return nil, err
 	}
 
