@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/devlucassantos/vnc-domains/src/domains/article"
 	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
@@ -27,6 +28,7 @@ func NewPropositionRepository(connectionManager connectionManagerInterface) *Pro
 func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userId uuid.UUID) (*proposition.Proposition, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -34,7 +36,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 	var propositionArticle dto.Article
 	err = postgresConnection.Get(&propositionArticle, queries.Proposition().Select().ByArticleId(), articleId)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados da proposição pela matéria %s no banco de dados: %s", articleId, err.Error())
+		log.Errorf("Error fetching proposition data for article %s from the database: %s", articleId, err.Error())
 		return nil, err
 	}
 
@@ -42,7 +44,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 	err = postgresConnection.Select(&propositionAuthors, queries.PropositionAuthor().Select().ByPropositionId(),
 		propositionArticle.Proposition.Id)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos autores da proposição %s no banco de dados: %s",
+		log.Errorf("Error fetching data of the authors for proposition %s from the database: %s",
 			propositionArticle.Proposition.Id, err.Error())
 		return nil, err
 	}
@@ -60,7 +62,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 				UpdatedAt(author.Deputy.Party.UpdatedAt).
 				Build()
 			if err != nil {
-				log.Errorf("Erro ao validar os dados do partido atual %s do(a) deputado(a) %s para a proposição %s: %s",
+				log.Errorf("Error validating data for the current party %s of deputy %s for proposition %s: %s",
 					author.Deputy.Party.Id, author.Deputy.Id, propositionArticle.Proposition.Id, err.Error())
 			}
 
@@ -73,8 +75,9 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 				UpdatedAt(author.Deputy.PartyInTheProposition.UpdatedAt).
 				Build()
 			if err != nil {
-				log.Errorf("Erro ao validar os dados do partido %s durante a proposição pelo(a) deputado(a) %s "+
-					"para a proposição %s: %s", author.Deputy.Party.Id, author.Deputy.Id, propositionArticle.Proposition.Id, err.Error())
+				log.Errorf("Error validating data for party %s during the proposition by deputy %s for "+
+					"proposition %s: %s", author.Deputy.Party.Id, author.Deputy.Id, propositionArticle.Proposition.Id,
+					err.Error())
 			}
 
 			deputyDomain, err := deputy.NewBuilder().
@@ -88,7 +91,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 				UpdatedAt(author.Deputy.UpdatedAt).
 				Build()
 			if err != nil {
-				log.Errorf("Erro ao validar os dados do(a) deputado(a) %s para a proposição %s: %s",
+				log.Errorf("Error validating data for deputy %s for proposition %s: %s",
 					author.Deputy.Id, propositionArticle.Proposition.Id, err.Error())
 				continue
 			}
@@ -103,7 +106,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 				UpdatedAt(author.ExternalAuthor.UpdatedAt).
 				Build()
 			if err != nil {
-				log.Errorf("Erro construindo a estrutura de dados do autor externo %s para a proposição %s: %s",
+				log.Errorf("Error validating data for external author %s for proposition %s: %s",
 					author.ExternalAuthor.Id, propositionArticle.Proposition.Id, err.Error())
 				continue
 			}
@@ -117,9 +120,9 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 		numberOfArticles := 1
 		err = postgresConnection.Get(&userArticle, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
 			numberOfArticles), userId, propositionArticle.Id)
-		if err != nil && err != sql.ErrNoRows {
-			log.Errorf("Erro as buscar no banco de dados as informações da matéria %s que o usuário %s avaliou e/ou "+
-				"salvou para ver depois: %s", articleId, userId, err.Error())
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			log.Errorf("Error fetching data for article %s that user %s may have rated or saved for later "+
+				"viewing: %s", articleId, userId, err.Error())
 			return nil, err
 		}
 	}
@@ -139,7 +142,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 		UpdatedAt(propositionArticle.ArticleType.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleId, err.Error())
+		log.Errorf("Error validating data for article type %s: %s", articleId, err.Error())
 		return nil, err
 	}
 
@@ -153,18 +156,23 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 		UpdatedAt(propositionArticle.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados da matéria %s da proposição %s: %s", propositionArticle.Id,
+		log.Errorf("Error validating data for article %s of proposition %s: %s", propositionArticle.Id,
 			propositionArticle.Proposition.Id, err.Error())
 		return nil, err
 	}
 
-	propositionDomain, err := proposition.NewBuilder().
+	propositionBuilder := proposition.NewBuilder()
+
+	if propositionArticle.Proposition.ImageUrl != "" {
+		propositionBuilder.ImageUrl(propositionArticle.Proposition.ImageUrl)
+	}
+
+	propositionDomain, err := propositionBuilder.
 		Id(propositionArticle.Proposition.Id).
 		OriginalTextUrl(propositionArticle.Proposition.OriginalTextUrl).
 		Title(propositionArticle.Proposition.Title).
 		Content(propositionArticle.Proposition.Content).
 		SubmittedAt(propositionArticle.Proposition.SubmittedAt).
-		ImageUrl(propositionArticle.Proposition.ImageUrl).
 		Deputies(deputies).
 		ExternalAuthors(externalAuthors).
 		Article(*articleDomain).
@@ -172,7 +180,8 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 		UpdatedAt(propositionArticle.Proposition.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro construindo a estrutura de dados da proposição %s: %s", articleId, err.Error())
+		log.Errorf("Error validating data for proposition %s of article %s: %s",
+			propositionArticle.Proposition.Id, articleId, err.Error())
 		return nil, err
 	}
 
@@ -183,7 +192,7 @@ func (instance Proposition) GetPropositionByArticleId(articleId uuid.UUID, userI
 
 	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), propositionArticle.Id, userIdPointer)
 	if err != nil {
-		log.Errorf("Erro ao registrar a visualização da proposição %s: %s", articleId, err.Error())
+		log.Errorf("Error registering the view for article %s: %s", articleId, err.Error())
 	}
 
 	return propositionDomain, nil

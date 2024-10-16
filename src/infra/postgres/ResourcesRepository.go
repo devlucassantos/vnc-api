@@ -24,7 +24,7 @@ func NewResourcesRepository(connectionManager connectionManagerInterface) *Resou
 func (instance Resources) GetArticleTypes(articleTypeIds []uuid.UUID) ([]articletype.ArticleType, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -42,7 +42,7 @@ func (instance Resources) GetArticleTypes(articleTypeIds []uuid.UUID) ([]article
 		err = postgresConnection.Select(&articleTypeData, queries.ArticleType().Select().All())
 	}
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos tipos de matéria no banco de dados: %s", err.Error())
+		log.Error("Error fetching article type data from the database: ", err.Error())
 		return nil, err
 	}
 
@@ -57,7 +57,7 @@ func (instance Resources) GetArticleTypes(articleTypeIds []uuid.UUID) ([]article
 			UpdatedAt(articleType.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do tipo de matéria %s: %s", articleType.Id, err.Error())
+			log.Errorf("Error validating data for article type %s: %s", articleType.Id, err.Error())
 		}
 
 		articleTypes = append(articleTypes, *articleTypeDomain)
@@ -69,7 +69,7 @@ func (instance Resources) GetArticleTypes(articleTypeIds []uuid.UUID) ([]article
 func (instance Resources) GetParties() ([]party.Party, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -77,7 +77,7 @@ func (instance Resources) GetParties() ([]party.Party, error) {
 	var partiesData []dto.Party
 	err = postgresConnection.Select(&partiesData, queries.Party().Select().All())
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos partidos no banco de dados: %s", err.Error())
+		log.Error("Error fetching party data from the database: ", err.Error())
 		return nil, err
 	}
 
@@ -92,7 +92,7 @@ func (instance Resources) GetParties() ([]party.Party, error) {
 			UpdatedAt(partyData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do partido %s: %s", partyDomain.Id, err.Error())
+			log.Errorf("Error validating data for party %s: %s", partyData.Id, err.Error())
 		}
 
 		parties = append(parties, *partyDomain)
@@ -104,7 +104,7 @@ func (instance Resources) GetParties() ([]party.Party, error) {
 func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -112,7 +112,7 @@ func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 	var deputiesData []dto.Deputy
 	err = postgresConnection.Select(&deputiesData, queries.Deputy().Select().All())
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos deputados no banco de dados: %s", err.Error())
+		log.Error("Error fetching deputy data from the database: ", err.Error())
 		return nil, err
 	}
 
@@ -127,7 +127,7 @@ func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 			UpdatedAt(deputyData.Party.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do partido atual %s do(a) deputado(a) %s: %s",
+			log.Errorf("Error validating data for the current party %s of deputy %s: %s",
 				deputyData.Party.Id, deputyData.Id, err.Error())
 		}
 
@@ -141,7 +141,7 @@ func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 			UpdatedAt(deputyData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do(a) deputado(a) %s: %s", deputyData.Id, err.Error())
+			log.Errorf("Error validating data for deputy %s: %s", deputyData.Id, err.Error())
 			continue
 		}
 
@@ -154,7 +154,7 @@ func (instance Resources) GetDeputies() ([]deputy.Deputy, error) {
 func (instance Resources) GetExternalAuthors() ([]external.ExternalAuthor, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -162,7 +162,7 @@ func (instance Resources) GetExternalAuthors() ([]external.ExternalAuthor, error
 	var externalAuthorsData []dto.ExternalAuthor
 	err = postgresConnection.Select(&externalAuthorsData, queries.ExternalAuthor().Select().All())
 	if err != nil {
-		log.Errorf("Erro ao obter os dados dos autores externos no banco de dados: %s", err.Error())
+		log.Error("Error fetching external author data from the database: ", err.Error())
 		return nil, err
 	}
 
@@ -176,8 +176,7 @@ func (instance Resources) GetExternalAuthors() ([]external.ExternalAuthor, error
 			UpdatedAt(externalAuthorData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do autor externo %s: %s", externalAuthorDomain.Id,
-				err.Error())
+			log.Errorf("Error validating data for external author %s: %s", externalAuthorData.Id, err.Error())
 		}
 
 		externalAuthors = append(externalAuthors, *externalAuthorDomain)

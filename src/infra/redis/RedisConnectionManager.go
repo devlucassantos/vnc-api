@@ -23,7 +23,7 @@ func (ConnectionManager) createConnection() (*redis.Client, error) {
 
 	pingResult := connection.Ping()
 	if pingResult.Err() != nil {
-		log.Error("Erro ao criar conexão com o banco de dados Redis: ", pingResult.Err().Error())
+		log.Error("Error checking the creation of the connection to the Redis database: ", pingResult.Err().Error())
 		return nil, pingResult.Err()
 	}
 
@@ -33,7 +33,7 @@ func (ConnectionManager) createConnection() (*redis.Client, error) {
 func (ConnectionManager) closeConnection(connection *redis.Client) {
 	err := connection.Close()
 	if err != nil {
-		log.Error("Erro ao encerrar conexão com o banco de dados Redis: ", err.Error())
+		log.Error("Error closing the connection to the Redis database: ", err.Error())
 	}
 }
 

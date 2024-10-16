@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/devlucassantos/vnc-domains/src/domains/article"
 	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
@@ -26,7 +27,7 @@ func NewArticleRepository(connectionManager connectionManagerInterface) *Article
 func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, 0, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -43,7 +44,7 @@ func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UU
 			filter.PaginationFilter.CalculateOffset(), filter.PaginationFilter.GetItemsPerPage())
 	}
 	if err != nil {
-		log.Error("Erro ao obter os dados das matérias no banco de dados: ", err.Error())
+		log.Error("Error fetching data for articles from the database: ", err.Error())
 		return nil, 0, err
 	}
 
@@ -58,8 +59,8 @@ func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UU
 		err = postgresConnection.Select(&userArticles, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
 			len(articles)), articleFilters...)
 		if err != nil {
-			log.Error("Erro as buscar no banco de dados as matérias que o usuário avaliou e/ou salvou para ver depois: ",
-				err.Error())
+			log.Errorf("Error fetching articles that the user %s rated and/or saved for later viewing: %s",
+				userId, err.Error())
 			return nil, 0, err
 		}
 	}
@@ -75,7 +76,7 @@ func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UU
 			UpdatedAt(articleData.ArticleType.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article type %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -98,10 +99,13 @@ func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UU
 
 		var articleDomain *article.Article
 		if articleData.Proposition.Id != uuid.Nil {
+			if articleData.Proposition.ImageUrl != "" {
+				articleBuilder.ImageUrl(articleData.Proposition.ImageUrl)
+			}
+
 			articleDomain, err = articleBuilder.
 				Title(articleData.Proposition.Title).
 				Content(articleData.Proposition.Content).
-				ImageUrl(articleData.Proposition.ImageUrl).
 				Build()
 		} else {
 			articleDomain, err = articleBuilder.
@@ -110,7 +114,7 @@ func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UU
 				Build()
 		}
 		if err != nil {
-			log.Errorf("Erro ao validar os dados da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -127,7 +131,7 @@ func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UU
 			&filter.TypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate, filter.EndDate)
 	}
 	if err != nil {
-		log.Error("Erro ao obter a quantidade total de matérias no banco de dados: ", err.Error())
+		log.Error("Error fetching the total number of articles from the database: ", err.Error())
 		return nil, 0, err
 	}
 
@@ -137,7 +141,7 @@ func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UU
 func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, 0, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -154,7 +158,7 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 			filter.PaginationFilter.CalculateOffset(), filter.PaginationFilter.GetItemsPerPage())
 	}
 	if err != nil {
-		log.Error("Erro ao obter as matérias em alta no banco de dados: ", err.Error())
+		log.Error("Error searching for trending articles in the database: ", err.Error())
 		return nil, 0, err
 	}
 
@@ -167,7 +171,7 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 
 		err = postgresConnection.Select(&articles, queries.Article().Select().In(len(trendingArticles)), articleIds...)
 		if err != nil {
-			log.Error("Erro ao obter os dados das matérias em alta no banco de dados: ", err.Error())
+			log.Error("Error fetching data for trending articles from the database: ", err.Error())
 			return nil, 0, err
 		}
 	}
@@ -192,7 +196,8 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 		err = postgresConnection.Select(&userArticles, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
 			len(articles)), articleFilters...)
 		if err != nil {
-			log.Error("Erro as buscar no banco de dados as matérias que o usuário avaliou e/ou salvou para ver depois: ", err.Error())
+			log.Errorf("Error fetching articles that the user %s rated and/or saved for later viewing: %s",
+				userId, err.Error())
 			return nil, 0, err
 		}
 	}
@@ -208,7 +213,7 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 			UpdatedAt(articleData.ArticleType.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article type %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -231,10 +236,13 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 
 		var articleDomain *article.Article
 		if articleData.Proposition.Id != uuid.Nil {
+			if articleData.Proposition.ImageUrl != "" {
+				articleBuilder.ImageUrl(articleData.Proposition.ImageUrl)
+			}
+
 			articleDomain, err = articleBuilder.
 				Title(articleData.Proposition.Title).
 				Content(articleData.Proposition.Content).
-				ImageUrl(articleData.Proposition.ImageUrl).
 				Build()
 		} else {
 			articleDomain, err = articleBuilder.
@@ -243,7 +251,7 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 				Build()
 		}
 		if err != nil {
-			log.Errorf("Erro ao validar os dados da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -260,7 +268,7 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 			&filter.TypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate, filter.EndDate)
 	}
 	if err != nil {
-		log.Error("Erro ao obter a quantidade total de matérias no banco de dados: ", err.Error())
+		log.Error("Error fetching the total number of articles from the database: ", err.Error())
 		return nil, 0, err
 	}
 
@@ -270,7 +278,7 @@ func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId
 func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, numberOfArticles int, userId uuid.UUID) ([]article.Article, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -279,7 +287,7 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 	err = postgresConnection.Select(&trendingArticles, queries.Article().Select().TrendingArticlesByType(),
 		articleTypeId, numberOfArticles)
 	if err != nil {
-		log.Errorf("Erro ao obter as matérias em alta do tipo de matéria %s no banco de dados: %s",
+		log.Errorf("Error searching for trending articles of article type %s in the database: %s",
 			articleTypeId, err.Error())
 		return nil, err
 	}
@@ -293,7 +301,7 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 
 		err = postgresConnection.Select(&articles, queries.Article().Select().In(len(trendingArticles)), articleIds...)
 		if err != nil {
-			log.Errorf("Erro ao obter os dados das matérias em alta do tipo de matéria %s no banco de dados: %s",
+			log.Errorf("Error fetching data for trending articles of article type %s from the database: %s",
 				articleTypeId, err.Error())
 			return nil, err
 		}
@@ -319,7 +327,8 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 		err = postgresConnection.Select(&userArticles, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
 			len(articles)), articleFilters...)
 		if err != nil {
-			log.Error("Erro as buscar no banco de dados as matérias que o usuário avaliou e/ou salvou para ver depois: ", err.Error())
+			log.Errorf("Error fetching articles that the user %s rated and/or saved for later viewing: %s",
+				userId, err.Error())
 			return nil, err
 		}
 	}
@@ -335,7 +344,7 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 			UpdatedAt(articleData.ArticleType.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article type %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -358,10 +367,13 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 		}
 
 		if articleData.Proposition.Id != uuid.Nil {
+			if articleData.Proposition.ImageUrl != "" {
+				articleBuilder.ImageUrl(articleData.Proposition.ImageUrl)
+			}
+
 			articleDomain, err = articleBuilder.
 				Title(articleData.Proposition.Title).
 				Content(articleData.Proposition.Content).
-				ImageUrl(articleData.Proposition.ImageUrl).
 				Build()
 		} else {
 			articleDomain, err = articleBuilder.
@@ -370,7 +382,7 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 				Build()
 		}
 		if err != nil {
-			log.Errorf("Erro ao validar os dados da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -383,7 +395,7 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, num
 func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
-		log.Error("Erro ao tentar se conectar com o Postgres: ", err.Error())
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, 0, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -400,7 +412,8 @@ func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, use
 			filter.PaginationFilter.CalculateOffset(), filter.PaginationFilter.GetItemsPerPage())
 	}
 	if err != nil {
-		log.Error("Erro ao obter as matérias marcadas para ver depois no banco de dados: ", err.Error())
+		log.Errorf("Error searching for articles bookmarked for later viewing by user %s in the database: %s",
+			userId, err.Error())
 		return nil, 0, err
 	}
 
@@ -413,7 +426,8 @@ func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, use
 
 		err = postgresConnection.Select(&articles, queries.Article().Select().In(len(userArticles)), articleIds...)
 		if err != nil {
-			log.Error("Erro ao obter os dados das matérias marcadas para ver depois no banco de dados: ", err.Error())
+			log.Errorf("Error fetching data for articles bookmarked for later viewing by user %s from the "+
+				"database: %s", userId, err.Error())
 			return nil, 0, err
 		}
 	}
@@ -438,7 +452,7 @@ func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, use
 			UpdatedAt(articleData.ArticleType.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article type %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -461,10 +475,13 @@ func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, use
 
 		var articleDomain *article.Article
 		if articleData.Proposition.Id != uuid.Nil {
+			if articleData.Proposition.ImageUrl != "" {
+				articleBuilder.ImageUrl(articleData.Proposition.ImageUrl)
+			}
+
 			articleDomain, err = articleBuilder.
 				Title(articleData.Proposition.Title).
 				Content(articleData.Proposition.Content).
-				ImageUrl(articleData.Proposition.ImageUrl).
 				Build()
 		} else {
 			articleDomain, err = articleBuilder.
@@ -473,7 +490,7 @@ func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, use
 				Build()
 		}
 		if err != nil {
-			log.Errorf("Erro ao validar os dados da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article %s: %s", articleData.Id, err.Error())
 			continue
 		}
 
@@ -490,7 +507,8 @@ func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, use
 			&filter.TypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate, filter.EndDate, userId)
 	}
 	if err != nil {
-		log.Error("Erro ao obter a quantidade total de matérias marcadas para ver depois no banco de dados: ", err.Error())
+		log.Errorf("Error fetching the total number of articles bookmarked for later viewing by user %s from the "+
+			"database: %s", userId, err.Error())
 		return nil, 0, err
 	}
 
@@ -500,6 +518,7 @@ func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, use
 func (instance Article) GetPropositionArticlesByNewsletterId(newsletterId uuid.UUID, userId uuid.UUID) ([]article.Article, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -508,8 +527,8 @@ func (instance Article) GetPropositionArticlesByNewsletterId(newsletterId uuid.U
 	err = postgresConnection.Select(&propositionArticles, queries.Article().Select().PropositionsByNewsletterId(),
 		newsletterId)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados das matérias das proposições do boletim %s no banco de dados: %s",
-			newsletterId, err.Error())
+		log.Errorf("Error fetching the data for the articles of the propositions from bulletin %s in the"+
+			"database: %s", newsletterId, err.Error())
 		return nil, err
 	}
 
@@ -524,7 +543,8 @@ func (instance Article) GetPropositionArticlesByNewsletterId(newsletterId uuid.U
 		err = postgresConnection.Select(&userArticles, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
 			len(propositionArticles)), articleFilters...)
 		if err != nil {
-			log.Error("Erro as buscar no banco de dados as matérias que o usuário avaliou e/ou salvou para ver depois: ", err.Error())
+			log.Errorf("Error fetching articles that the user %s rated and/or saved for later viewing: %s",
+				userId, err.Error())
 			return nil, err
 		}
 	}
@@ -550,15 +570,18 @@ func (instance Article) GetPropositionArticlesByNewsletterId(newsletterId uuid.U
 			UpdatedAt(articleData.ArticleType.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleData.Id, err.Error())
+			log.Errorf("Error validating data for article type %s: %s", articleData.Id, err.Error())
 			continue
+		}
+
+		if articleData.Proposition.ImageUrl != "" {
+			articleBuilder.ImageUrl(articleData.Proposition.ImageUrl)
 		}
 
 		articleDomain, err := articleBuilder.
 			Id(articleData.Id).
 			Title(articleData.Proposition.Title).
 			Content(articleData.Proposition.Content).
-			ImageUrl(articleData.Proposition.ImageUrl).
 			AverageRating(articleData.AverageRating).
 			NumberOfRatings(articleData.NumberOfRatings).
 			Type(*articleType).
@@ -567,7 +590,7 @@ func (instance Article) GetPropositionArticlesByNewsletterId(newsletterId uuid.U
 			UpdatedAt(articleData.UpdatedAt).
 			Build()
 		if err != nil {
-			log.Errorf("Erro ao validar os dados da matéria %s da proposição %s: %s", articleData.Id,
+			log.Errorf("Error validating data for article %s of proposition %s: %s", articleData.Id,
 				articleData.Proposition.Id, err.Error())
 			continue
 		}
@@ -581,6 +604,7 @@ func (instance Article) GetPropositionArticlesByNewsletterId(newsletterId uuid.U
 func (instance Article) GetNewsletterArticleByPropositionId(propositionId uuid.UUID, userId uuid.UUID) (*article.Article, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -588,9 +612,9 @@ func (instance Article) GetNewsletterArticleByPropositionId(propositionId uuid.U
 	var newsletterArticle dto.Article
 	err = postgresConnection.Get(&newsletterArticle, queries.Article().Select().NewsletterByPropositionId(), propositionId)
 	if err != nil {
-		errorMessage := "Erro ao obter os dados do boletim pela matéria %s no banco de dados: %s"
-		if err == sql.ErrNoRows {
-			log.Infof(errorMessage, propositionId, "Boletim não encontrado")
+		errorMessage := "Error fetching data for newsletter by article %s from the database: %s"
+		if errors.Is(err, sql.ErrNoRows) {
+			log.Infof(errorMessage, propositionId, "Newsletter not found")
 		} else {
 			log.Errorf(errorMessage, propositionId, err.Error())
 		}
@@ -603,9 +627,9 @@ func (instance Article) GetNewsletterArticleByPropositionId(propositionId uuid.U
 		numberOfArticles := 1
 		err = postgresConnection.Get(&userArticle, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
 			numberOfArticles), userId, newsletterArticle.Id)
-		if err != nil && err != sql.ErrNoRows {
-			log.Errorf("Erro as buscar no banco de dados as informações da matéria %s que o usuário %s avaliou e/ou "+
-				"salvou para ver depois: %s", newsletterArticle.Id, userId, err.Error())
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			log.Errorf("Error fetching data for article %s that user %s may have rated or saved for later "+
+				"viewing: %s", newsletterArticle.Id, userId, err.Error())
 			return nil, err
 		}
 	}
@@ -625,7 +649,7 @@ func (instance Article) GetNewsletterArticleByPropositionId(propositionId uuid.U
 		UpdatedAt(newsletterArticle.ArticleType.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", newsletterArticle.Id, err.Error())
+		log.Errorf("Error validating data for article type %s: %s", newsletterArticle.Id, err.Error())
 		return nil, err
 	}
 
@@ -641,7 +665,7 @@ func (instance Article) GetNewsletterArticleByPropositionId(propositionId uuid.U
 		UpdatedAt(newsletterArticle.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados da matéria %s do boletim %s: %s", newsletterArticle.Id,
+		log.Errorf("Error validating data for article %s of newsletter %s: %s", newsletterArticle.Id,
 			newsletterArticle.Newsletter.Id, err.Error())
 		return nil, err
 	}
@@ -652,13 +676,14 @@ func (instance Article) GetNewsletterArticleByPropositionId(propositionId uuid.U
 func (instance Article) SaveArticleRating(userId uuid.UUID, articleId uuid.UUID, rating int) error {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
 
 	sqlResult, err := postgresConnection.Exec(queries.UserArticle().Update().Rating(), rating, userId, articleId)
 	if err != nil {
-		log.Errorf("Erro ao atualizar avaliação do artigo %s com o usuário %s: %s", articleId, userId, err)
+		log.Errorf("Error updating the rating for article %s with user %s: %s", articleId, userId, err.Error())
 		return err
 	}
 
@@ -666,12 +691,13 @@ func (instance Article) SaveArticleRating(userId uuid.UUID, articleId uuid.UUID,
 	if err == nil && rowsAffected == 0 {
 		_, err = postgresConnection.Exec(queries.UserArticle().Insert().Rating(), userId, articleId, rating)
 		if err != nil {
-			log.Errorf("Erro ao inserir avaliação do artigo %s com o usuário %s: %s", articleId, userId, err)
+			log.Errorf("Error inserting the rating for article %s with user %s: %s",
+				articleId, userId, err.Error())
 			return err
 		}
 	} else if err != nil {
-		log.Errorf("Erro ao extrair a quantidade de linhas afetadas pela atualização da avaliação do artigo %s "+
-			"com o usuário %s: %s", articleId, userId, err)
+		log.Errorf("Error fetching the number of rows affected by the rating update for article %s with "+
+			"user %s: %s", articleId, userId, err.Error())
 		return err
 	}
 
@@ -681,14 +707,15 @@ func (instance Article) SaveArticleRating(userId uuid.UUID, articleId uuid.UUID,
 func (instance Article) SaveArticleToViewLater(userId uuid.UUID, articleId uuid.UUID, viewLater bool) error {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
 
 	sqlResult, err := postgresConnection.Exec(queries.UserArticle().Update().ViewLater(), viewLater, userId, articleId)
 	if err != nil {
-		log.Errorf("Erro ao atualizar marcação de ver depois do artigo %s com o usuário %s: %s",
-			articleId, userId, err)
+		log.Errorf("Error updating view later bookmark for article %s with user %s: %s",
+			articleId, userId, err.Error())
 		return err
 	}
 
@@ -696,13 +723,13 @@ func (instance Article) SaveArticleToViewLater(userId uuid.UUID, articleId uuid.
 	if err == nil && rowsAffected == 0 {
 		_, err = postgresConnection.Exec(queries.UserArticle().Insert().ViewLater(), userId, articleId, viewLater)
 		if err != nil {
-			log.Errorf("Erro ao inserir marcação de ver depois do artigo %s com o usuário %s: %s",
-				articleId, userId, err)
+			log.Errorf("Error inserting view later bookmark for article %s with user %s: %s",
+				articleId, userId, err.Error())
 			return err
 		}
 	} else if err != nil {
-		log.Errorf("Erro ao extrair a quantidade de linhas afetadas pela atualização da marcação de ver depois "+
-			"do artigo %s com o usuário %s: %s", articleId, userId, err)
+		log.Errorf("Error fetching the number of rows affected by the view later bookmark update for article"+
+			" %s with user %s: %s", articleId, userId, err.Error())
 		return err
 	}
 

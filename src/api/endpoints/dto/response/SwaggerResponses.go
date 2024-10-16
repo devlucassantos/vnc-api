@@ -6,7 +6,7 @@ import (
 )
 
 type SwaggerHttpError struct {
-	Message string `json:"message" example:"Algo errado aconteceu..."`
+	Message string `json:"message" example:"Something went wrong..."`
 }
 
 type SwaggerArticlePagination struct {

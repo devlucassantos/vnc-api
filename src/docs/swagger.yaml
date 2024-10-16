@@ -219,7 +219,7 @@ definitions:
   response.SwaggerHttpError:
     properties:
       message:
-        example: Algo errado aconteceu...
+        example: Something went wrong...
         type: string
     type: object
   response.SwaggerNewsletterArticle:
@@ -395,53 +395,53 @@ info:
   contact:
     email: email.vocenacamara@gmail.com
     name: Você na Câmara
-  description: Conjunto de rotas responsável por gerenciar a manipulação de dados
-    da Plataforma Você na Câmara.
-  title: API da Plataforma Você na Câmara
+  description: Set of routes responsible for managing data manipulation in Você na
+    Câmara applications.
+  title: Você na Câmara API
   version: v1
 paths:
   /articles:
     get:
-      description: Esta requisição é responsável por listar as matérias mais recentes
-        disponíveis na plataforma.
+      description: This request is responsible for listing the most recent articles
+        available on the platform.
       operationId: GetArticles
       parameters:
-      - description: ID do tipo da matéria.
+      - description: Article type ID
         in: query
         name: typeId
         type: string
-      - description: Parte do conteúdo das matérias, no título ou conteúdo.
+      - description: Part of the content of the articles, in the title or content
         in: query
         name: content
         type: string
-      - description: ID do deputado que elaborou a proposição.
+      - description: ID of the deputy who drafted the proposition
         in: query
         name: deputyId
         type: string
-      - description: ID do partido que elaborou a proposição.
+      - description: ID of the party that drafted the proposition
         in: query
         name: partyId
         type: string
-      - description: ID do autor externo que elaborou a proposição.
+      - description: ID of the external author who drafted the proposition
         in: query
         name: externalAuthorId
         type: string
-      - description: 'Data a partir da qual as matérias podem ter sido criadas. Formato
-          aceito: YYYY-MM-DD'
+      - description: 'Date from which the articles may have been created. Accepted
+          format: YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Data até a qual as matérias podem ter sido criadas. Formato
-          aceito: YYYY-MM-DD'
+      - description: 'Date until which the articles may have been created. Accepted
+          format: YYYY-MM-DD'
         in: query
         name: endDate
         type: string
-      - description: Número da página. Por padrão é 1.
+      - description: Page number. By default, it is 1
         in: query
         name: page
         type: integer
-      - description: Quantidade de matérias retornadas por página. Por padrão é 15
-          e os valores permitidos são entre 1 e 100.
+      - description: Number of articles returned per page. The default is 15 and the
+          allowed values are between 1 and 100
         in: query
         name: itemsPerPage
         type: integer
@@ -449,42 +449,41 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerArticlePagination'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Listar matérias mais recentes
+      summary: List most recent articles
       tags:
-      - Matérias
+      - Articles
   /articles/{articleId}/newsletter:
     get:
-      description: Esta requisição é responsável por buscar os detalhes de uma matéria
-        do tipo boletim pelo ID.
+      description: This request is responsible for looking up the details of an article
+        of a newsletter by the article ID.
       operationId: GetNewsletterArticleById
       parameters:
-      - description: ID da matéria
+      - description: Article ID
         in: path
         name: articleId
         required: true
@@ -493,46 +492,45 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerNewsletterArticle'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "404":
-          description: Recurso solicitado não encontrado.
+          description: Requested resource not found
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Buscar detalhes de uma matéria do tipo boletim pelo ID
+      summary: Get article details by ID (Only for newsletter articles)
       tags:
-      - Matérias
+      - Articles
   /articles/{articleId}/proposition:
     get:
-      description: Esta requisição é responsável por buscar os detalhes de uma matéria
-        dos tipos de proposições pelo ID.
+      description: This request is responsible for looking up the details of an article
+        of a proposition by the article ID.
       operationId: GetPropositionArticleById
       parameters:
-      - description: ID da matéria
+      - description: Article ID
         in: path
         name: articleId
         required: true
@@ -541,54 +539,52 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerPropositionArticle'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "404":
-          description: Recurso solicitado não encontrado.
+          description: Requested resource not found
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Buscar detalhes de uma matéria dos tipos de proposições pelo ID
+      summary: Get article details by ID (Only for proposition articles)
       tags:
-      - Matérias
+      - Articles
   /articles/{articleId}/rating:
     put:
       consumes:
       - application/json
-      description: Esta requisição é responsável pelo registro da avaliação de uma
-        matéria pelo usuário.
+      description: This request is responsible for recording the user's rating of
+        an article.
       operationId: SaveArticleRating
       parameters:
-      - description: ID da matéria
+      - description: Article ID
         in: path
         name: articleId
         required: true
         type: string
-      - description: JSON com todos os dados necessários para que a avaliação da matéria
-          seja realizada.
+      - description: Request body
         in: body
         name: body
         required: true
@@ -598,56 +594,54 @@ paths:
       - application/json
       responses:
         "204":
-          description: Requisição realizada com sucesso.
+          description: Successful request
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "403":
-          description: Acesso negado.
+          description: Access denied
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "404":
-          description: Recurso solicitado não encontrado.
+          description: Requested resource not found
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Avaliar matéria
+      summary: Rate article
       tags:
-      - Matérias
+      - Articles
   /articles/{articleId}/view-later:
     put:
       consumes:
       - application/json
-      description: Esta requisição é responsável por adicionar ou remover a matéria
-        da lista de matérias marcadas para ver depois pelo usuário.
+      description: This request is responsible for adding or removing the article
+        from the list of articles bookmarked for later viewing by the user.
       operationId: SaveArticleToViewLater
       parameters:
-      - description: ID da matéria
+      - description: Article ID
         in: path
         name: articleId
         required: true
         type: string
-      - description: JSON com todos os dados necessários para marcar/desmarcar a matéria
-          para ver depois.
+      - description: Request body
         in: body
         name: body
         required: true
@@ -657,84 +651,83 @@ paths:
       - application/json
       responses:
         "204":
-          description: Requisição realizada com sucesso.
+          description: Successful request
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "403":
-          description: Acesso negado.
+          description: Access denied
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "404":
-          description: Recurso solicitado não encontrado.
+          description: Requested resource not found
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Adicionar ou remover matéria da lista de matérias marcadas para ver
-        depois pelo usuário
+      summary: Add or remove an article from the list of articles bookmarked for later
+        viewing by the user
       tags:
-      - Matérias
+      - Articles
   /articles/trending:
     get:
-      description: Esta requisição é responsável por listar as matérias em alta disponíveis
-        na plataforma.
+      description: This request is responsible for listing trending articles on the
+        platform.
       operationId: GetTrendingArticles
       parameters:
-      - description: ID do tipo da matéria.
+      - description: Article type ID
         in: query
         name: typeId
         type: string
-      - description: Parte do conteúdo das matérias, no título ou conteúdo.
+      - description: Part of the content of the articles, in the title or content
         in: query
         name: content
         type: string
-      - description: ID do deputado que elaborou a proposição.
+      - description: ID of the deputy who drafted the proposition
         in: query
         name: deputyId
         type: string
-      - description: ID do partido que elaborou a proposição.
+      - description: ID of the party that drafted the proposition
         in: query
         name: partyId
         type: string
-      - description: ID do autor externo que elaborou a proposição.
+      - description: ID of the external author who drafted the proposition
         in: query
         name: externalAuthorId
         type: string
-      - description: 'Data a partir da qual as matérias podem ter sido criadas. Formato
-          aceito: YYYY-MM-DD'
+      - description: 'Date from which the articles may have been created. Accepted
+          format: YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Data até a qual as matérias podem ter sido criadas. Formato
-          aceito: YYYY-MM-DD'
+      - description: 'Date until which the articles may have been created. Accepted
+          format: YYYY-MM-DD'
         in: query
         name: endDate
         type: string
-      - description: Número da página. Por padrão é 1.
+      - description: Page number. By default, it is 1
         in: query
         name: page
         type: integer
-      - description: Quantidade de matérias retornadas por página. Por padrão é 15
-          e os valores permitidos são entre 1 e 100.
+      - description: Number of articles returned per page. The default is 15 and the
+          allowed values are between 1 and 100
         in: query
         name: itemsPerPage
         type: integer
@@ -742,48 +735,47 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerArticlePagination'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Listar matérias em alta
+      summary: List trending articles
       tags:
-      - Matérias
+      - Articles
   /articles/trending/type:
     get:
-      description: Esta requisição é responsável por listar as matérias em alta pelos
-        tipos de matérias.
+      description: This request is responsible for listing the trending articles by
+        article types.
       operationId: GetTrendingArticlesByTypeId
       parameters:
-      - description: Lista com os IDs dos tipos de matérias que devem ser retornados
-          (Separados por vírgula). Por padrão retorna todos.
+      - description: List of IDs of the types of articles that should be returned
+          (separated by commas). By default, it returns all types
         in: query
-        name: ids
+        name: articleTypeIds
         type: string
-      - description: Quantidade de matérias retornadas por tipo. Por padrão é 5 e
-          os valores permitidos são entre 1 e 20.
+      - description: Number of articles returned by type. The default is 5 and the
+          allowed values are between 1 and 20
         in: query
         name: itemsPerType
         type: integer
@@ -791,73 +783,73 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerArticleTypeWithArticles'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Listar matérias em alta pelos tipos de matérias
+      summary: List trending articles by article types
       tags:
-      - Matérias
+      - Articles
   /articles/view-later:
     get:
-      description: Esta requisição é responsável por listar as matérias marcadas para
-        ver depois pelo usuário na plataforma. As matérias serão listadas na ordem
-        que o usuário realizou a marcação das matérias.
+      description: This request is responsible for listing the articles bookmarked
+        for later viewing by the user on the platform. The articles will be listed
+        in the order in which the user bookmarked the articles.
       operationId: GetArticlesToViewLater
       parameters:
-      - description: ID do tipo da matéria.
+      - description: Article type ID
         in: query
         name: typeId
         type: string
-      - description: Parte do conteúdo das matérias, no título ou conteúdo.
+      - description: Part of the content of the articles, in the title or content
         in: query
         name: content
         type: string
-      - description: ID do deputado que elaborou a proposição.
+      - description: ID of the deputy who drafted the proposition
         in: query
         name: deputyId
         type: string
-      - description: ID do partido que elaborou a proposição.
+      - description: ID of the party that drafted the proposition
         in: query
         name: partyId
         type: string
-      - description: ID do autor externo que elaborou a proposição.
+      - description: ID of the external author who drafted the proposition
         in: query
         name: externalAuthorId
         type: string
-      - description: 'Data a partir da qual as matérias podem ter sido criadas. Formato
-          aceito: YYYY-MM-DD'
+      - description: 'Date from which the articles may have been created. Accepted
+          format: YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Data até a qual as matérias podem ter sido criadas. Formato
-          aceito: YYYY-MM-DD'
+      - description: 'Date until which the articles may have been created. Accepted
+          format: YYYY-MM-DD'
         in: query
         name: endDate
         type: string
-      - description: Número da página. Por padrão é 1.
+      - description: Page number. By default, it is 1
         in: query
         name: page
         type: integer
-      - description: Quantidade de matérias retornadas por página. Por padrão é 15
-          e os valores permitidos são entre 1 e 100.
+      - description: Number of articles returned per page. The default is 15 and the
+          allowed values are between 1 and 100
         in: query
         name: itemsPerPage
         type: integer
@@ -865,45 +857,43 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerArticlePagination'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Listar matérias marcadas para ver depois pelo usuário
+      summary: List articles bookmarked for later viewing by the user
       tags:
-      - Matérias
+      - Articles
   /auth/refresh:
     post:
       consumes:
       - application/json
-      description: Esta requisição é responsável por realizar a atualização dos tokens
-        de acesso do usuário na plataforma.
+      description: This request is responsible for refreshing the user's access tokens
+        on the platform.
       operationId: Refresh
       parameters:
-      - description: JSON com todos os dados necessários para que a atualização dos
-          tokens de acesso seja realizada.
+      - description: Request body
         in: body
         name: body
         required: true
@@ -913,42 +903,40 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerUser'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
-      summary: Atualizar tokens de acesso
+      summary: Refresh access tokens
       tags:
-      - Autenticação
+      - Authentication
   /auth/sign-in:
     post:
       consumes:
       - application/json
-      description: Esta requisição é responsável por permitir a entrada do usuário
-        em sua conta na plataforma.
+      description: This request is responsible for signing the user into the platform.
       operationId: SignIn
       parameters:
-      - description: JSON com todos os dados necessários para que o login seja realizado.
+      - description: Request body
         in: body
         name: body
         required: true
@@ -958,82 +946,74 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerUser'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
-          schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
-        "404":
-          description: Recurso solicitado não encontrado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
-      summary: Fazer login
+      summary: Sign In
       tags:
-      - Autenticação
+      - Authentication
   /auth/sign-out:
     post:
-      description: Esta requisição é responsável por realizar o encerramento do acesso
-        do usuário a plataforma.
+      description: This request is responsible for signing the user out of the platform.
       operationId: SignOut
       produces:
       - application/json
       responses:
         "204":
-          description: Requisição realizada com sucesso.
+          description: Successful request
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "403":
-          description: Acesso negado.
+          description: Access denied
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Fazer logout
+      summary: Sign Out
       tags:
-      - Autenticação
+      - Authentication
   /auth/sign-up:
     post:
       consumes:
       - application/json
-      description: Esta requisição é responsável por permitir o cadastro do usuário
-        na plataforma.
+      description: This request is responsible for signing the user up to the platform.
       operationId: SignUp
       parameters:
-      - description: JSON com todos os dados necessários para que a criação da conta
-          seja realizada.
+      - description: Request body
         in: body
         name: body
         required: true
@@ -1043,77 +1023,74 @@ paths:
       - application/json
       responses:
         "201":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             $ref: '#/definitions/response.SwaggerUser'
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "409":
-          description: Requisição contém dados que já estão cadastrados no banco de
-            dados e que devem ser únicos.
+          description: Some of the data provided is conflicting
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "422":
-          description: Requisição não processada devido a algum dos dados enviados
-            serem inválidos.
+          description: Some of the data provided is invalid
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
-      summary: Criar conta
+      summary: Sign Up
       tags:
-      - Autenticação
+      - Authentication
   /resources:
     get:
-      description: Esta requisição é responsável por listar todos os recursos da plataforma.
+      description: This request is responsible for listing all the platform resources.
       operationId: GetResources
       produces:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             items:
               $ref: '#/definitions/response.SwaggerResources'
             type: array
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
-      summary: Listar todos os recursos
+      summary: List all resources
       tags:
-      - Recursos
+      - Resources
   /user/activate-account:
     patch:
       consumes:
       - application/json
-      description: Esta requisição é responsável por ativar a conta do usuário, comprovando
-        que o endereço de email fornecido no cadastro realmente existe e pertence
-        ao usuário.
+      description: This request is responsible for activating the user's account,
+        proving that the email address provided during registration really exists
+        and belongs to the user.
       operationId: ActivateAccount
       parameters:
-      - description: JSON com todos os dados necessários para que a ativação da conta
-          seja realizada.
+      - description: Request body
         in: body
         name: body
         required: true
@@ -1123,81 +1100,80 @@ paths:
       - application/json
       responses:
         "200":
-          description: Requisição realizada com sucesso.
+          description: Successful request
           schema:
             items:
               $ref: '#/definitions/response.SwaggerUser'
             type: array
         "400":
-          description: Requisição mal formulada ou o código de ativação informado
-            é inválido.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "403":
-          description: Acesso negado.
+          description: Access denied
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "409":
-          description: A conta do usuário já está ativa.
+          description: Some of the data provided is conflicting
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Ativar conta do usuário
+      summary: Activate user account
       tags:
-      - Usuário
+      - Users
   /user/resend-activation-email:
     patch:
-      description: Esta requisição é responsável por reenviar o email de ativação
-        da conta do usuário. A cada envio, um novo código é gerado, invalidando o
-        código anterior.
+      description: This request is responsible for resending the user account activation
+        email. Each time it is sent, a new code is generated, invalidating the previous
+        code.
       operationId: ResendActivationEmail
       produces:
       - application/json
       responses:
         "204":
-          description: Requisição realizada com sucesso.
+          description: Successful request
         "400":
-          description: Requisição mal formulada.
+          description: Badly formatted request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "401":
-          description: Acesso não autorizado.
+          description: Unauthorized access
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "403":
-          description: Acesso negado.
+          description: Access denied
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "409":
-          description: A conta do usuário já está ativa.
+          description: Some of the data provided is conflicting
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "500":
-          description: Ocorreu um erro inesperado durante o processamento da requisição.
+          description: An unexpected error occurred while processing the request
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
         "503":
-          description: Algum dos serviços/recursos está temporariamente indisponível.
+          description: Some of the services/resources are temporarily unavailable
           schema:
             $ref: '#/definitions/response.SwaggerHttpError'
       security:
       - BearerAuth: []
-      summary: Reenviar email de ativação da conta do usuário
+      summary: Resend user account activation email
       tags:
-      - Usuário
+      - Users
 securityDefinitions:
   BearerAuth:
     in: header

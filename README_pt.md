@@ -2,7 +2,7 @@
 
 🌍 *[English](README.md) ∙ [Português](README_pt.md)*
 
-`vnc-api` é o repositório responsável por realizar o gerenciamento do backend da plataforma
+`vnc-api` é o serviço responsável por realizar o gerenciamento do backend da plataforma
 [Você na Câmara (VNC)](#você-na-câmara-vnc). Neste repositório você encontrará o código-fonte da API do VNC e
 também o container responsável por executar este código, deste modo você poderá facilmente rodar o projeto.
 
@@ -10,9 +10,9 @@ também o container responsável por executar este código, deste modo você pod
 
 ### Pré-requisitos
 
-> Observe que para executar corretamente o `vnc-api` você precisará ter os
-[containers do `vnc-databases`](https://github.com/devlucassantos/vnc-databases) em execução de modo que o container
-desta aplicação tenha acesso aos bancos de dados necessários para a consulta dos dados.
+Para executar corretamente o `vnc-api` você precisará ter os containers do
+[`vnc-databases`](https://github.com/devlucassantos/vnc-databases) em execução, de modo que o container desta aplicação
+tenha acesso aos bancos de dados necessários para a consulta dos dados.
 
 ### Executando via Docker
 
@@ -27,7 +27,7 @@ docker compose up
 
 Após a execução do projeto, todas as rotas disponíveis para acesso à API podem ser encontradas através do link:
 
-> [http://localhost:8084/api/v1/documentation/index.html](http://localhost:8084/api/v1/documentation/index.html)
+> [http://localhost:8083/api/documentation](http://localhost:8083/api/documentation)
 
 ## Você na Câmara (VNC)
 

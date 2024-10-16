@@ -33,26 +33,26 @@ func NewArticleHandler(articleService services.Article, resourceService services
 
 // GetArticles
 // @ID          GetArticles
-// @Summary     Listar matérias mais recentes
-// @Tags        Matérias
-// @Description Esta requisição é responsável por listar as matérias mais recentes disponíveis na plataforma.
+// @Summary     List most recent articles
+// @Tags        Articles
+// @Description This request is responsible for listing the most recent articles available on the platform.
 // @Security    BearerAuth
 // @Produce     json
-// @Param       typeId           query string false "ID do tipo da matéria."
-// @Param       content          query string false "Parte do conteúdo das matérias, no título ou conteúdo."
-// @Param       deputyId         query string false "ID do deputado que elaborou a proposição."
-// @Param       partyId          query string false "ID do partido que elaborou a proposição."
-// @Param       externalAuthorId query string false "ID do autor externo que elaborou a proposição."
-// @Param       startDate        query string false "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
-// @Param       endDate          query string false "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
-// @Param       page             query int    false "Número da página. Por padrão é 1."
-// @Param       itemsPerPage     query int    false "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100."
-// @Success 200 {object} response.SwaggerArticlePagination "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError         "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError         "Acesso não autorizado."
-// @Failure 422 {object} response.SwaggerHttpError         "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError         "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError         "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       typeId           query string false "Article type ID"
+// @Param       content          query string false "Part of the content of the articles, in the title or content"
+// @Param       deputyId         query string false "ID of the deputy who drafted the proposition"
+// @Param       partyId          query string false "ID of the party that drafted the proposition"
+// @Param       externalAuthorId query string false "ID of the external author who drafted the proposition"
+// @Param       startDate        query string false "Date from which the articles may have been created. Accepted format: YYYY-MM-DD"
+// @Param       endDate          query string false "Date until which the articles may have been created. Accepted format: YYYY-MM-DD"
+// @Param       page             query int    false "Page number. By default, it is 1"
+// @Param       itemsPerPage     query int    false "Number of articles returned per page. The default is 15 and the allowed values are between 1 and 100"
+// @Success 200 {object} response.SwaggerArticlePagination "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError         "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError         "Unauthorized access"
+// @Failure 422 {object} response.SwaggerHttpError         "Some of the data provided is invalid"
+// @Failure 500 {object} response.SwaggerHttpError         "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError         "Some of the services/resources are temporarily unavailable"
 // @Router /articles [GET]
 func (instance Article) GetArticles(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
@@ -61,9 +61,9 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 	typeIdParam := context.QueryParam("typeId")
 	if typeIdParam != "" {
-		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "ID do tipo da matéria")
+		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "Article type ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro typeId: ", httpError.Message)
+			log.Error("Error converting the typeId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.TypeId = &typeId
@@ -73,9 +73,9 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 	deputyIdParam := context.QueryParam("deputyId")
 	if deputyIdParam != "" {
-		deputyId, httpError := utils.ConvertFromStringToUuid(deputyIdParam, "ID do deputado")
+		deputyId, httpError := utils.ConvertFromStringToUuid(deputyIdParam, "Deputy ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro deputyId: ", httpError.Message)
+			log.Error("Error converting the deputyId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.DeputyId = &deputyId
@@ -83,9 +83,9 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 	partyIdParam := context.QueryParam("partyId")
 	if partyIdParam != "" {
-		partyId, httpError := utils.ConvertFromStringToUuid(partyIdParam, "ID do partido")
+		partyId, httpError := utils.ConvertFromStringToUuid(partyIdParam, "Party ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro partyId: ", httpError.Message)
+			log.Error("Error converting the partyId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.PartyId = &partyId
@@ -93,9 +93,9 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 	externalAuthorIdParam := context.QueryParam("externalAuthorId")
 	if externalAuthorIdParam != "" {
-		externalAuthorId, httpError := utils.ConvertFromStringToUuid(externalAuthorIdParam, "ID do autor externo")
+		externalAuthorId, httpError := utils.ConvertFromStringToUuid(externalAuthorIdParam, "External author ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro externalAuthorId: ", httpError.Message)
+			log.Error("Error converting the externalAuthorId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.ExternalAuthorId = &externalAuthorId
@@ -103,9 +103,9 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 	startDateParam := context.QueryParam("startDate")
 	if startDateParam != "" {
-		startDate, httpError := utils.ConvertFromStringToTime(startDateParam, "Data inicial")
+		startDate, httpError := utils.ConvertFromStringToTime(startDateParam, "Start date")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro startDate: ", httpError.Message)
+			log.Error("Error converting the startDate parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.StartDate = &startDate
@@ -113,25 +113,25 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 	endDateParam := context.QueryParam("endDate")
 	if endDateParam != "" {
-		endDate, httpError := utils.ConvertFromStringToTime(endDateParam, "Data final")
+		endDate, httpError := utils.ConvertFromStringToTime(endDateParam, "End date")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro endDate: ", httpError.Message)
+			log.Error("Error converting the endDate parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.EndDate = &endDate
 	}
 
 	if articleFilter.StartDate != nil && articleFilter.EndDate != nil && articleFilter.StartDate.After(*articleFilter.EndDate) {
-		errorMessage := fmt.Sprintf("Parâmetros inválidos: O parâmetro startDate não pode ser maior que o parâmetro endDate")
+		errorMessage := fmt.Sprintf("Invalid parameters: The startDate parameter cannot be greater than the endDate parameter")
 		log.Error(errorMessage)
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
 	}
 
 	pageParam := context.QueryParam("page")
 	if pageParam != "" {
-		page, httpError := utils.ConvertFromStringToInt(pageParam, "Página")
+		page, httpError := utils.ConvertFromStringToInt(pageParam, "Page")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro page: ", httpError.Message)
+			log.Error("Error converting the page parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.PaginationFilter.Page = &page
@@ -139,15 +139,15 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 	itemsPerPageParam := context.QueryParam("itemsPerPage")
 	if itemsPerPageParam != "" {
-		itemsPerPage, httpError := utils.ConvertFromStringToInt(itemsPerPageParam, "Itens por página")
+		itemsPerPage, httpError := utils.ConvertFromStringToInt(itemsPerPageParam, "Items per page")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro itemsPerPage: ", httpError.Message)
+			log.Error("Error converting the itemsPerPage parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 
 		if itemsPerPage > 100 {
-			errorMessage := fmt.Sprintf("Parâmetro inválido: Itens por página")
-			log.Errorf("Requisição mal formulada: %s (Valor: %s)", errorMessage, itemsPerPage)
+			errorMessage := fmt.Sprintf("Invalid parameter: Items per page")
+			log.Errorf("Badly formatted request: %s (Value: %d)", errorMessage, itemsPerPage)
 			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest, errorMessage))
 		}
 
@@ -157,11 +157,11 @@ func (instance Article) GetArticles(context echo.Context) error {
 	articleSlice, totalNumberOfArticles, err := instance.articleService.GetArticles(articleFilter, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Error("Erro ao buscar as matérias: ", err.Error())
+		log.Error("Error fetching articles: ", err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -182,26 +182,26 @@ func (instance Article) GetArticles(context echo.Context) error {
 
 // GetTrendingArticles
 // @ID          GetTrendingArticles
-// @Summary     Listar matérias em alta
-// @Tags        Matérias
-// @Description Esta requisição é responsável por listar as matérias em alta disponíveis na plataforma.
+// @Summary     List trending articles
+// @Tags        Articles
+// @Description This request is responsible for listing trending articles on the platform.
 // @Security    BearerAuth
 // @Produce     json
-// @Param       typeId           query string false "ID do tipo da matéria."
-// @Param       content          query string false "Parte do conteúdo das matérias, no título ou conteúdo."
-// @Param       deputyId         query string false "ID do deputado que elaborou a proposição."
-// @Param       partyId          query string false "ID do partido que elaborou a proposição."
-// @Param       externalAuthorId query string false "ID do autor externo que elaborou a proposição."
-// @Param       startDate        query string false "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
-// @Param       endDate          query string false "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
-// @Param       page             query int    false "Número da página. Por padrão é 1."
-// @Param       itemsPerPage     query int    false "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100."
-// @Success 200 {object} response.SwaggerArticlePagination "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError         "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError         "Acesso não autorizado."
-// @Failure 422 {object} response.SwaggerHttpError         "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError         "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError         "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       typeId           query string false "Article type ID"
+// @Param       content          query string false "Part of the content of the articles, in the title or content"
+// @Param       deputyId         query string false "ID of the deputy who drafted the proposition"
+// @Param       partyId          query string false "ID of the party that drafted the proposition"
+// @Param       externalAuthorId query string false "ID of the external author who drafted the proposition"
+// @Param       startDate        query string false "Date from which the articles may have been created. Accepted format: YYYY-MM-DD"
+// @Param       endDate          query string false "Date until which the articles may have been created. Accepted format: YYYY-MM-DD"
+// @Param       page             query int    false "Page number. By default, it is 1"
+// @Param       itemsPerPage     query int    false "Number of articles returned per page. The default is 15 and the allowed values are between 1 and 100"
+// @Success 200 {object} response.SwaggerArticlePagination "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError         "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError         "Unauthorized access"
+// @Failure 422 {object} response.SwaggerHttpError         "Some of the data provided is invalid"
+// @Failure 500 {object} response.SwaggerHttpError         "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError         "Some of the services/resources are temporarily unavailable"
 // @Router /articles/trending [GET]
 func (instance Article) GetTrendingArticles(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
@@ -210,9 +210,9 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 	typeIdParam := context.QueryParam("typeId")
 	if typeIdParam != "" {
-		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "ID do tipo da matéria")
+		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "Article type ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro typeId: ", httpError.Message)
+			log.Error("Error converting the typeId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.TypeId = &typeId
@@ -222,9 +222,9 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 	deputyIdParam := context.QueryParam("deputyId")
 	if deputyIdParam != "" {
-		deputyId, httpError := utils.ConvertFromStringToUuid(deputyIdParam, "ID do deputado")
+		deputyId, httpError := utils.ConvertFromStringToUuid(deputyIdParam, "Deputy ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro deputyId: ", httpError.Message)
+			log.Error("Error converting the deputyId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.DeputyId = &deputyId
@@ -232,9 +232,9 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 	partyIdParam := context.QueryParam("partyId")
 	if partyIdParam != "" {
-		partyId, httpError := utils.ConvertFromStringToUuid(partyIdParam, "ID do partido")
+		partyId, httpError := utils.ConvertFromStringToUuid(partyIdParam, "Party ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro partyId: ", httpError.Message)
+			log.Error("Error converting the partyId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.PartyId = &partyId
@@ -242,9 +242,9 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 	externalAuthorIdParam := context.QueryParam("externalAuthorId")
 	if externalAuthorIdParam != "" {
-		externalAuthorId, httpError := utils.ConvertFromStringToUuid(externalAuthorIdParam, "ID do autor externo")
+		externalAuthorId, httpError := utils.ConvertFromStringToUuid(externalAuthorIdParam, "External author ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro externalAuthorId: ", httpError.Message)
+			log.Error("Error converting the externalAuthorId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.ExternalAuthorId = &externalAuthorId
@@ -252,9 +252,9 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 	startDateParam := context.QueryParam("startDate")
 	if startDateParam != "" {
-		startDate, httpError := utils.ConvertFromStringToTime(startDateParam, "Data inicial")
+		startDate, httpError := utils.ConvertFromStringToTime(startDateParam, "Start date")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro startDate: ", httpError.Message)
+			log.Error("Error converting the startDate parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.StartDate = &startDate
@@ -262,25 +262,25 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 	endDateParam := context.QueryParam("endDate")
 	if endDateParam != "" {
-		endDate, httpError := utils.ConvertFromStringToTime(endDateParam, "Data final")
+		endDate, httpError := utils.ConvertFromStringToTime(endDateParam, "End date")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro endDate: ", httpError.Message)
+			log.Error("Error converting the endDate parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.EndDate = &endDate
 	}
 
 	if articleFilter.StartDate != nil && articleFilter.EndDate != nil && articleFilter.StartDate.After(*articleFilter.EndDate) {
-		errorMessage := fmt.Sprintf("Parâmetros inválidos: O parâmetro startDate não pode ser maior que o parâmetro endDate")
+		errorMessage := fmt.Sprintf("Invalid parameters: The startDate parameter cannot be greater than the endDate parameter")
 		log.Error(errorMessage)
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
 	}
 
 	pageParam := context.QueryParam("page")
 	if pageParam != "" {
-		page, httpError := utils.ConvertFromStringToInt(pageParam, "Página")
+		page, httpError := utils.ConvertFromStringToInt(pageParam, "Page")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro page: ", httpError.Message)
+			log.Error("Error converting the page parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.PaginationFilter.Page = &page
@@ -288,15 +288,15 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 	itemsPerPageParam := context.QueryParam("itemsPerPage")
 	if itemsPerPageParam != "" {
-		itemsPerPage, httpError := utils.ConvertFromStringToInt(itemsPerPageParam, "Itens por página")
+		itemsPerPage, httpError := utils.ConvertFromStringToInt(itemsPerPageParam, "Items per page")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro itemsPerPage: ", httpError.Message)
+			log.Error("Error converting the itemsPerPage parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 
 		if itemsPerPage > 100 {
-			errorMessage := fmt.Sprintf("Parâmetro inválido: Itens por página")
-			log.Errorf("Requisição mal formulada: %s (Valor: %s)", errorMessage, itemsPerPage)
+			errorMessage := fmt.Sprintf("Invalid parameter: Items per page")
+			log.Errorf("Badly formatted request: %s (Value: %d)", errorMessage, itemsPerPage)
 			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest, errorMessage))
 		}
 
@@ -306,11 +306,11 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 	articleSlice, totalNumberOfArticles, err := instance.articleService.GetTrendingArticles(articleFilter, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Error("Erro ao buscar as matérias em alta: ", err.Error())
+		log.Error("Error fetching trending articles: ", err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -331,31 +331,31 @@ func (instance Article) GetTrendingArticles(context echo.Context) error {
 
 // GetTrendingArticlesByTypeId
 // @ID          GetTrendingArticlesByTypeId
-// @Summary     Listar matérias em alta pelos tipos de matérias
-// @Tags        Matérias
-// @Description Esta requisição é responsável por listar as matérias em alta pelos tipos de matérias.
+// @Summary     List trending articles by article types
+// @Tags        Articles
+// @Description This request is responsible for listing the trending articles by article types.
 // @Security    BearerAuth
 // @Produce     json
-// @Param       ids          query string false "Lista com os IDs dos tipos de matérias que devem ser retornados (Separados por vírgula). Por padrão retorna todos."
-// @Param       itemsPerType query int    false "Quantidade de matérias retornadas por tipo. Por padrão é 5 e os valores permitidos são entre 1 e 20."
-// @Success 200 {object} response.SwaggerArticleTypeWithArticles "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError               "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError               "Acesso não autorizado."
-// @Failure 500 {object} response.SwaggerHttpError               "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError               "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       articleTypeIds query string false "List of IDs of the types of articles that should be returned (separated by commas). By default, it returns all types"
+// @Param       itemsPerType   query int    false "Number of articles returned by type. The default is 5 and the allowed values are between 1 and 20"
+// @Success 200 {object} response.SwaggerArticleTypeWithArticles "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError               "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError               "Unauthorized access"
+// @Failure 500 {object} response.SwaggerHttpError               "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError               "Some of the services/resources are temporarily unavailable"
 // @Router /articles/trending/type [GET]
 func (instance Article) GetTrendingArticlesByTypeId(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
 	var articleTypeIds []uuid.UUID
-	idsParam := context.QueryParam("ids")
+	idsParam := context.QueryParam("articleTypeIds")
 	if idsParam != "" {
 		articleTypeIdsAsStringSlice := strings.Split(idsParam, ",")
 		for index, articleTypeIdAsString := range articleTypeIdsAsStringSlice {
 			articleTypeId, httpError := utils.ConvertFromStringToUuid(articleTypeIdAsString,
-				fmt.Sprintf("Id do %d° tipo de matéria", index+1))
+				fmt.Sprintf("%d°th article type ID", index+1))
 			if httpError != nil {
-				log.Error("Erro ao converter o parâmetro ids: ", httpError.Message)
+				log.Error("Error converting the articleTypeIds parameter: ", httpError.Message)
 				return context.JSON(httpError.Code, httpError)
 			}
 			articleTypeIds = append(articleTypeIds, articleTypeId)
@@ -366,15 +366,15 @@ func (instance Article) GetTrendingArticlesByTypeId(context echo.Context) error 
 	itemsPerTypeParam := context.QueryParam("itemsPerType")
 	if itemsPerTypeParam != "" {
 		var httpError *response.HttpError
-		itemsPerType, httpError = utils.ConvertFromStringToInt(itemsPerTypeParam, "Itens por tipo")
+		itemsPerType, httpError = utils.ConvertFromStringToInt(itemsPerTypeParam, "Items per type")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro itemsPerType: ", httpError.Message)
+			log.Error("Error converting the itemsPerType parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 
 		if itemsPerType > 20 {
-			errorMessage := fmt.Sprintf("Parâmetro inválido: Itens por tipo")
-			log.Errorf("Requisição mal formulada: %s (Valor: %s)", errorMessage, itemsPerType)
+			errorMessage := fmt.Sprintf("Invalid parameter: Items per type")
+			log.Errorf("Badly formatted request: %s (Value: %d)", errorMessage, itemsPerType)
 			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest, errorMessage))
 		}
 	}
@@ -382,11 +382,11 @@ func (instance Article) GetTrendingArticlesByTypeId(context echo.Context) error 
 	articleTypes, err := instance.resourceService.GetArticleTypes(articleTypeIds)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Error("Erro ao buscar os detalhes dos tipos de matéria no banco de dados: ", err.Error())
+		log.Error("Error fetching article type details: ", err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -395,11 +395,11 @@ func (instance Article) GetTrendingArticlesByTypeId(context echo.Context) error 
 		articles, err := instance.articleService.GetTrendingArticlesByTypeId(articleType.Id(), itemsPerType, userId)
 		if err != nil {
 			if strings.Contains(err.Error(), "connection refused") {
-				log.Error("Banco de dados indisponível: ", err.Error())
+				log.Error("Database unavailable: ", err.Error())
 				return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 			}
 
-			log.Errorf("Erro ao buscar as matérias do tipo de matéria %s: %s", articleType.Id(), err.Error())
+			log.Errorf("Error fetching articles of article type %s: %s", articleType.Id(), err.Error())
 			return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 		}
 
@@ -420,26 +420,26 @@ func (instance Article) GetTrendingArticlesByTypeId(context echo.Context) error 
 
 // GetArticlesToViewLater
 // @ID          GetArticlesToViewLater
-// @Summary     Listar matérias marcadas para ver depois pelo usuário
-// @Tags        Matérias
-// @Description Esta requisição é responsável por listar as matérias marcadas para ver depois pelo usuário na plataforma. As matérias serão listadas na ordem que o usuário realizou a marcação das matérias.
+// @Summary     List articles bookmarked for later viewing by the user
+// @Tags        Articles
+// @Description This request is responsible for listing the articles bookmarked for later viewing by the user on the platform. The articles will be listed in the order in which the user bookmarked the articles.
 // @Security    BearerAuth
 // @Produce     json
-// @Param       typeId           query string false "ID do tipo da matéria."
-// @Param       content          query string false "Parte do conteúdo das matérias, no título ou conteúdo."
-// @Param       deputyId         query string false "ID do deputado que elaborou a proposição."
-// @Param       partyId          query string false "ID do partido que elaborou a proposição."
-// @Param       externalAuthorId query string false "ID do autor externo que elaborou a proposição."
-// @Param       startDate        query string false "Data a partir da qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
-// @Param       endDate          query string false "Data até a qual as matérias podem ter sido criadas. Formato aceito: YYYY-MM-DD"
-// @Param       page             query int    false "Número da página. Por padrão é 1."
-// @Param       itemsPerPage     query int    false "Quantidade de matérias retornadas por página. Por padrão é 15 e os valores permitidos são entre 1 e 100."
-// @Success 200 {object} response.SwaggerArticlePagination "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError         "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError         "Acesso não autorizado."
-// @Failure 422 {object} response.SwaggerHttpError         "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError         "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError         "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       typeId           query string false "Article type ID"
+// @Param       content          query string false "Part of the content of the articles, in the title or content"
+// @Param       deputyId         query string false "ID of the deputy who drafted the proposition"
+// @Param       partyId          query string false "ID of the party that drafted the proposition"
+// @Param       externalAuthorId query string false "ID of the external author who drafted the proposition"
+// @Param       startDate        query string false "Date from which the articles may have been created. Accepted format: YYYY-MM-DD"
+// @Param       endDate          query string false "Date until which the articles may have been created. Accepted format: YYYY-MM-DD"
+// @Param       page             query int    false "Page number. By default, it is 1"
+// @Param       itemsPerPage     query int    false "Number of articles returned per page. The default is 15 and the allowed values are between 1 and 100"
+// @Success 200 {object} response.SwaggerArticlePagination "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError         "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError         "Unauthorized access"
+// @Failure 422 {object} response.SwaggerHttpError         "Some of the data provided is invalid"
+// @Failure 500 {object} response.SwaggerHttpError         "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError         "Some of the services/resources are temporarily unavailable"
 // @Router /articles/view-later [GET]
 func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
@@ -448,9 +448,9 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 	typeIdParam := context.QueryParam("typeId")
 	if typeIdParam != "" {
-		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "ID do tipo da matéria")
+		typeId, httpError := utils.ConvertFromStringToUuid(typeIdParam, "Article type ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro typeId: ", httpError.Message)
+			log.Error("Error converting the typeId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.TypeId = &typeId
@@ -460,9 +460,9 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 	deputyIdParam := context.QueryParam("deputyId")
 	if deputyIdParam != "" {
-		deputyId, httpError := utils.ConvertFromStringToUuid(deputyIdParam, "ID do deputado")
+		deputyId, httpError := utils.ConvertFromStringToUuid(deputyIdParam, "Deputy ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro deputyId: ", httpError.Message)
+			log.Error("Error converting the deputyId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.DeputyId = &deputyId
@@ -470,9 +470,9 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 	partyIdParam := context.QueryParam("partyId")
 	if partyIdParam != "" {
-		partyId, httpError := utils.ConvertFromStringToUuid(partyIdParam, "ID do partido")
+		partyId, httpError := utils.ConvertFromStringToUuid(partyIdParam, "Party ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro partyId: ", httpError.Message)
+			log.Error("Error converting the partyId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.PartyId = &partyId
@@ -480,9 +480,9 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 	externalAuthorIdParam := context.QueryParam("externalAuthorId")
 	if externalAuthorIdParam != "" {
-		externalAuthorId, httpError := utils.ConvertFromStringToUuid(externalAuthorIdParam, "ID do autor externo")
+		externalAuthorId, httpError := utils.ConvertFromStringToUuid(externalAuthorIdParam, "External author ID")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro externalAuthorId: ", httpError.Message)
+			log.Error("Error converting the externalAuthorId parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.ExternalAuthorId = &externalAuthorId
@@ -490,9 +490,9 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 	startDateParam := context.QueryParam("startDate")
 	if startDateParam != "" {
-		startDate, httpError := utils.ConvertFromStringToTime(startDateParam, "Data inicial")
+		startDate, httpError := utils.ConvertFromStringToTime(startDateParam, "Start date")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro startDate: ", httpError.Message)
+			log.Error("Error converting the startDate parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.StartDate = &startDate
@@ -500,25 +500,25 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 	endDateParam := context.QueryParam("endDate")
 	if endDateParam != "" {
-		endDate, httpError := utils.ConvertFromStringToTime(endDateParam, "Data final")
+		endDate, httpError := utils.ConvertFromStringToTime(endDateParam, "End date")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro endDate: ", httpError.Message)
+			log.Error("Error converting the endDate parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.EndDate = &endDate
 	}
 
 	if articleFilter.StartDate != nil && articleFilter.EndDate != nil && articleFilter.StartDate.After(*articleFilter.EndDate) {
-		errorMessage := fmt.Sprintf("Parâmetros inválidos: O parâmetro startDate não pode ser maior que o parâmetro endDate")
+		errorMessage := fmt.Sprintf("Invalid parameters: The startDate parameter cannot be greater than the endDate parameter")
 		log.Error(errorMessage)
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
 	}
 
 	pageParam := context.QueryParam("page")
 	if pageParam != "" {
-		page, httpError := utils.ConvertFromStringToInt(pageParam, "Página")
+		page, httpError := utils.ConvertFromStringToInt(pageParam, "Page")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro page: ", httpError.Message)
+			log.Error("Error converting the page parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 		articleFilter.PaginationFilter.Page = &page
@@ -526,15 +526,15 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 	itemsPerPageParam := context.QueryParam("itemsPerPage")
 	if itemsPerPageParam != "" {
-		itemsPerPage, httpError := utils.ConvertFromStringToInt(itemsPerPageParam, "Itens por página")
+		itemsPerPage, httpError := utils.ConvertFromStringToInt(itemsPerPageParam, "Items per page")
 		if httpError != nil {
-			log.Error("Erro ao converter o parâmetro itemsPerPage: ", httpError.Message)
+			log.Error("Error converting the itemsPerPage parameter: ", httpError.Message)
 			return context.JSON(httpError.Code, httpError)
 		}
 
 		if itemsPerPage > 100 {
-			errorMessage := fmt.Sprintf("Parâmetro inválido: Itens por página")
-			log.Errorf("Requisição mal formulada: %s (Valor: %s)", errorMessage, itemsPerPage)
+			errorMessage := fmt.Sprintf("Invalid parameter: Items per page")
+			log.Errorf("Badly formatted request: %s (Value: %d)", errorMessage, itemsPerPage)
 			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest, errorMessage))
 		}
 
@@ -544,11 +544,11 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 	articleSlice, totalNumberOfArticles, err := instance.articleService.GetArticlesToViewLater(articleFilter, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Error("Erro ao buscar as matérias marcadas para ver depois pelo usuário %s: %s", userId, err.Error())
+		log.Errorf("Error fetching articles bookmarked for later viewing by user %s: %s", userId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -569,41 +569,41 @@ func (instance Article) GetArticlesToViewLater(context echo.Context) error {
 
 // GetPropositionArticleById
 // @ID          GetPropositionArticleById
-// @Summary     Buscar detalhes de uma matéria dos tipos de proposições pelo ID
-// @Tags        Matérias
-// @Description Esta requisição é responsável por buscar os detalhes de uma matéria dos tipos de proposições pelo ID.
+// @Summary     Get article details by ID (Only for proposition articles)
+// @Tags        Articles
+// @Description This request is responsible for looking up the details of an article of a proposition by the article ID.
 // @Security    BearerAuth
 // @Produce     json
-// @Param       articleId path string true "ID da matéria"
-// @Success 200 {object} response.SwaggerPropositionArticle "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError          "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError          "Acesso não autorizado."
-// @Failure 404 {object} response.SwaggerHttpError          "Recurso solicitado não encontrado."
-// @Failure 422 {object} response.SwaggerHttpError          "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError          "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError          "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       articleId path string true "Article ID"
+// @Success 200 {object} response.SwaggerPropositionArticle "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError          "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError          "Unauthorized access"
+// @Failure 404 {object} response.SwaggerHttpError          "Requested resource not found"
+// @Failure 422 {object} response.SwaggerHttpError          "Some of the data provided is invalid"
+// @Failure 500 {object} response.SwaggerHttpError          "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError          "Some of the services/resources are temporarily unavailable"
 // @Router /articles/{articleId}/proposition [GET]
 func (instance Article) GetPropositionArticleById(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
-	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "ID da matéria")
+	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "Article ID")
 	if httpError != nil {
-		log.Error("Erro ao converter o parâmetro articleId: ", httpError.Message)
+		log.Error("Error converting the articleId parameter: ", httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
 	propositionData, err := instance.propositionService.GetPropositionByArticleId(articleId, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows") {
-			log.Errorf("Não foi possível encontrar a matéria da proposição %s: %s", articleId, err.Error())
+			log.Errorf("Proposition article %s could not be found: %s", articleId, err.Error())
 			return context.JSON(http.StatusNotFound, response.NewHttpError(http.StatusNotFound,
-				"Matéria da proposição não encontrada"))
+				"Proposition article not found"))
 		} else if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Errorf("Erro ao buscar matéria da proposição %s: %s", articleId, err.Error())
+		log.Errorf("Error fetching proposition article %s: %s", articleId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -612,10 +612,10 @@ func (instance Article) GetPropositionArticleById(context echo.Context) error {
 	newsletterArticle, err := instance.articleService.GetNewsletterArticleByPropositionId(propositionData.Id(), userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		} else if !strings.Contains(err.Error(), "no rows") {
-			log.Errorf("Erro ao buscar matéria do boletim da proposição %s (Matéria: %s): %s",
+			log.Errorf("Error fetching newsletter article of proposition %s (Article: %s): %s",
 				propositionData.Id(), articleId, err.Error())
 			return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 		}
@@ -628,41 +628,41 @@ func (instance Article) GetPropositionArticleById(context echo.Context) error {
 
 // GetNewsletterArticleById
 // @ID          GetNewsletterArticleById
-// @Summary     Buscar detalhes de uma matéria do tipo boletim pelo ID
-// @Tags        Matérias
-// @Description Esta requisição é responsável por buscar os detalhes de uma matéria do tipo boletim pelo ID.
+// @Summary     Get article details by ID (Only for newsletter articles)
+// @Tags        Articles
+// @Description This request is responsible for looking up the details of an article of a newsletter by the article ID.
 // @Security    BearerAuth
 // @Produce     json
-// @Param       articleId path string true "ID da matéria"
-// @Success 200 {object} response.SwaggerNewsletterArticle "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError         "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError         "Acesso não autorizado."
-// @Failure 404 {object} response.SwaggerHttpError         "Recurso solicitado não encontrado."
-// @Failure 422 {object} response.SwaggerHttpError         "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError         "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError         "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       articleId path string true "Article ID"
+// @Success 200 {object} response.SwaggerNewsletterArticle "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError         "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError         "Unauthorized access"
+// @Failure 404 {object} response.SwaggerHttpError         "Requested resource not found"
+// @Failure 422 {object} response.SwaggerHttpError         "Some of the data provided is invalid"
+// @Failure 500 {object} response.SwaggerHttpError         "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError         "Some of the services/resources are temporarily unavailable"
 // @Router /articles/{articleId}/newsletter [GET]
 func (instance Article) GetNewsletterArticleById(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
-	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "ID da matéria")
+	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "Article ID")
 	if httpError != nil {
-		log.Error("Erro ao converter o parâmetro articleId: ", httpError.Message)
+		log.Error("Error converting the articleId parameter: ", httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
 	newsletterData, err := instance.newsletterService.GetNewsletterByArticleId(articleId, userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows") {
-			log.Errorf("Não foi possível encontrar a matéria do boletim %s: %s", articleId, err.Error())
+			log.Errorf("Newsletter article %s could not be found: %s", articleId, err.Error())
 			return context.JSON(http.StatusNotFound, response.NewHttpError(http.StatusNotFound,
-				"Matéria do boletim não encontrada"))
+				"Newsletter article not found"))
 		} else if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Errorf("Erro ao buscar matéria do boletim %s: %s", articleId, err.Error())
+		log.Errorf("Error fetching newsletter article %s: %s", articleId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -671,11 +671,11 @@ func (instance Article) GetNewsletterArticleById(context echo.Context) error {
 	propositionArticles, err := instance.articleService.GetPropositionArticlesByNewsletterId(newsletterData.Id(), userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Errorf("Erro ao buscar matérias das proposições do boletim %s (Matéria: %s): %s",
+		log.Errorf("Error fetching proposition articles of newsletter %s (Article: %s): %s",
 			newsletterData.Id(), articleId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
@@ -689,61 +689,60 @@ func (instance Article) GetNewsletterArticleById(context echo.Context) error {
 
 // SaveArticleRating
 // @ID          SaveArticleRating
-// @Summary     Avaliar matéria
-// @Tags        Matérias
-// @Description Esta requisição é responsável pelo registro da avaliação de uma matéria pelo usuário.
+// @Summary     Rate article
+// @Tags        Articles
+// @Description This request is responsible for recording the user's rating of an article.
 // @Security    BearerAuth
 // @Accept      json
 // @Produce     json
-// @Param       articleId path string         true "ID da matéria"
-// @Param       body      body request.Rating true "JSON com todos os dados necessários para que a avaliação da matéria seja realizada."
-// @Success 204 {object} nil                       "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
-// @Failure 403 {object} response.SwaggerHttpError "Acesso negado."
-// @Failure 404 {object} response.SwaggerHttpError "Recurso solicitado não encontrado."
-// @Failure 422 {object} response.SwaggerHttpError "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       articleId path string         true "Article ID"
+// @Param       body      body request.Rating true "Request body"
+// @Success 204 {object} nil                       "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
+// @Failure 403 {object} response.SwaggerHttpError "Access denied"
+// @Failure 404 {object} response.SwaggerHttpError "Requested resource not found"
+// @Failure 422 {object} response.SwaggerHttpError "Some of the data provided is invalid"
+// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
 // @Router /articles/{articleId}/rating [PUT]
 func (instance Article) SaveArticleRating(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
-	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "ID da matéria")
+	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "Article ID")
 	if httpError != nil {
-		log.Error("Erro ao converter o parâmetro articleId: ", httpError.Message)
+		log.Error("Error converting the articleId parameter: ", httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
 	var rating request.Rating
 	err := context.Bind(&rating)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição de avaliação da matéria ao DTO: ", err.Error())
+		log.Error("Error assigning data from article rating request to DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
 	if rating.Rating < 1 || rating.Rating > 5 {
-		errorMessage := "O valor da avaliação da matéria é inválido"
-		log.Errorf("%s: (Valor: %d; Usuário: %s)", errorMessage, rating.Rating, userId)
+		errorMessage := "The article rating value is invalid"
+		log.Errorf("%s: (Value: %d; User: %s)", errorMessage, rating.Rating, userId)
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage))
 	}
 
 	err = instance.articleService.SaveArticleRating(userId, articleId, rating.Rating)
 	if err != nil {
 		if strings.Contains(err.Error(), "user_article_article_fk") {
-			log.Errorf("Não foi possível encontrar a matéria %s avaliada pelo usuário %s: %s",
-				articleId, userId, err.Error())
+			log.Errorf("Article %s rated by user %s could not be found: %s", articleId, userId, err.Error())
 			return context.JSON(http.StatusNotFound, response.NewHttpError(http.StatusNotFound,
-				"Matéria não encontrada"))
+				"Article not found"))
 		} else if strings.Contains(err.Error(), "duplicate key") {
-			log.Errorf("Não foi possível avaliar a matéria %s com o usuário %s: %s", articleId, userId, err.Error())
+			log.Errorf("Could not rate the article %s with user %s: %s", articleId, userId, err.Error())
 			return context.JSON(http.StatusForbidden, response.NewForbiddenError())
 		} else if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Errorf("Erro ao avaliar matéria %s com o usuário %s: %s", articleId, userId, err.Error())
+		log.Errorf("Error rating the article %s with user %s: %s", articleId, userId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -752,36 +751,36 @@ func (instance Article) SaveArticleRating(context echo.Context) error {
 
 // SaveArticleToViewLater
 // @ID          SaveArticleToViewLater
-// @Summary     Adicionar ou remover matéria da lista de matérias marcadas para ver depois pelo usuário
-// @Tags        Matérias
-// @Description Esta requisição é responsável por adicionar ou remover a matéria da lista de matérias marcadas para ver depois pelo usuário.
+// @Summary     Add or remove an article from the list of articles bookmarked for later viewing by the user
+// @Tags        Articles
+// @Description This request is responsible for adding or removing the article from the list of articles bookmarked for later viewing by the user.
 // @Security    BearerAuth
 // @Accept      json
 // @Produce     json
-// @Param       articleId path string            true "ID da matéria"
-// @Param       body      body request.ViewLater true "JSON com todos os dados necessários para marcar/desmarcar a matéria para ver depois."
-// @Success 204 {object} nil                       "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
-// @Failure 403 {object} response.SwaggerHttpError "Acesso negado."
-// @Failure 404 {object} response.SwaggerHttpError "Recurso solicitado não encontrado."
-// @Failure 422 {object} response.SwaggerHttpError "Requisição não processada devido a algum dos dados enviados serem inválidos."
-// @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       articleId path string            true "Article ID"
+// @Param       body      body request.ViewLater true "Request body"
+// @Success 204 {object} nil                       "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
+// @Failure 403 {object} response.SwaggerHttpError "Access denied"
+// @Failure 404 {object} response.SwaggerHttpError "Requested resource not found"
+// @Failure 422 {object} response.SwaggerHttpError "Some of the data provided is invalid"
+// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
 // @Router /articles/{articleId}/view-later [PUT]
 func (instance Article) SaveArticleToViewLater(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
 
-	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "ID da matéria")
+	articleId, httpError := utils.ConvertFromStringToUuid(context.Param("articleId"), "Article ID")
 	if httpError != nil {
-		log.Error("Erro ao converter o parâmetro articleId: ", httpError.Message)
+		log.Error("Error converting the articleId parameter: ", httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
 	var viewLater request.ViewLater
 	err := context.Bind(&viewLater)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição de marcação da matéria para ver depois ao DTO: ",
+		log.Error("Error assigning data from article bookmarking request to view later to DTO: ",
 			err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
@@ -789,21 +788,21 @@ func (instance Article) SaveArticleToViewLater(context echo.Context) error {
 	err = instance.articleService.SaveArticleToViewLater(userId, articleId, viewLater.ViewLater)
 	if err != nil {
 		if strings.Contains(err.Error(), "user_article_article_fk") {
-			log.Errorf("Não foi possível encontrar a matéria %s marcada/desmarcada para ver depois pelo usuário "+
-				"%s: %s", articleId, userId, err.Error())
+			log.Errorf("Could not find article %s bookmarked/unbookmarked for later viewing by user %s: %s",
+				articleId, userId, err.Error())
 			return context.JSON(http.StatusNotFound, response.NewHttpError(http.StatusNotFound,
-				"Matéria não encontrada"))
+				"Article not found"))
 		} else if strings.Contains(err.Error(), "duplicate key") {
-			log.Errorf("Não foi possível atualizar a marcação da matéria %s com o usuário %s: %s",
+			log.Errorf("Could not update the bookmarking of article %s with user %s: %s",
 				articleId, userId, err.Error())
 			return context.JSON(http.StatusForbidden, response.NewForbiddenError())
 		} else if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Errorf("Erro ao atualizar marcação de ver depois da matéria %s com o usuário %s: %s", articleId,
-			userId, err.Error())
+		log.Errorf("Error updating the later viewing bookmark of article %s with user %s: %s",
+			articleId, userId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 

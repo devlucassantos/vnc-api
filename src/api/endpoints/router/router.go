@@ -1,6 +1,9 @@
 package router
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/labstack/echo/v4"
+	"os"
+)
 
 type Router interface {
 	Load(*echo.Group)
@@ -14,9 +17,14 @@ func New() Router {
 }
 
 func (instance *router) Load(group *echo.Group) {
-	loadDocumentationRoutes(group)
-	loadAuthenticationRoutes(group)
-	loadUserRoutes(group)
-	loadResourcesRoutes(group)
-	loadArticleRoutes(group)
+	if os.Getenv("SERVER_MODE") != "production" {
+		loadDocumentationRoutes(group)
+	}
+
+	v1Group := group.Group("/v1")
+
+	loadAuthenticationRoutes(v1Group)
+	loadUserRoutes(v1Group)
+	loadResourcesRoutes(v1Group)
+	loadArticleRoutes(v1Group)
 }

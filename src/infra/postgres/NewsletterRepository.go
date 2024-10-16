@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/devlucassantos/vnc-domains/src/domains/article"
 	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/newsletter"
@@ -24,6 +25,7 @@ func NewNewsletterRepository(connectionManager connectionManagerInterface) *News
 func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId uuid.UUID) (*newsletter.Newsletter, error) {
 	postgresConnection, err := instance.connectionManager.createConnection()
 	if err != nil {
+		log.Error("Error creating a connection to the Postgres database: ", err.Error())
 		return nil, err
 	}
 	defer instance.connectionManager.closeConnection(postgresConnection)
@@ -31,7 +33,7 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 	var newsletterArticle dto.Article
 	err = postgresConnection.Get(&newsletterArticle, queries.Newsletter().Select().ByArticleId(), articleId)
 	if err != nil {
-		log.Errorf("Erro ao obter os dados do boletim pela matéria %s no banco de dados: %s", articleId, err.Error())
+		log.Errorf("Error fetching newsletter data for article %s from the database: %s", articleId, err.Error())
 		return nil, err
 	}
 
@@ -40,9 +42,9 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 		numberOfArticles := 1
 		err = postgresConnection.Get(&userArticle, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
 			numberOfArticles), userId, newsletterArticle.Id)
-		if err != nil && err != sql.ErrNoRows {
-			log.Errorf("Erro as buscar no banco de dados as informações da matéria %s que o usuário %s avaliou e/ou "+
-				"salvou para ver depois: %s", articleId, userId, err.Error())
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			log.Errorf("Error fetching data for article %s that user %s may have rated or saved for later "+
+				"viewing: %s", articleId, userId, err.Error())
 			return nil, err
 		}
 	}
@@ -62,7 +64,7 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 		UpdatedAt(newsletterArticle.ArticleType.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do tipo da matéria %s: %s", articleId, err.Error())
+		log.Errorf("Error validating data for article type %s: %s", articleId, err.Error())
 		return nil, err
 	}
 
@@ -76,7 +78,7 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 		UpdatedAt(newsletterArticle.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados da matéria %s do boletim %s: %s", newsletterArticle.Id,
+		log.Errorf("Error validating data for article %s of newsletter %s: %s", newsletterArticle.Id,
 			newsletterArticle.Newsletter.Id, err.Error())
 		return nil, err
 	}
@@ -91,7 +93,8 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 		UpdatedAt(newsletterArticle.Newsletter.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Erro construindo a estrutura de dados do boletim %s: %s", articleId, err.Error())
+		log.Errorf("Error validating data for newsletter %s of article %s: %s",
+			newsletterArticle.Newsletter.Id, articleId, err.Error())
 		return nil, err
 	}
 
@@ -102,7 +105,7 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 
 	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), newsletterArticle.Id, userIdPointer)
 	if err != nil {
-		log.Errorf("Erro ao registrar a visualização do boletim %s: %s", articleId, err.Error())
+		log.Errorf("Error registering the view for article %s: %s", articleId, err.Error())
 	}
 
 	return newsletterDomain, nil

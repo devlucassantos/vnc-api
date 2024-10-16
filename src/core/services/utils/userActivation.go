@@ -13,7 +13,7 @@ func GenerateUserActivationCode() (string, error) {
 	for index := range activationCode {
 		randomInt, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
 		if err != nil {
-			log.Errorf("Erro ao gerar código de ativação da conta do usuário: ", err.Error())
+			log.Error("Error generating user account activation code: ", err.Error())
 			return "", err
 		}
 

@@ -22,18 +22,18 @@ func NewUserHandler(service services.User) *User {
 
 // ResendActivationEmail
 // @ID          ResendActivationEmail
-// @Summary     Reenviar email de ativação da conta do usuário
-// @Tags        Usuário
-// @Description Esta requisição é responsável por reenviar o email de ativação da conta do usuário. A cada envio, um novo código é gerado, invalidando o código anterior.
+// @Summary     Resend user account activation email
+// @Tags        Users
+// @Description This request is responsible for resending the user account activation email. Each time it is sent, a new code is generated, invalidating the previous code.
 // @Security    BearerAuth
 // @Produce     json
-// @Success 204 {object} nil                       "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada."
-// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
-// @Failure 403 {object} response.SwaggerHttpError "Acesso negado."
-// @Failure 409 {object} response.SwaggerHttpError "A conta do usuário já está ativa."
-// @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
+// @Success 204 {object} nil                       "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
+// @Failure 403 {object} response.SwaggerHttpError "Access denied"
+// @Failure 409 {object} response.SwaggerHttpError "Some of the data provided is conflicting"
+// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
 // @Router /user/resend-activation-email [PATCH]
 func (instance User) ResendActivationEmail(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
@@ -41,15 +41,15 @@ func (instance User) ResendActivationEmail(context echo.Context) error {
 	err := instance.service.ResendUserAccountActivationEmail(userId)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
-		} else if strings.Contains(err.Error(), "conta ativa") {
-			log.Errorf("A conta do usuário %s já está ativa: %s", userId, err.Error())
+		} else if strings.Contains(err.Error(), "active account") {
+			log.Errorf("The account for user %s is already active: %s", userId, err.Error())
 			return context.JSON(http.StatusConflict, response.NewHttpError(http.StatusConflict,
-				"Conta ativa, não foi possível reenviar o email."))
+				"Account active, email could not be resent"))
 		}
 
-		log.Errorf("Erro ao reenviar o email de ativação da conta do usuário %s: %s", userId, err.Error())
+		log.Errorf("Error resending the account activation email for user %s: %s", userId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -58,20 +58,20 @@ func (instance User) ResendActivationEmail(context echo.Context) error {
 
 // ActivateAccount
 // @ID          ActivateAccount
-// @Summary     Ativar conta do usuário
-// @Tags        Usuário
-// @Description Esta requisição é responsável por ativar a conta do usuário, comprovando que o endereço de email fornecido no cadastro realmente existe e pertence ao usuário.
+// @Summary     Activate user account
+// @Tags        Users
+// @Description This request is responsible for activating the user's account, proving that the email address provided during registration really exists and belongs to the user.
 // @Security    BearerAuth
 // @Accept      json
 // @Produce     json
-// @Param       body body request.UserAccountActivation true "JSON com todos os dados necessários para que a ativação da conta seja realizada."
-// @Success 200 {array}  response.SwaggerUser      "Requisição realizada com sucesso."
-// @Failure 400 {object} response.SwaggerHttpError "Requisição mal formulada ou o código de ativação informado é inválido."
-// @Failure 401 {object} response.SwaggerHttpError "Acesso não autorizado."
-// @Failure 403 {object} response.SwaggerHttpError "Acesso negado."
-// @Failure 409 {object} response.SwaggerHttpError "A conta do usuário já está ativa."
-// @Failure 500 {object} response.SwaggerHttpError "Ocorreu um erro inesperado durante o processamento da requisição."
-// @Failure 503 {object} response.SwaggerHttpError "Algum dos serviços/recursos está temporariamente indisponível."
+// @Param       body body request.UserAccountActivation true "Request body"
+// @Success 200 {array}  response.SwaggerUser      "Successful request"
+// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
+// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
+// @Failure 403 {object} response.SwaggerHttpError "Access denied"
+// @Failure 409 {object} response.SwaggerHttpError "Some of the data provided is conflicting"
+// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
 // @Router /user/activate-account [PATCH]
 func (instance User) ActivateAccount(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
@@ -79,32 +79,32 @@ func (instance User) ActivateAccount(context echo.Context) error {
 	var UserAccountActivationDto request.UserAccountActivation
 	err := context.Bind(&UserAccountActivationDto)
 	if err != nil {
-		log.Error("Erro ao atribuir os dados da requisição de ativação da conta ao DTO: ", err.Error())
+		log.Error("Error assigning data from account activation request to DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
 	userData, err := user.NewBuilder().Id(userId).ActivationCode(UserAccountActivationDto.ActivationCode).Build()
 	if err != nil {
-		log.Errorf("Erro ao validar os dados do usuário %s: %s", userId, err.Error())
+		log.Errorf("Error validating data for user %s: %s", userId, err.Error())
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, err.Error()))
 	}
 
 	userData, err = instance.service.ActivateUserAccount(*userData)
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
-			log.Error("Banco de dados indisponível: ", err.Error())
+			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
-		} else if strings.Contains(err.Error(), "conta ativa") {
-			log.Errorf("A conta do usuário %s já está ativa: %s", userId, err.Error())
+		} else if strings.Contains(err.Error(), "active account") {
+			log.Errorf("The account for user %s is already active: %s", userId, err.Error())
 			return context.JSON(http.StatusConflict, response.NewHttpError(http.StatusConflict,
-				"Conta ativa, não foi possível prosseguir."))
-		} else if strings.Contains(err.Error(), "código de ativação inválido") {
-			log.Errorf("O código de ativação informado para a conta do usuário %s é inválido: %s", userId, err.Error())
+				"Active account, could not proceed"))
+		} else if strings.Contains(err.Error(), "invalid activation code") {
+			log.Errorf("The activation code provided for the user account %s is invalid: %s", userId, err.Error())
 			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest,
-				"O código de ativação da conta informado é inválido."))
+				"The account activation code provided is invalid"))
 		}
 
-		log.Errorf("Erro ao reenviar o email de ativação da conta do usuário %s: %s", userId, err.Error())
+		log.Errorf("Error activating account for user %s: %s", userId, err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 

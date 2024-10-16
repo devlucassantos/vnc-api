@@ -27,11 +27,11 @@ type api struct {
 func NewApi() Api {
 	err := godotenv.Load("api/config/.env")
 	if err != nil {
-		log.Fatal("Arquivo de variáveis de ambiente não encontrado: ", err)
+		log.Fatal("Environment variables file not found: ", err.Error())
 	}
 
 	echoInstance := echo.New()
-	return &api{echoInstance.Group("/api/v1"), echoInstance}
+	return &api{echoInstance.Group("/api"), echoInstance}
 }
 
 func (instance *api) Serve() {
