@@ -120,7 +120,7 @@ func (instance Authentication) SignIn(context echo.Context) error {
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows") {
 			log.Error("Could not find data for user ", signInDto.Email)
-			return context.JSON(http.StatusUnauthorized, response.NewHttpError(http.StatusNotFound,
+			return context.JSON(http.StatusUnauthorized, response.NewHttpError(http.StatusUnauthorized,
 				"The password is incorrect or the email address is not registered on the platform"))
 		} else if strings.Contains(err.Error(), "incorrect password") {
 			log.Errorf("The password provided for user %s is incorrect", signInDto.Email)
