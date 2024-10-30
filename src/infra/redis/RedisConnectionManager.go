@@ -1,10 +1,12 @@
 package redis
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/go-redis/redis"
 	"github.com/labstack/gommon/log"
 	"os"
+	"strings"
 )
 
 type connectionManagerInterface interface {
@@ -19,7 +21,13 @@ func NewRedisConnectionManager() *ConnectionManager {
 }
 
 func (ConnectionManager) createConnection() (*redis.Client, error) {
-	connection := redis.NewClient(getRedisConnectionOptions())
+	redisOptions, err := getRedisConnectionOptions()
+	if err != nil {
+		log.Error("Error getting Redis database connection address: ", err.Error())
+		return nil, err
+	}
+
+	connection := redis.NewClient(redisOptions)
 
 	pingResult := connection.Ping()
 	if pingResult.Err() != nil {
@@ -37,7 +45,24 @@ func (ConnectionManager) closeConnection(connection *redis.Client) {
 	}
 }
 
-func getRedisConnectionOptions() *redis.Options {
+func getRedisConnectionOptions() (*redis.Options, error) {
+	redisUrl := os.Getenv("REDIS_URL")
+	if len(redisUrl) > 0 {
+		redisOptions, err := redis.ParseURL(redisUrl)
+		if err != nil {
+			log.Error("Error parsing Redis URL: ", err.Error())
+			return nil, err
+		}
+
+		if strings.HasPrefix(redisUrl, "rediss") {
+			redisOptions.TLSConfig = &tls.Config{
+				InsecureSkipVerify: true,
+			}
+		}
+
+		return redisOptions, nil
+	}
+
 	host := os.Getenv("REDIS_HOST")
 	port := os.Getenv("REDIS_PORT")
 	password := os.Getenv("REDIS_PASSWORD")
@@ -48,5 +73,5 @@ func getRedisConnectionOptions() *redis.Options {
 		DB:       0,
 	}
 
-	return redisOptions
+	return redisOptions, nil
 }

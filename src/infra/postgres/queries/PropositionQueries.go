@@ -22,7 +22,8 @@ func (propositionSelectSqlManager) ByArticleId() string {
        			article_type.created_at AS article_type_created_at, article_type.updated_at AS article_type_updated_at,
 				proposition.id AS proposition_id, proposition.original_text_url AS proposition_original_text_url,
 				proposition.title AS proposition_title, proposition.content AS proposition_content,
-				proposition.submitted_at AS proposition_submitted_at, proposition.image_url AS proposition_image_url,
+				proposition.submitted_at AS proposition_submitted_at,
+				COALESCE(proposition.image_url, '') AS proposition_image_url,
 				proposition.created_at AS proposition_created_at, proposition.updated_at AS proposition_updated_at
 			FROM article
 			    INNER JOIN article_type ON article_type.id = article.article_type_id

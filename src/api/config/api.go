@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"net/http"
+	"os"
 	"vnc-api/api/endpoints/middlewares"
 	"vnc-api/api/endpoints/router"
 	"vnc-api/api/utils"
@@ -25,9 +26,11 @@ type api struct {
 }
 
 func NewApi() Api {
-	err := godotenv.Load("api/config/.env")
-	if err != nil {
-		log.Fatal("Environment variables file not found: ", err.Error())
+	if os.Getenv("SERVER_MODE") != "production" {
+		err := godotenv.Load("api/config/.env")
+		if err != nil {
+			log.Fatal("Environment variables file not found: ", err.Error())
+		}
 	}
 
 	echoInstance := echo.New()
@@ -64,7 +67,7 @@ func (instance *api) getCORSSettings() echo.MiddlewareFunc {
 }
 
 func getServerAddress() string {
-	host := utils.GetenvWithDefaultValue("SERVER_HOST", "0.0.0.0")
-	port := utils.GetenvWithDefaultValue("SERVER_PORT", "8080")
+	host := utils.GetenvWithDefaultValue("HOST", "0.0.0.0")
+	port := utils.GetenvWithDefaultValue("PORT", "8080")
 	return fmt.Sprintf("%s:%s", host, port)
 }
