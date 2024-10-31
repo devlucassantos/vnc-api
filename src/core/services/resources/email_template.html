@@ -71,13 +71,14 @@
     </div>
     <div class="content">
         <h1>Olá, {{.user_name}}!</h1>
-        <p>Obrigado por se registrar na plataforma Você na Câmara! Para ativar sua conta, por favor, copie o código abaixo
-            e insira no <a href="#">site</a> ou <a href="#">aplicativo</a>:</p>
+        <p>Obrigado por se registrar na plataforma Você na Câmara! Para concluir a ativação da sua conta, copie o código
+            abaixo e insira-o no <a href="{{.application_url}}">site ou aplicativo</a>:</p>
         <div class="activation-code">{{.activation_code}}</div>
-        <p>Se você não se registrou na plataforma, por favor ignore este email.</p>
+        <p>Se você não realizou o registro na plataforma, desconsidere este e-mail.</p>
+        <p>Atenciosamente,<br>Equipe de Suporte da Você na Câmara.</p>
     </div>
     <div class="footer">
-        <p>&copy; {{.current_year}} Você na Câmara. Todos os direitos reservados.</p>
+        <p>&copy; Copyright {{.current_year}} Você na Câmara. Todos os direitos reservados.</p>
     </div>
 </div>
 </body>

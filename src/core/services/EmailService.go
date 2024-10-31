@@ -26,6 +26,7 @@ func (instance Email) SendUserAccountActivationEmail(userData user.User) error {
 		"user_name":       fmt.Sprintf("%s %s", userData.FirstName(), userData.LastName()),
 		"activation_code": userData.ActivationCode(),
 		"current_year":    time.Now().Year(),
+		"application_url": os.Getenv("APPLICATION_URL"),
 	}
 
 	err := sendEmail(subject, userData.Email(), templatePath, emailData)
