@@ -26,7 +26,8 @@ type api struct {
 }
 
 func NewApi() Api {
-	if os.Getenv("SERVER_MODE") != "production" {
+	serverMode := os.Getenv("SERVER_MODE")
+	if serverMode != "production" && serverMode != "stage" {
 		err := godotenv.Load("api/config/.env")
 		if err != nil {
 			log.Fatal("Environment variables file not found: ", err.Error())

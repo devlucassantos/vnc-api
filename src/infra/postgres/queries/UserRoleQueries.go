@@ -29,8 +29,7 @@ func (userRoleSqlManager) Select() *userRoleSelectSqlManager {
 }
 
 func (userRoleSelectSqlManager) ByUserId() string {
-	return `SELECT role.id AS role_id, role.code AS role_code, role.created_at AS role_created_at,
-       			role.updated_at AS role_updated_at
+	return `SELECT role.id AS role_id, role.code AS role_code
 			FROM role
 				INNER JOIN user_role ON user_role.role_id = role.id
 			WHERE role.active = true AND user_role.active = true AND user_id = $1`

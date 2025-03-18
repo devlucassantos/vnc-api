@@ -17,30 +17,27 @@ func (propositionAuthorSelectSqlManager) ByPropositionId() string {
        			COALESCE(deputy.name, '') AS deputy_name,
        			COALESCE(deputy.electoral_name, '') AS deputy_electoral_name,
        			COALESCE(deputy.image_url, '') AS deputy_image_url,
-       			COALESCE(deputy.created_at, '1970-01-01 00:00:00') AS deputy_created_at,
-       			COALESCE(deputy.updated_at, '1970-01-01 00:00:00') AS deputy_updated_at,
+				COALESCE(deputy.federated_unit, '') AS deputy_federated_unit,
+				COALESCE(proposition_author.federated_unit, '') AS deputy_previous_federated_unit,
         		COALESCE(party.id, '00000000-0000-0000-0000-000000000000') AS party_id,
         		COALESCE(party.name, '') AS party_name,
         		COALESCE(party.acronym, '') AS party_acronym,
         		COALESCE(party.image_url, '') AS party_image_url,
-        		COALESCE(party.created_at, '1970-01-01 00:00:00') AS party_created_at,
-        		COALESCE(party.updated_at, '1970-01-01 00:00:00') AS party_updated_at,
-        		COALESCE(party_in_the_proposal.id, '00000000-0000-0000-0000-000000000000') AS party_in_the_proposal_id,
-        		COALESCE(party_in_the_proposal.name, '') AS party_in_the_proposal_name,
-        		COALESCE(party_in_the_proposal.acronym, '') AS party_in_the_proposal_acronym,
-        		COALESCE(party_in_the_proposal.image_url, '') AS party_in_the_proposal_image_url,
-        		COALESCE(party_in_the_proposal.created_at, '1970-01-01 00:00:00') AS party_in_the_proposal_created_at,
-        		COALESCE(party_in_the_proposal.updated_at, '1970-01-01 00:00:00') AS party_in_the_proposal_updated_at,
+        		COALESCE(previous_party.id, '00000000-0000-0000-0000-000000000000') AS previous_party_id,
+        		COALESCE(previous_party.name, '') AS previous_party_name,
+        		COALESCE(previous_party.acronym, '') AS previous_party_acronym,
+        		COALESCE(previous_party.image_url, '') AS previous_party_image_url,
         		COALESCE(external_author.id, '00000000-0000-0000-0000-000000000000') AS external_author_id,
         		COALESCE(external_author.name, '') AS external_author_name,
-        		COALESCE(external_author.type, '') AS external_author_type,
-        		COALESCE(external_author.created_at, '1970-01-01 00:00:00') AS external_author_created_at,
-        		COALESCE(external_author.updated_at, '1970-01-01 00:00:00') AS external_author_updated_at
+				COALESCE(external_author_type.id, '00000000-0000-0000-0000-000000000000') AS external_author_type_id,
+       			COALESCE(external_author_type.description, '') AS external_author_type_description
 			FROM proposition_author
 				LEFT JOIN deputy ON deputy.id = proposition_author.deputy_id
 				LEFT JOIN party ON party.id = deputy.party_id
-				LEFT JOIN party party_in_the_proposal ON party_in_the_proposal.id = proposition_author.party_id
+				LEFT JOIN party previous_party ON previous_party.id = proposition_author.party_id
 				LEFT JOIN external_author ON external_author.id = proposition_author.external_author_id
+				LEFT JOIN external_author_type ON external_author_type.id = external_author.external_author_type_id
 			WHERE proposition_author.active = true AND ((deputy.active = true AND party.active = true AND
-				party_in_the_proposal.active = true) OR external_author.active = true) AND proposition_author.proposition_id = $1`
+				previous_party.active = true) OR (external_author.active = true AND
+				external_author_type.active = true)) AND proposition_author.proposition_id = $1`
 }

@@ -28,12 +28,12 @@ func NewUserHandler(service services.User) *User {
 // @Security    BearerAuth
 // @Produce     json
 // @Success 204 {object} nil                       "Successful request"
-// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
-// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
-// @Failure 403 {object} response.SwaggerHttpError "Access denied"
-// @Failure 409 {object} response.SwaggerHttpError "Some of the data provided is conflicting"
-// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
-// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
+// @Failure 400 {object} swagger.HttpError "Badly formatted request"
+// @Failure 401 {object} swagger.HttpError "Unauthorized access"
+// @Failure 403 {object} swagger.HttpError "Access denied"
+// @Failure 409 {object} swagger.HttpError "Some of the data provided is conflicting"
+// @Failure 500 {object} swagger.HttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} swagger.HttpError "Some of the services/resources are temporarily unavailable"
 // @Router /user/resend-activation-email [PATCH]
 func (instance User) ResendActivationEmail(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
@@ -44,7 +44,7 @@ func (instance User) ResendActivationEmail(context echo.Context) error {
 			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		} else if strings.Contains(err.Error(), "active account") {
-			log.Errorf("The account for user %s is already active: %s", userId, err.Error())
+			log.Warnf("The account for user %s is already active: %s", userId, err.Error())
 			return context.JSON(http.StatusConflict, response.NewHttpError(http.StatusConflict,
 				"Account active, email could not be resent"))
 		}
@@ -64,14 +64,14 @@ func (instance User) ResendActivationEmail(context echo.Context) error {
 // @Security    BearerAuth
 // @Accept      json
 // @Produce     json
-// @Param       body body request.UserAccountActivation true "Request body"
-// @Success 200 {array}  response.SwaggerUser      "Successful request"
-// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
-// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
-// @Failure 403 {object} response.SwaggerHttpError "Access denied"
-// @Failure 409 {object} response.SwaggerHttpError "Some of the data provided is conflicting"
-// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
-// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
+// @Param       requestBody body request.UserAccountActivation true "Request body"
+// @Success 200 {array}  swagger.User      "Successful request"
+// @Failure 400 {object} swagger.HttpError "Badly formatted request"
+// @Failure 401 {object} swagger.HttpError "Unauthorized access"
+// @Failure 403 {object} swagger.HttpError "Access denied"
+// @Failure 409 {object} swagger.HttpError "Some of the data provided is conflicting"
+// @Failure 500 {object} swagger.HttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} swagger.HttpError "Some of the services/resources are temporarily unavailable"
 // @Router /user/activate-account [PATCH]
 func (instance User) ActivateAccount(context echo.Context) error {
 	userId := utils.GetUserIdFromAuthorizationHeader(context)
@@ -79,13 +79,13 @@ func (instance User) ActivateAccount(context echo.Context) error {
 	var UserAccountActivationDto request.UserAccountActivation
 	err := context.Bind(&UserAccountActivationDto)
 	if err != nil {
-		log.Error("Error assigning data from account activation request to DTO: ", err.Error())
+		log.Warn("Error assigning data from account activation request to DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
 	userData, err := user.NewBuilder().Id(userId).ActivationCode(UserAccountActivationDto.ActivationCode).Build()
 	if err != nil {
-		log.Errorf("Error validating data for user %s: %s", userId, err.Error())
+		log.Warnf("Error validating data for user %s: %s", userId, err.Error())
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, err.Error()))
 	}
 
@@ -95,11 +95,11 @@ func (instance User) ActivateAccount(context echo.Context) error {
 			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		} else if strings.Contains(err.Error(), "active account") {
-			log.Errorf("The account for user %s is already active: %s", userId, err.Error())
+			log.Warnf("The account for user %s is already active: %s", userId, err.Error())
 			return context.JSON(http.StatusConflict, response.NewHttpError(http.StatusConflict,
 				"Active account, could not proceed"))
 		} else if strings.Contains(err.Error(), "invalid activation code") {
-			log.Errorf("The activation code provided for the user account %s is invalid: %s", userId, err.Error())
+			log.Warnf("The activation code provided for the user account %s is invalid: %s", userId, err.Error())
 			return context.JSON(http.StatusBadRequest, response.NewHttpError(http.StatusBadRequest,
 				"The account activation code provided is invalid"))
 		}

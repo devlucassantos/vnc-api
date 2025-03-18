@@ -2,11 +2,11 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
-	"vnc-api/api/config/diconteiner"
+	"vnc-api/api/config/dicontainer"
 )
 
 func loadResourcesRoutes(group *echo.Group) {
-	resourcesHandler := diconteiner.GetResourcesHandler()
+	resourcesHandler := dicontainer.GetResourcesHandler()
 
 	group = group.Group("/resources")
 

@@ -28,20 +28,20 @@ func NewAuthenticationHandler(service services.Authentication) *Authentication {
 // @Description This request is responsible for signing the user up to the platform.
 // @Accept      json
 // @Produce     json
-// @Param       body body request.SignUp true "Request body"
-// @Success 201 {object} response.SwaggerUser      "Successful request"
-// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
-// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
-// @Failure 409 {object} response.SwaggerHttpError "Some of the data provided is conflicting"
-// @Failure 422 {object} response.SwaggerHttpError "Some of the data provided is invalid"
-// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
-// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
+// @Param       requestBody body request.SignUp true "Request body"
+// @Success 201 {object} swagger.User      "Successful request"
+// @Failure 400 {object} swagger.HttpError "Badly formatted request"
+// @Failure 401 {object} swagger.HttpError "Unauthorized access"
+// @Failure 409 {object} swagger.HttpError "Some of the data provided is conflicting"
+// @Failure 422 {object} swagger.HttpError "Some of the data provided is invalid"
+// @Failure 500 {object} swagger.HttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} swagger.HttpError "Some of the services/resources are temporarily unavailable"
 // @Router /auth/sign-up [POST]
 func (instance Authentication) SignUp(context echo.Context) error {
 	var signUpDto request.SignUp
 	err := context.Bind(&signUpDto)
 	if err != nil {
-		log.Error("Error assigning data from user account creation request to DTO: ", err.Error())
+		log.Warn("Error assigning data from user account creation request to DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
@@ -61,14 +61,14 @@ func (instance Authentication) SignUp(context echo.Context) error {
 		Roles(roles).
 		Build()
 	if err != nil {
-		log.Errorf("Error validating data for user %s: %s", signUpDto.Email, err.Error())
+		log.Warnf("Error validating data for user %s: %s", signUpDto.Email, err.Error())
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, err.Error()))
 	}
 
 	createdUserData, err := instance.service.SignUp(*userData)
 	if err != nil {
 		if strings.Contains(err.Error(), "user_email_key") {
-			log.Errorf("Error registering a new user with an already registered email address(%s): %s",
+			log.Warnf("Error registering a new user with an already registered email address(%s): %s",
 				signUpDto.Email, err.Error())
 			return context.JSON(http.StatusConflict, response.NewHttpError(http.StatusConflict,
 				"The email address provided already belongs to an account registered on the platform"))
@@ -91,19 +91,19 @@ func (instance Authentication) SignUp(context echo.Context) error {
 // @Description This request is responsible for signing the user into the platform.
 // @Accept      json
 // @Produce     json
-// @Param       body body request.SignIn true "Request body"
-// @Success 200 {object} response.SwaggerUser      "Successful request"
-// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
-// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
-// @Failure 422 {object} response.SwaggerHttpError "Some of the data provided is invalid"
-// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
-// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
+// @Param       requestBody body request.SignIn true "Request body"
+// @Success 200 {object} swagger.User      "Successful request"
+// @Failure 400 {object} swagger.HttpError "Badly formatted request"
+// @Failure 401 {object} swagger.HttpError "Unauthorized access"
+// @Failure 422 {object} swagger.HttpError "Some of the data provided is invalid"
+// @Failure 500 {object} swagger.HttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} swagger.HttpError "Some of the services/resources are temporarily unavailable"
 // @Router /auth/sign-in [POST]
 func (instance Authentication) SignIn(context echo.Context) error {
 	var signInDto request.SignIn
 	err := context.Bind(&signInDto)
 	if err != nil {
-		log.Error("Error assigning data from login request to DTO: ", err.Error())
+		log.Warn("Error assigning data from login request to DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
@@ -112,18 +112,18 @@ func (instance Authentication) SignIn(context echo.Context) error {
 		Password(signInDto.Password).
 		Build()
 	if err != nil {
-		log.Errorf("Error validating data for user %s: %s", signInDto.Email, err.Error())
+		log.Warnf("Error validating data for user %s: %s", signInDto.Email, err.Error())
 		return context.JSON(http.StatusUnprocessableEntity, response.NewHttpError(http.StatusUnprocessableEntity, err.Error()))
 	}
 
 	savedUserData, err := instance.service.SignIn(*userData)
 	if err != nil {
 		if strings.Contains(err.Error(), "no rows") {
-			log.Error("Could not find data for user ", signInDto.Email)
+			log.Warn("Could not find data for user ", signInDto.Email)
 			return context.JSON(http.StatusUnauthorized, response.NewHttpError(http.StatusUnauthorized,
 				"The password is incorrect or the email address is not registered on the platform"))
 		} else if strings.Contains(err.Error(), "incorrect password") {
-			log.Errorf("The password provided for user %s is incorrect", signInDto.Email)
+			log.Warnf("The password provided for user %s is incorrect", signInDto.Email)
 			return context.JSON(http.StatusUnauthorized, response.NewHttpError(http.StatusUnauthorized,
 				"The password is incorrect or the email address is not registered on the platform"))
 		} else if strings.Contains(err.Error(), "connection refused") {
@@ -131,7 +131,7 @@ func (instance Authentication) SignIn(context echo.Context) error {
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Errorf("Error fetching access data for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error retrieving access data for user %s: %s", userData.Email(), err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
@@ -145,32 +145,34 @@ func (instance Authentication) SignIn(context echo.Context) error {
 // @Description This request is responsible for signing the user out of the platform.
 // @Security    BearerAuth
 // @Produce     json
-// @Success 204 {object} nil                       "Successful request"
-// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
-// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
-// @Failure 403 {object} response.SwaggerHttpError "Access denied"
-// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
-// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
+// @Success 204 {object} nil               "Successful request"
+// @Failure 400 {object} swagger.HttpError "Badly formatted request"
+// @Failure 401 {object} swagger.HttpError "Unauthorized access"
+// @Failure 403 {object} swagger.HttpError "Access denied"
+// @Failure 500 {object} swagger.HttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} swagger.HttpError "Some of the services/resources are temporarily unavailable"
 // @Router /auth/sign-out [POST]
 func (instance Authentication) SignOut(context echo.Context) error {
 	_, accessToken := utils.ExtractToken(context.Request().Header.Get("Authorization"))
 
 	claims, httpError := utils.ExtractTokenClaims(accessToken)
 	if httpError != nil {
-		log.Error("Error extracting claims from refresh token: ", httpError.Message)
+		log.Warn("Error extracting claims from refresh token: ", httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
-	userId, httpError := utils.ConvertFromStringToUuid(claims.Subject, "ID do usuário")
+	parameter, parameterDescription := "sub", "ID do usuário"
+	userId, httpError := utils.ConvertFromStringToUuid(claims.Subject, parameter, parameterDescription)
 	if httpError != nil {
-		log.Error("Error converting user ID: ", httpError.Message)
-		return context.JSON(httpError.Code, httpError)
+		log.Warn("Error converting user ID: ", httpError.Message)
+		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
-	sessionId, httpError := utils.ConvertFromStringToUuid(claims.SessionId, "ID da sessão do usuário")
+	parameter, parameterDescription = "session_id", "ID da sessão do usuário"
+	sessionId, httpError := utils.ConvertFromStringToUuid(claims.SessionId, parameter, parameterDescription)
 	if httpError != nil {
-		log.Errorf("Error converting session ID for user %s: %s", userId, httpError.Message)
-		return context.JSON(httpError.Code, httpError)
+		log.Warn("Error converting session ID for user %s: %s", userId, httpError.Message)
+		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
 	err := instance.service.SignOut(userId, sessionId)
@@ -194,44 +196,46 @@ func (instance Authentication) SignOut(context echo.Context) error {
 // @Description This request is responsible for refreshing the user's access tokens on the platform.
 // @Accept      json
 // @Produce     json
-// @Param       body body request.RefreshTokens true "Request body"
-// @Success 200 {object} response.SwaggerUser      "Successful request"
-// @Failure 400 {object} response.SwaggerHttpError "Badly formatted request"
-// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
-// @Failure 422 {object} response.SwaggerHttpError "Some of the data provided is invalid"
-// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
-// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
+// @Param       requestBody body request.RefreshTokens true "Request body"
+// @Success 200 {object} swagger.User      "Successful request"
+// @Failure 400 {object} swagger.HttpError "Badly formatted request"
+// @Failure 401 {object} swagger.HttpError "Unauthorized access"
+// @Failure 422 {object} swagger.HttpError "Some of the data provided is invalid"
+// @Failure 500 {object} swagger.HttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} swagger.HttpError "Some of the services/resources are temporarily unavailable"
 // @Router /auth/refresh [POST]
 func (instance Authentication) Refresh(context echo.Context) error {
 	var refreshTokensDto request.RefreshTokens
 	err := context.Bind(&refreshTokensDto)
 	if err != nil {
-		log.Error("Error assigning data from refresh tokens request to DTO: ", err.Error())
+		log.Warn("Error assigning data from refresh tokens request to DTO: ", err.Error())
 		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
 	httpError := utils.ValidateRefreshToken(refreshTokensDto.RefreshToken)
 	if httpError != nil {
-		log.Error("Error validating refresh token: ", httpError.Message)
+		log.Warn("Error validating refresh token: ", httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
 	claims, httpError := utils.ExtractTokenClaims(refreshTokensDto.RefreshToken)
 	if httpError != nil {
-		log.Error("Error extracting claims from refresh token: ", httpError.Message)
+		log.Warn("Error extracting claims from refresh token: ", httpError.Message)
 		return context.JSON(httpError.Code, httpError)
 	}
 
-	userId, httpError := utils.ConvertFromStringToUuid(claims.Subject, "ID do usuário")
+	parameter, parameterDescription := "sub", "ID do usuário"
+	userId, httpError := utils.ConvertFromStringToUuid(claims.Subject, parameter, parameterDescription)
 	if httpError != nil {
-		log.Error("Error converting user ID: ", httpError.Message)
-		return context.JSON(httpError.Code, httpError)
+		log.Warn("Error converting user ID: ", httpError.Message)
+		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
-	sessionId, httpError := utils.ConvertFromStringToUuid(claims.SessionId, "ID da sessão do usuário")
+	parameter, parameterDescription = "session_id", "ID da sessão do usuário"
+	sessionId, httpError := utils.ConvertFromStringToUuid(claims.SessionId, parameter, parameterDescription)
 	if httpError != nil {
-		log.Errorf("Error converting session ID for user %s: %s", userId, httpError.Message)
-		return context.JSON(httpError.Code, httpError)
+		log.Warnf("Error converting session ID for user %s: %s", userId, httpError.Message)
+		return context.JSON(http.StatusBadRequest, response.NewBadRequestError())
 	}
 
 	savedUserData, err := instance.service.RefreshTokens(userId, sessionId, refreshTokensDto.RefreshToken)

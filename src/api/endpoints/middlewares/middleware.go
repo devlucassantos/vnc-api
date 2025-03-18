@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"vnc-api/api/config/diconteiner"
+	"vnc-api/api/config/dicontainer"
 	"vnc-api/api/endpoints/dto/response"
 	"vnc-api/api/endpoints/handlers/utils"
 )
@@ -23,7 +23,7 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		log.Error("Error building the enforcer: ", err.Error())
 	}
 
-	authService := diconteiner.GetAuthenticationService()
+	authService := dicontainer.GetAuthenticationService()
 	return func(context echo.Context) error {
 		authHeader := context.Request().Header.Get("Authorization")
 		method := context.Request().Method
@@ -44,7 +44,7 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 					return next(context)
 				}
 
-				log.Errorf("User not authorized to access the resource: [Method: %s; Path: %s; Roles: %s]",
+				log.Warnf("User not authorized to access the resource: [Method: %s; Path: %s; Roles: %s]",
 					method, path, roles)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			} else if !hasAccess {
@@ -52,7 +52,7 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 					continue
 				}
 
-				log.Errorf("User not authorized to access the resource: [Method: %s; Path: %s; Roles: %s]",
+				log.Warnf("User not authorized to access the resource: [Method: %s; Path: %s; Roles: %s]",
 					method, path, roles)
 				return context.JSON(http.StatusForbidden, response.NewForbiddenError())
 			}
@@ -61,20 +61,19 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 			claims, httpError := utils.ExtractTokenClaims(accessToken)
 			if httpError != nil {
-				log.Error("Error extracting claims from access token: " + httpError.Message)
+				log.Warn("Error extracting claims from access token: ", httpError.Message)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 
 			userId, err := uuid.Parse(claims.Subject)
 			if err != nil {
-				log.Error("Error converting user ID from access token: " + err.Error())
+				log.Warn("Error converting user ID from access token: ", err.Error())
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 
 			sessionId, err := uuid.Parse(claims.SessionId)
 			if err != nil {
-				log.Errorf("Error converting session ID of user %s from the access token: %s",
-					userId, err.Error())
+				log.Warnf("Error converting session ID of user %s from the access token: %s", userId, err.Error())
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 
@@ -85,10 +84,10 @@ func GuardMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 					return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 				}
 
-				log.Infof("Error checking if the session of user %s exists", userId)
+				log.Warnf("Error checking if the session of user %s exists", userId)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			} else if !exists {
-				log.Infof("User %s not authorized, the provided session does not exist", userId)
+				log.Warnf("User %s not authorized, the provided session does not exist", userId)
 				return context.JSON(http.StatusUnauthorized, response.NewUnauthorizedError())
 			}
 		}

@@ -53,7 +53,7 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 
 	err = transaction.Select(&roleSlice, queries.Role().Select().ByCodes(len(userRoles)), userRoles...)
 	if err != nil {
-		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Email(),
+		log.Errorf("Error retrieving the roles data for user %s from the database: %s", userData.Email(),
 			err.Error())
 		return nil, err
 	}
@@ -72,8 +72,6 @@ func (instance User) CreateUser(userData user.User) (*user.User, error) {
 		roleDomain, err := role.NewBuilder().
 			Id(roleData.Id).
 			Code(roleData.Code).
-			CreatedAt(roleData.CreatedAt).
-			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
 			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userId, err.Error())
@@ -139,7 +137,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 	var roleSlice []dto.Role
 	err = transaction.Select(&roleSlice, queries.Role().Select().ByCodes(len(userRoles)), userRoles...)
 	if err != nil {
-		log.Errorf("Error fetching the data for the new roles of user %s from the database: %s", userData.Id(),
+		log.Errorf("Error retrieving the data for the new roles of user %s from the database: %s", userData.Id(),
 			err.Error())
 		return nil, err
 	}
@@ -147,7 +145,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 	var userRolesSlice []dto.Role
 	err = transaction.Select(&userRolesSlice, queries.UserRole().Select().ByUserId(), userData.Id())
 	if err != nil {
-		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Id(),
+		log.Errorf("Error retrieving the roles data for user %s from the database: %s", userData.Id(),
 			err.Error())
 		return nil, err
 	}
@@ -205,7 +203,7 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 				return nil, err
 			}
 		} else if err != nil {
-			log.Errorf("Error fetching the number of rows affected by the activation of role %s for user %s "+
+			log.Errorf("Error retrieving the number of rows affected by the activation of role %s for user %s "+
 				"in the database: %s", roleData.Id, userData.Id(), err.Error())
 			return nil, err
 		}
@@ -216,8 +214,6 @@ func (instance User) UpdateUser(userData user.User) (*user.User, error) {
 		roleDomain, err := role.NewBuilder().
 			Id(roleData.Id).
 			Code(roleData.Code).
-			CreatedAt(roleData.CreatedAt).
-			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
 			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userData.Id(), err.Error())
@@ -262,14 +258,14 @@ func (instance User) GetUserById(id uuid.UUID) (*user.User, error) {
 	var userData dto.User
 	err = postgresConnection.Get(&userData, queries.User().Select().ById(), id)
 	if err != nil {
-		log.Errorf("Error fetching data for user %s from the database: %s", id, err.Error())
+		log.Errorf("Error retrieving data for user %s from the database: %s", id, err.Error())
 		return nil, err
 	}
 
 	var roleSlice []dto.Role
 	err = postgresConnection.Select(&roleSlice, queries.UserRole().Select().ByUserId(), userData.Id)
 	if err != nil {
-		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Id, err.Error())
+		log.Errorf("Error retrieving the roles data for user %s from the database: %s", userData.Id, err.Error())
 		return nil, err
 	}
 
@@ -278,8 +274,6 @@ func (instance User) GetUserById(id uuid.UUID) (*user.User, error) {
 		roleDomain, err := role.NewBuilder().
 			Id(roleData.Id).
 			Code(roleData.Code).
-			CreatedAt(roleData.CreatedAt).
-			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
 			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userData.Id, err.Error())
@@ -318,14 +312,14 @@ func (instance User) GetUserByEmail(email string) (*user.User, error) {
 	var userData dto.User
 	err = postgresConnection.Get(&userData, queries.User().Select().ByEmail(), email)
 	if err != nil {
-		log.Errorf("Error fetching data for user %s from the database: %s", email, err.Error())
+		log.Errorf("Error retrieving data for user %s from the database: %s", email, err.Error())
 		return nil, err
 	}
 
 	var roleSlice []dto.Role
 	err = postgresConnection.Select(&roleSlice, queries.UserRole().Select().ByUserId(), userData.Id)
 	if err != nil {
-		log.Errorf("Error fetching the roles data for user %s from the database: %s", userData.Email,
+		log.Errorf("Error retrieving the roles data for user %s from the database: %s", userData.Email,
 			err.Error())
 		return nil, err
 	}
@@ -335,8 +329,6 @@ func (instance User) GetUserByEmail(email string) (*user.User, error) {
 		roleDomain, err := role.NewBuilder().
 			Id(roleData.Id).
 			Code(roleData.Code).
-			CreatedAt(roleData.CreatedAt).
-			UpdatedAt(roleData.UpdatedAt).
 			Build()
 		if err != nil {
 			log.Errorf("Error validating data for role %s for user %s: %s", roleData.Id, userData.Id, err.Error())

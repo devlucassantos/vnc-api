@@ -1,9 +1,9 @@
 package postgres
 
 import (
-	"database/sql"
-	"errors"
+	"fmt"
 	"github.com/devlucassantos/vnc-domains/src/domains/article"
+	"github.com/devlucassantos/vnc-domains/src/domains/articlesituation"
 	"github.com/devlucassantos/vnc-domains/src/domains/articletype"
 	"github.com/devlucassantos/vnc-domains/src/domains/newsletter"
 	"github.com/google/uuid"
@@ -33,39 +33,175 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 	var newsletterArticle dto.Article
 	err = postgresConnection.Get(&newsletterArticle, queries.Newsletter().Select().ByArticleId(), articleId)
 	if err != nil {
-		log.Errorf("Error fetching newsletter data for article %s from the database: %s", articleId, err.Error())
+		log.Errorf("Error retrieving newsletter data of article %s from the database: %s", articleId, err.Error())
 		return nil, err
 	}
 
-	var userArticle dto.UserArticle
-	if userId != uuid.Nil && newsletterArticle.Id != uuid.Nil {
-		numberOfArticles := 1
-		err = postgresConnection.Get(&userArticle, queries.UserArticle().Select().RatingsAndArticlesSavedForLaterViewing(
-			numberOfArticles), userId, newsletterArticle.Id)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			log.Errorf("Error fetching data for article %s that user %s may have rated or saved for later "+
-				"viewing: %s", articleId, userId, err.Error())
+	var newsletterArticles []dto.Article
+	err = postgresConnection.Select(&newsletterArticles, queries.Article().Select().ArticlesByNewsletterId(),
+		newsletterArticle.Newsletter.Id)
+	if err != nil {
+		log.Errorf("Error retrieving data for articles of the newsletter %s from the database: %s",
+			articleId, err.Error())
+		return nil, err
+	}
+
+	userArticles := make(map[uuid.UUID]dto.UserArticle)
+	if userId != uuid.Nil {
+		var articles []interface{}
+		articles = append(articles, newsletterArticle.Id)
+		for _, articleData := range newsletterArticles {
+			articles = append(articles, articleData.Id)
+		}
+		articleFilters := append([]interface{}{}, userId)
+		articleFilters = append(articleFilters, articles...)
+
+		var userArticleData []dto.UserArticle
+		err = postgresConnection.Select(&userArticleData, queries.Article().Select().
+			RatingsAndArticlesSavedForLaterViewing(len(articles)), articleFilters...)
+		if err != nil {
+			log.Errorf("Error retrieving articles that the user %s rated and/or saved for later viewing: %s",
+				userId, err.Error())
 			return nil, err
+		}
+
+		for _, userArticle := range userArticleData {
+			userArticles[userArticle.Article.Id] = userArticle
 		}
 	}
 
-	articleBuilder := article.NewBuilder()
+	var articles []article.Article
+	for _, articleData := range newsletterArticles {
+		articleType, err := articletype.NewBuilder().
+			Id(articleData.ArticleType.Id).
+			Description(articleData.ArticleType.Description).
+			Codes(articleData.ArticleType.Codes).
+			Color(articleData.ArticleType.Color).
+			Build()
+		if err != nil {
+			log.Errorf("Error validating data for article type %s of article %s: %s",
+				articleData.ArticleType.Id, articleData.Id, err.Error())
+			return nil, err
+		}
 
-	if userArticle.Article != nil {
-		articleBuilder.UserRating(userArticle.Rating).ViewLater(userArticle.ViewLater)
+		articleBuilder := article.NewBuilder().
+			Id(articleData.Id).
+			AverageRating(articleData.AverageRating).
+			NumberOfRatings(articleData.NumberOfRatings).
+			Type(*articleType).
+			CreatedAt(articleData.CreatedAt).
+			UpdatedAt(articleData.UpdatedAt)
+
+		if _, exists := userArticles[articleData.Id]; exists {
+			articleBuilder.UserRating(userArticles[articleData.Id].Rating).
+				ViewLater(userArticles[articleData.Id].ViewLater)
+		}
+
+		var articleDomain *article.Article
+		var articleErr error
+		if articleData.Proposition.Id != uuid.Nil {
+			articleSpecificType, err := articletype.NewBuilder().
+				Id(articleData.Proposition.PropositionType.Id).
+				Description(articleData.Proposition.PropositionType.Description).
+				Color(articleData.Proposition.PropositionType.Color).
+				Build()
+			if err != nil {
+				log.Errorf("Error validating data for proposition type %s of proposition %s of article %s: %s",
+					articleData.Proposition.PropositionType.Id, articleData.Proposition.Id, articleData.Id, err.Error())
+				return nil, err
+			}
+
+			if articleData.Proposition.ImageUrl != "" {
+				articleBuilder.MultimediaUrl(articleData.Proposition.ImageUrl).
+					MultimediaDescription(articleData.Proposition.ImageDescription)
+			}
+
+			articleDomain, articleErr = articleBuilder.
+				Title(articleData.Proposition.Title).
+				Content(articleData.Proposition.Content).
+				SpecificType(*articleSpecificType).
+				Build()
+		} else if articleData.Voting.Id != uuid.Nil {
+			articleSituation, err := articlesituation.NewBuilder().
+				IsApproved(articleData.Voting.IsApproved).
+				Build()
+			if err != nil {
+				log.Errorf("Error validating data for article/voting situation of voting %s of article %s: %s",
+					articleData.Voting.Id, articleData.Id, err.Error())
+				return nil, err
+			}
+
+			articleDomain, articleErr = articleBuilder.
+				Title(fmt.Sprint("Votação ", articleData.Voting.Code)).
+				Content(articleData.Voting.Result).
+				Situation(*articleSituation).
+				Build()
+		} else if articleData.Event.Id != uuid.Nil {
+			if articleData.Event.VideoUrl != "" {
+				articleBuilder.MultimediaUrl(articleData.Event.VideoUrl)
+			}
+
+			articleSituation, err := articlesituation.NewBuilder().
+				Id(articleData.Event.EventSituation.Id).
+				Description(articleData.Event.EventSituation.Description).
+				Color(articleData.Event.EventSituation.Color).
+				StartsAt(articleData.Event.StartsAt).
+				EndsAt(articleData.Event.EndsAt).
+				Build()
+			if err != nil {
+				log.Errorf("Error validating data for article/event situation %s of event %s of article %s: %s",
+					articleData.Event.EventSituation.Id, articleData.Event.Id, articleData.Id, err.Error())
+				return nil, err
+			}
+
+			articleSpecificType, err := articletype.NewBuilder().
+				Id(articleData.Event.EventType.Id).
+				Description(articleData.Event.EventType.Description).
+				Color(articleData.Event.EventType.Color).
+				Build()
+			if err != nil {
+				log.Errorf("Error validating data for event type %s of event %s of article %s: %s",
+					articleData.Event.EventType.Id, articleData.Event.Id, articleData.Id, err.Error())
+				return nil, err
+			}
+
+			articleDomain, articleErr = articleBuilder.
+				Title(articleData.Event.Title).
+				Content(articleData.Event.Description).
+				Situation(*articleSituation).
+				SpecificType(*articleSpecificType).
+				Build()
+		} else {
+			articleDomain, articleErr = articleBuilder.
+				Title(fmt.Sprint("Boletim do dia ",
+					articleData.Newsletter.ReferenceDate.Format("02/01/2006"))).
+				Content(articleData.Newsletter.Description).
+				Build()
+		}
+		if articleErr != nil {
+			log.Errorf("Error validating data for article %s: %s", articleData.Id, articleErr.Error())
+			return nil, articleErr
+		}
+
+		articles = append(articles, *articleDomain)
 	}
 
 	articleType, err := articletype.NewBuilder().
 		Id(newsletterArticle.ArticleType.Id).
 		Description(newsletterArticle.ArticleType.Description).
+		Codes(newsletterArticle.ArticleType.Codes).
 		Color(newsletterArticle.ArticleType.Color).
-		SortOrder(newsletterArticle.ArticleType.SortOrder).
-		CreatedAt(newsletterArticle.ArticleType.CreatedAt).
-		UpdatedAt(newsletterArticle.ArticleType.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Error validating data for article type %s: %s", articleId, err.Error())
+		log.Errorf("Error validating data for article type %s of article %s: %s",
+			newsletterArticle.ArticleType.Id, articleId, err.Error())
 		return nil, err
+	}
+
+	articleBuilder := article.NewBuilder()
+
+	if _, exists := userArticles[articleId]; exists {
+		articleBuilder.UserRating(userArticles[articleId].Rating).ViewLater(userArticles[articleId].ViewLater)
 	}
 
 	articleDomain, err := articleBuilder.
@@ -73,12 +209,11 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 		AverageRating(newsletterArticle.AverageRating).
 		NumberOfRatings(newsletterArticle.NumberOfRatings).
 		Type(*articleType).
-		ReferenceDateTime(newsletterArticle.ReferenceDateTime).
 		CreatedAt(newsletterArticle.CreatedAt).
 		UpdatedAt(newsletterArticle.UpdatedAt).
 		Build()
 	if err != nil {
-		log.Errorf("Error validating data for article %s of newsletter %s: %s", newsletterArticle.Id,
+		log.Errorf("Error validating data for article %s of newsletter %s: %s", articleId,
 			newsletterArticle.Newsletter.Id, err.Error())
 		return nil, err
 	}
@@ -86,11 +221,10 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 	newsletterDomain, err := newsletter.NewBuilder().
 		Id(newsletterArticle.Newsletter.Id).
 		ReferenceDate(newsletterArticle.Newsletter.ReferenceDate).
-		Title(newsletterArticle.Newsletter.Title).
+		Title(fmt.Sprint("Boletim do dia ", newsletterArticle.ReferenceDate.Format("02/01/2006"))).
 		Description(newsletterArticle.Newsletter.Description).
 		Article(*articleDomain).
-		CreatedAt(newsletterArticle.Newsletter.CreatedAt).
-		UpdatedAt(newsletterArticle.Newsletter.UpdatedAt).
+		Articles(articles).
 		Build()
 	if err != nil {
 		log.Errorf("Error validating data for newsletter %s of article %s: %s",
@@ -103,7 +237,7 @@ func (instance Newsletter) GetNewsletterByArticleId(articleId uuid.UUID, userId 
 		userIdPointer = &userId
 	}
 
-	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), newsletterArticle.Id, userIdPointer)
+	_, err = postgresConnection.Exec(queries.ArticleView().Insert(), articleId, userIdPointer)
 	if err != nil {
 		log.Errorf("Error registering the view for article %s: %s", articleId, err.Error())
 	}

@@ -30,20 +30,19 @@ func NewUserService(userRepository repositories.User, sessionRepository reposito
 func (instance User) ResendUserAccountActivationEmail(userId uuid.UUID) error {
 	userData, err := instance.userRepository.GetUserById(userId)
 	if err != nil {
-		log.Errorf("Error fetching data for user %s from the database: %s", userId, err.Error())
+		log.Errorf("Error retrieving data for user %s from the database: %s", userId, err.Error())
 		return err
 	}
 
 	if len(userData.Roles()) != 1 || userData.Roles()[0].Code() != role.InactiveUserRoleCode {
 		errorMessage := "active account"
-		log.Errorf("Error resending the account activation email for user %s: %s", userId, errorMessage)
+		log.Warnf("Error resending the account activation email for user %s: %s", userId, errorMessage)
 		return errors.New(errorMessage)
 	}
 
 	userActivationCode, err := utils.GenerateUserActivationCode()
 	if err != nil {
-		log.Errorf("Error generating new account activation email for user %s: %s",
-			userData.Id(), err.Error())
+		log.Errorf("Error generating new account activation email for user %s: %s", userData.Id(), err.Error())
 		return err
 	}
 
@@ -70,20 +69,20 @@ func (instance User) ResendUserAccountActivationEmail(userId uuid.UUID) error {
 func (instance User) ActivateUserAccount(userAccountActivationData user.User) (*user.User, error) {
 	userData, err := instance.userRepository.GetUserById(userAccountActivationData.Id())
 	if err != nil {
-		log.Errorf("Error fetching data for user %s from the database: %s",
+		log.Errorf("Error retrieving data for user %s from the database: %s",
 			userAccountActivationData.Id(), err.Error())
 		return nil, err
 	}
 
 	if len(userData.Roles()) != 1 || userData.Roles()[0].Code() != role.InactiveUserRoleCode {
 		errorMessage := "active account"
-		log.Errorf("Error activating account for user %s: %s", userAccountActivationData.Id(), errorMessage)
+		log.Warnf("Error activating account for user %s: %s", userAccountActivationData.Id(), errorMessage)
 		return nil, errors.New(errorMessage)
 	}
 
 	if userData.ActivationCode() != strings.ToUpper(userAccountActivationData.ActivationCode()) {
 		errorMessage := "invalid activation code"
-		log.Errorf("The activation code provided for the account of user %s is invalid: %s", userData.Id(), errorMessage)
+		log.Warnf("The activation code provided for the account of user %s is invalid: %s", userData.Id(), errorMessage)
 		return nil, errors.New(errorMessage)
 	}
 

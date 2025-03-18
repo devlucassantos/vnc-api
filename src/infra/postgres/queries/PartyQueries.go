@@ -13,8 +13,7 @@ func (partySqlManager) Select() *partySelectSqlManager {
 }
 
 func (partySelectSqlManager) All() string {
-	return `SELECT id AS party_id, name AS party_name, acronym AS party_acronym, image_url AS party_image_url,
-       			created_at AS party_created_at, updated_at AS party_updated_at
+	return `SELECT id AS party_id, name AS party_name, acronym AS party_acronym, image_url AS party_image_url
     		FROM party
     		WHERE party.active = true
 			ORDER BY party.acronym, party.name`

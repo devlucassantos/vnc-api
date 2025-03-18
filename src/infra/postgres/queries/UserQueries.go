@@ -16,7 +16,7 @@ func (userSqlManager) Update() string {
 	return `UPDATE "user"
 			SET first_name = $1, last_name = $2, email = $3, password = $4, activation_code = $5,
                   updated_at = TIMEZONE('America/Sao_Paulo'::TEXT, NOW())
-			WHERE id = $6
+			WHERE active = true AND id = $6
 			RETURNING updated_at`
 }
 

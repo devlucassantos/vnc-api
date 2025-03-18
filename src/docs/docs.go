@@ -44,38 +44,104 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Article specific type ID",
+                        "name": "specificTypeId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Part of the content of the articles, in the title or content",
                         "name": "content",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID of the deputy who drafted the proposition",
-                        "name": "deputyId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the party that drafted the proposition",
-                        "name": "partyId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the external author who drafted the proposition",
-                        "name": "externalAuthorId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Date from which the articles may have been created. Accepted format: YYYY-MM-DD",
+                        "description": "Date from which the articles were created. Accepted format: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Date until which the articles may have been created. Accepted format: YYYY-MM-DD",
+                        "description": "Date until which the articles were created. Accepted format: YYYY-MM-DD",
                         "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the deputy who drafted the proposition",
+                        "name": "propositionDeputyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the party that drafted the proposition",
+                        "name": "propositionPartyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the external author who drafted the proposition",
+                        "name": "propositionExternalAuthorId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date from which the voting results were announced. Accepted format: YYYY-MM-DD",
+                        "name": "votingStartDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date until which the voting results were announced. Accepted format: YYYY-MM-DD",
+                        "name": "votingEndDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Is the voting approved?",
+                        "name": "isVotingApproved",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the legislative body responsible for the voting",
+                        "name": "votingLegislativeBodyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date from which the events occurred. Accepted format: YYYY-MM-DD",
+                        "name": "eventStartDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date until which the events occurred. Accepted format: YYYY-MM-DD",
+                        "name": "eventEndDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the event situation",
+                        "name": "eventSituationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the legislative body responsible for the event",
+                        "name": "eventLegislativeBodyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the rapporteur (deputy) for one or more items on the event agenda",
+                        "name": "eventRapporteurId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Remove events in the future?",
+                        "name": "removeEventsInTheFuture",
                         "in": "query"
                     },
                     {
@@ -95,37 +161,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerArticlePagination"
+                            "$ref": "#/definitions/swagger.ArticlePagination"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -156,38 +222,104 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Article specific type ID",
+                        "name": "specificTypeId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Part of the content of the articles, in the title or content",
                         "name": "content",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID of the deputy who drafted the proposition",
-                        "name": "deputyId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the party that drafted the proposition",
-                        "name": "partyId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the external author who drafted the proposition",
-                        "name": "externalAuthorId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Date from which the articles may have been created. Accepted format: YYYY-MM-DD",
+                        "description": "Date from which the articles were created. Accepted format: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Date until which the articles may have been created. Accepted format: YYYY-MM-DD",
+                        "description": "Date until which the articles were created. Accepted format: YYYY-MM-DD",
                         "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the deputy who drafted the proposition",
+                        "name": "propositionDeputyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the party that drafted the proposition",
+                        "name": "propositionPartyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the external author who drafted the proposition",
+                        "name": "propositionExternalAuthorId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date from which the voting results were announced. Accepted format: YYYY-MM-DD",
+                        "name": "votingStartDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date until which the voting results were announced. Accepted format: YYYY-MM-DD",
+                        "name": "votingEndDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Is the voting approved?",
+                        "name": "isVotingApproved",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the legislative body responsible for the voting",
+                        "name": "votingLegislativeBodyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date from which the events occurred. Accepted format: YYYY-MM-DD",
+                        "name": "eventStartDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date until which the events occurred. Accepted format: YYYY-MM-DD",
+                        "name": "eventEndDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the event situation",
+                        "name": "eventSituationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the legislative body responsible for the event",
+                        "name": "eventLegislativeBodyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the rapporteur (deputy) for one or more items on the event agenda",
+                        "name": "eventRapporteurId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Remove events in the future?",
+                        "name": "removeEventsInTheFuture",
                         "in": "query"
                     },
                     {
@@ -207,37 +339,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerArticlePagination"
+                            "$ref": "#/definitions/swagger.ArticlePagination"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -250,7 +382,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "This request is responsible for listing the trending articles by article types.",
+                "description": "This request is responsible for listing the trending articles by article types or specific types.",
                 "produces": [
                     "application/json"
                 ],
@@ -258,12 +390,18 @@ const docTemplate = `{
                     "Articles"
                 ],
                 "summary": "List trending articles by article types",
-                "operationId": "GetTrendingArticlesByTypeId",
+                "operationId": "GetTrendingArticlesByType",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "List of IDs of the types of articles that should be returned (separated by commas). By default, it returns all types",
                         "name": "articleTypeIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "List of IDs of the specific types of articles that should be returned (separated by commas). By default, it returns all specific types",
+                        "name": "articleSpecificTypeIds",
                         "in": "query"
                     },
                     {
@@ -277,31 +415,31 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerArticleTypeWithArticles"
+                            "$ref": "#/definitions/swagger.ArticleTypeWithSpecificTypes"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -332,38 +470,104 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Article specific type ID",
+                        "name": "specificTypeId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Part of the content of the articles, in the title or content",
                         "name": "content",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ID of the deputy who drafted the proposition",
-                        "name": "deputyId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the party that drafted the proposition",
-                        "name": "partyId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the external author who drafted the proposition",
-                        "name": "externalAuthorId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Date from which the articles may have been created. Accepted format: YYYY-MM-DD",
+                        "description": "Date from which the articles were created. Accepted format: YYYY-MM-DD",
                         "name": "startDate",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Date until which the articles may have been created. Accepted format: YYYY-MM-DD",
+                        "description": "Date until which the articles were created. Accepted format: YYYY-MM-DD",
                         "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the deputy who drafted the proposition",
+                        "name": "propositionDeputyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the party that drafted the proposition",
+                        "name": "propositionPartyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the external author who drafted the proposition",
+                        "name": "propositionExternalAuthorId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date from which the voting results were announced. Accepted format: YYYY-MM-DD",
+                        "name": "votingStartDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date until which the voting results were announced. Accepted format: YYYY-MM-DD",
+                        "name": "votingEndDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Is the voting approved?",
+                        "name": "isVotingApproved",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the legislative body responsible for the voting",
+                        "name": "votingLegislativeBodyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date from which the events occurred. Accepted format: YYYY-MM-DD",
+                        "name": "eventStartDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date until which the events occurred. Accepted format: YYYY-MM-DD",
+                        "name": "eventEndDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the event situation",
+                        "name": "eventSituationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the legislative body responsible for the event",
+                        "name": "eventLegislativeBodyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the rapporteur (deputy) for one or more items on the event agenda",
+                        "name": "eventRapporteurId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Remove events in the future?",
+                        "name": "removeEventsInTheFuture",
                         "in": "query"
                     },
                     {
@@ -383,37 +587,108 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerArticlePagination"
+                            "$ref": "#/definitions/swagger.ArticlePagination"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{articleId}/event": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This request is responsible for looking up the details of an article of an event by the article ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get article details by ID (Only for event articles)",
+                "operationId": "GetEventArticleById",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Article ID",
+                        "name": "articleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful request",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.EventArticle"
+                        }
+                    },
+                    "400": {
+                        "description": "Badly formatted request",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized access",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested resource not found",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Some of the data provided is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred while processing the request",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Some of the services/resources are temporarily unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -448,43 +723,43 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerNewsletterArticle"
+                            "$ref": "#/definitions/swagger.NewsletterArticle"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "404": {
                         "description": "Requested resource not found",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -519,43 +794,43 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerPropositionArticle"
+                            "$ref": "#/definitions/swagger.PropositionArticle"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "404": {
                         "description": "Requested resource not found",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -590,7 +865,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Request body",
-                        "name": "body",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -605,43 +880,43 @@ const docTemplate = `{
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "403": {
                         "description": "Access denied",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "404": {
                         "description": "Requested resource not found",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -676,7 +951,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Request body",
-                        "name": "body",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -691,43 +966,114 @@ const docTemplate = `{
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "403": {
                         "description": "Access denied",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "404": {
                         "description": "Requested resource not found",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{articleId}/voting": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This request is responsible for looking up the details of an article of a voting by the article ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get article details by ID (Only for voting articles)",
+                "operationId": "GetVotingArticleById",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Article ID",
+                        "name": "articleId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful request",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.VotingArticle"
+                        }
+                    },
+                    "400": {
+                        "description": "Badly formatted request",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized access",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested resource not found",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "422": {
+                        "description": "Some of the data provided is invalid",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "500": {
+                        "description": "An unexpected error occurred while processing the request",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
+                        }
+                    },
+                    "503": {
+                        "description": "Some of the services/resources are temporarily unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -750,7 +1096,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Request body",
-                        "name": "body",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -762,37 +1108,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerUser"
+                            "$ref": "#/definitions/swagger.User"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -815,7 +1161,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Request body",
-                        "name": "body",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -827,37 +1173,37 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerUser"
+                            "$ref": "#/definitions/swagger.User"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -886,31 +1232,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "403": {
                         "description": "Access denied",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -933,7 +1279,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Request body",
-                        "name": "body",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -945,43 +1291,43 @@ const docTemplate = `{
                     "201": {
                         "description": "Successful request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerUser"
+                            "$ref": "#/definitions/swagger.User"
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "409": {
                         "description": "Some of the data provided is conflicting",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "422": {
                         "description": "Some of the data provided is invalid",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -1004,26 +1350,26 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/response.SwaggerResources"
+                                "$ref": "#/definitions/swagger.Resources"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -1051,7 +1397,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Request body",
-                        "name": "body",
+                        "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1065,44 +1411,44 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/response.SwaggerUser"
+                                "$ref": "#/definitions/swagger.User"
                             }
                         }
                     },
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "403": {
                         "description": "Access denied",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "409": {
                         "description": "Some of the data provided is conflicting",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -1131,37 +1477,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Badly formatted request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "401": {
                         "description": "Unauthorized access",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "403": {
                         "description": "Access denied",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "409": {
                         "description": "Some of the data provided is conflicting",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "500": {
                         "description": "An unexpected error occurred while processing the request",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     },
                     "503": {
                         "description": "Some of the services/resources are temporarily unavailable",
                         "schema": {
-                            "$ref": "#/definitions/response.SwaggerHttpError"
+                            "$ref": "#/definitions/swagger.HttpError"
                         }
                     }
                 }
@@ -1239,7 +1585,20 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerArticle": {
+        "swagger.AgendaItemRegime": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Matéria Sobre a Mesa"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "667084f2-eddb-495b-b50f-8f60a2949a92"
+                }
+            }
+        },
+        "swagger.Article": {
             "type": "object",
             "properties": {
                 "average_rating": {
@@ -1252,13 +1611,17 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2024-01-05T20:25:19Z"
+                    "example": "2024-01-05T20:25:19.98031Z"
                 },
                 "id": {
                     "type": "string",
                     "example": "b27947d6-3224-4479-8da4-7917ae16b34d"
                 },
-                "image_url": {
+                "multimedia_description": {
+                    "type": "string",
+                    "example": "A imagem retrata uma pequena cidade costeira afetada por uma forte chuva..."
+                },
+                "multimedia_url": {
                     "type": "string",
                     "example": "https://image.url.com/article/b27947d6-3224-4479-8da4-7917ae16b34d/image.png"
                 },
@@ -1266,20 +1629,19 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 452
                 },
-                "reference_date_time": {
-                    "type": "string",
-                    "example": "2024-01-05T20:25:19Z"
+                "situation": {
+                    "$ref": "#/definitions/swagger.ArticleSituation"
                 },
                 "title": {
                     "type": "string",
                     "example": "Novo projeto de lei impulsiona crescimento do setor portuário até 2028"
                 },
                 "type": {
-                    "$ref": "#/definitions/response.SwaggerArticleType"
+                    "$ref": "#/definitions/swagger.ArticleTypeWithSpecificType"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2024-01-05T20:25:19Z"
+                    "example": "2024-01-05T20:25:19.98031Z"
                 },
                 "user_rating": {
                     "type": "integer",
@@ -1291,13 +1653,13 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerArticlePagination": {
+        "swagger.ArticlePagination": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerArticle"
+                        "$ref": "#/definitions/swagger.Article"
                     }
                 },
                 "items_per_page": {
@@ -1314,16 +1676,41 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerArticleType": {
+        "swagger.ArticleSituation": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#D2D2D2"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Em Andamento"
+                },
+                "ends_at": {
+                    "type": "string",
+                    "example": "2023-02-15T17:00:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "16f6b271-fc96-4143-972c-0a2ac149dc55"
+                },
+                "is_approved": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "starts_at": {
+                    "type": "string",
+                    "example": "2023-02-12T10:00:00Z"
+                }
+            }
+        },
+        "swagger.ArticleSpecificType": {
             "type": "object",
             "properties": {
                 "color": {
                     "type": "string",
                     "example": "#C4170C"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
                 },
                 "description": {
                     "type": "string",
@@ -1331,127 +1718,337 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string",
-                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
-                },
-                "sort_order": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
+                    "example": "111c1a6d-d061-40b2-ad39-ec714f05c81c"
                 }
             }
         },
-        "response.SwaggerArticleTypeWithArticles": {
+        "swagger.ArticleType": {
+            "type": "object",
+            "properties": {
+                "codes": {
+                    "type": "string",
+                    "example": "proposition"
+                },
+                "color": {
+                    "type": "string",
+                    "example": "#06D13C"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Proposições"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
+                }
+            }
+        },
+        "swagger.ArticleTypeWithArticles": {
             "type": "object",
             "properties": {
                 "articles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerArticle"
+                        "$ref": "#/definitions/swagger.Article"
                     }
                 },
                 "color": {
                     "type": "string",
                     "example": "#C4170C"
                 },
-                "created_at": {
-                    "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
-                },
                 "description": {
                     "type": "string",
                     "example": "Projeto de Lei"
                 },
                 "id": {
                     "type": "string",
+                    "example": "111c1a6d-d061-40b2-ad39-ec714f05c81c"
+                }
+            }
+        },
+        "swagger.ArticleTypeWithSpecificType": {
+            "type": "object",
+            "properties": {
+                "codes": {
+                    "type": "string",
+                    "example": "proposition"
+                },
+                "color": {
+                    "type": "string",
+                    "example": "#06D13C"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Proposições"
+                },
+                "id": {
+                    "type": "string",
                     "example": "560206f4-7360-4e21-8e45-33026f7e0953"
                 },
-                "sort_order": {
+                "specific_type": {
+                    "$ref": "#/definitions/swagger.ArticleSpecificType"
+                }
+            }
+        },
+        "swagger.ArticleTypeWithSpecificTypes": {
+            "type": "object",
+            "properties": {
+                "codes": {
+                    "type": "string",
+                    "example": "proposition"
+                },
+                "color": {
+                    "type": "string",
+                    "example": "#06D13C"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Proposições"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "560206f4-7360-4e21-8e45-33026f7e0953"
+                },
+                "specific_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.ArticleTypeWithArticles"
+                    }
+                }
+            }
+        },
+        "swagger.Deputy": {
+            "type": "object",
+            "properties": {
+                "electoral_name": {
+                    "type": "string",
+                    "example": "José do Povo"
+                },
+                "federated_unit": {
+                    "type": "string",
+                    "example": "AL"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "a4b04454-f426-44d2-843e-1331510b19ad"
+                },
+                "image_description": {
+                    "type": "string",
+                    "example": "Foto do(a) deputado(a) federal José do Povo (PVNC-AL)"
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://www.camara.leg.br/internet/deputado/bandep/87624.jpg"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "José da Silva Santos"
+                },
+                "party": {
+                    "$ref": "#/definitions/swagger.Party"
+                },
+                "previous_federated_unit": {
+                    "type": "string",
+                    "example": "SP"
+                },
+                "previous_party": {
+                    "$ref": "#/definitions/swagger.Party"
+                }
+            }
+        },
+        "swagger.DeputyResource": {
+            "type": "object",
+            "properties": {
+                "electoral_name": {
+                    "type": "string",
+                    "example": "José do Povo"
+                },
+                "federated_unit": {
+                    "type": "string",
+                    "example": "AL"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "a4b04454-f426-44d2-843e-1331510b19ad"
+                },
+                "image_description": {
+                    "type": "string",
+                    "example": "Foto do(a) deputado(a) federal José do Povo (PVNC-AL)"
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://www.camara.leg.br/internet/deputado/bandep/87624.jpg"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "José da Silva Santos"
+                },
+                "party": {
+                    "$ref": "#/definitions/swagger.Party"
+                }
+            }
+        },
+        "swagger.EventAgendaItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "a1b5ae2e-b3e7-443d-b87d-dca789224578"
+                },
+                "proposition": {
+                    "$ref": "#/definitions/swagger.Article"
+                },
+                "rapporteur": {
+                    "$ref": "#/definitions/swagger.Deputy"
+                },
+                "regime": {
+                    "$ref": "#/definitions/swagger.AgendaItemRegime"
+                },
+                "related_proposition": {
+                    "$ref": "#/definitions/swagger.Article"
+                },
+                "situation": {
+                    "type": "string",
+                    "example": "Discussão em turno único. Encerrada a discussão..."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "PL 132/4567"
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "Discussão"
+                },
+                "voting": {
+                    "$ref": "#/definitions/swagger.Article"
+                }
+            }
+        },
+        "swagger.EventArticle": {
+            "type": "object",
+            "properties": {
+                "agenda_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.EventAgendaItem"
+                    }
+                },
+                "average_rating": {
+                    "type": "number",
+                    "example": 2.5
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-08-22T10:39:14.465814Z"
+                },
+                "description_content": {
+                    "type": "string",
+                    "example": "Discussão e votação de propostas legislativas..."
+                },
+                "ends_at": {
+                    "type": "string",
+                    "example": "2023-08-24T18:00:00Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "e36492f7-5305-4333-9aea-05dcf3689693"
+                },
+                "is_internal": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "legislative_bodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.LegislativeBody"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "example": "Plenário da Câmara dos Deputados"
+                },
+                "newsletter": {
+                    "$ref": "#/definitions/swagger.Article"
+                },
+                "number_of_ratings": {
                     "type": "integer",
-                    "example": 1
+                    "example": 2
+                },
+                "requirements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
+                    }
+                },
+                "situation": {
+                    "$ref": "#/definitions/swagger.EventSituation"
+                },
+                "starts_at": {
+                    "type": "string",
+                    "example": "2023-08-24T13:00:00Z"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "TCU Pede Ação Urgente contra Dívida Pública..."
+                },
+                "type": {
+                    "$ref": "#/definitions/swagger.ArticleTypeWithSpecificType"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2020-08-14T12:22:00Z"
+                    "example": "2023-08-22T10:39:14.465814Z"
+                },
+                "user_rating": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "video_url": {
+                    "type": "string",
+                    "example": "https://video.url.com/article/e36492f7-5305-4333-9aea-05dcf3689693/video.mp4"
+                },
+                "view_later": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },
-        "response.SwaggerDeputy": {
+        "swagger.EventSituation": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "color": {
                     "type": "string",
-                    "example": "2022-08-07T15:55:00Z"
+                    "example": "#0047AB"
                 },
-                "electoral_name": {
+                "description": {
                     "type": "string",
-                    "example": "José do Povo"
+                    "example": "Encerrado"
                 },
                 "id": {
                     "type": "string",
-                    "example": "a4b04454-f426-44d2-843e-1331510b19ad"
-                },
-                "image_url": {
-                    "type": "string",
-                    "example": "https://www.camara.leg.br/internet/deputado/bandep/87624.jpg"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "José da Silva Santos"
-                },
-                "party": {
-                    "$ref": "#/definitions/response.SwaggerParty"
-                },
-                "party_in_the_proposal": {
-                    "$ref": "#/definitions/response.SwaggerParty"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2022-08-07T15:55:00Z"
+                    "example": "0f7f6406-bbce-4a26-aa02-c1694bda5e72"
                 }
             }
         },
-        "response.SwaggerDeputyResource": {
+        "swagger.EventType": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "color": {
                     "type": "string",
-                    "example": "2022-08-07T15:55:00Z"
+                    "example": "#006767"
                 },
-                "electoral_name": {
+                "description": {
                     "type": "string",
-                    "example": "José do Povo"
+                    "example": "Reunião Deliberativa"
                 },
                 "id": {
                     "type": "string",
-                    "example": "a4b04454-f426-44d2-843e-1331510b19ad"
-                },
-                "image_url": {
-                    "type": "string",
-                    "example": "https://www.camara.leg.br/internet/deputado/bandep/87624.jpg"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "José da Silva Santos"
-                },
-                "party": {
-                    "$ref": "#/definitions/response.SwaggerParty"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2022-08-07T15:55:00Z"
+                    "example": "2371ffd1-67d0-40b2-b6ee-dde3948cbb80"
                 }
             }
         },
-        "response.SwaggerExternalAuthor": {
+        "swagger.ExternalAuthor": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2020-12-13T18:37:00Z"
-                },
                 "id": {
                     "type": "string",
                     "example": "9d543e6f-20e3-4895-83e4-26b6a976580e"
@@ -1461,16 +2058,24 @@ const docTemplate = `{
                     "example": "Organização Você na Câmara"
                 },
                 "type": {
-                    "type": "string",
-                    "example": "Org da Câmara"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2020-12-13T18:37:00Z"
+                    "$ref": "#/definitions/swagger.ExternalAuthorType"
                 }
             }
         },
-        "response.SwaggerHttpError": {
+        "swagger.ExternalAuthorType": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Órgão Do Poder Legislativo"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "344b3941-69fb-4715-a7e5-6afc21cd3e48"
+                }
+            }
+        },
+        "swagger.HttpError": {
             "type": "object",
             "properties": {
                 "message": {
@@ -1479,7 +2084,40 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SwaggerNewsletterArticle": {
+        "swagger.LegislativeBody": {
+            "type": "object",
+            "properties": {
+                "acronym": {
+                    "type": "string",
+                    "example": "2009"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "31991060-fa3d-4647-aea5-b17b41de6a36"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Comissão de Educação"
+                },
+                "type": {
+                    "$ref": "#/definitions/swagger.LegislativeBodyType"
+                }
+            }
+        },
+        "swagger.LegislativeBodyType": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Comissão Mista Permanente"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "3440489a-d787-447f-80dd-51c0c577f07f"
+                }
+            }
+        },
+        "swagger.NewsletterArticle": {
             "type": "object",
             "properties": {
                 "average_rating": {
@@ -1492,7 +2130,13 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2023-12-24T19:15:22Z"
+                    "example": "2023-12-24T19:15:22.90905Z"
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
+                    }
                 },
                 "id": {
                     "type": "string",
@@ -1502,30 +2146,26 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 743
                 },
-                "proposition_articles": {
+                "propositions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerArticle"
+                        "$ref": "#/definitions/swagger.Article"
                     }
                 },
                 "reference_date": {
                     "type": "string",
-                    "example": "2023-12-23T16:34:14Z"
-                },
-                "reference_date_time": {
-                    "type": "string",
-                    "example": "2023-12-24T19:15:22Z"
+                    "example": "2023-12-23T16:34:14.441877Z"
                 },
                 "title": {
                     "type": "string",
                     "example": "Boletim do dia 26/02/2024"
                 },
                 "type": {
-                    "$ref": "#/definitions/response.SwaggerArticleType"
+                    "$ref": "#/definitions/swagger.ArticleType"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2023-12-24T19:15:22Z"
+                    "example": "2023-12-24T19:15:22.90905Z"
                 },
                 "user_rating": {
                     "type": "integer",
@@ -1534,23 +2174,29 @@ const docTemplate = `{
                 "view_later": {
                     "type": "boolean",
                     "example": true
+                },
+                "votes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
+                    }
                 }
             }
         },
-        "response.SwaggerParty": {
+        "swagger.Party": {
             "type": "object",
             "properties": {
                 "acronym": {
                     "type": "string",
                     "example": "PVNC"
                 },
-                "created_at": {
-                    "type": "string",
-                    "example": "2021-05-19T18:10:00Z"
-                },
                 "id": {
                     "type": "string",
                     "example": "9bb4028f-6fa8-493a-9fe8-e3bbd341c794"
+                },
+                "image_description": {
+                    "type": "string",
+                    "example": "Logo do Partido Você na Câmara (PVNC)"
                 },
                 "image_url": {
                     "type": "string",
@@ -1559,14 +2205,10 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Partido Você na Câmara"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2021-05-19T18:10:00Z"
                 }
             }
         },
-        "response.SwaggerPropositionArticle": {
+        "swagger.PropositionArticle": {
             "type": "object",
             "properties": {
                 "average_rating": {
@@ -1579,41 +2221,52 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2023-08-09T14:55:00Z"
+                    "example": "2023-08-09T14:55:00.465814Z"
                 },
                 "deputies": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerDeputy"
+                        "$ref": "#/definitions/swagger.Deputy"
+                    }
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
                     }
                 },
                 "external_authors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerExternalAuthor"
+                        "$ref": "#/definitions/swagger.ExternalAuthor"
                     }
                 },
                 "id": {
                     "type": "string",
                     "example": "9dc67bd9-674f-4e4d-9536-07485335c362"
                 },
+                "image_description": {
+                    "type": "string",
+                    "example": "A imagem retrata uma pequena cidade costeira afetada por uma forte chuva..."
+                },
                 "image_url": {
                     "type": "string",
                     "example": "https://www.vnc.com.br/news/proposition/image/87624.jpg"
                 },
-                "newsletter_article": {
-                    "$ref": "#/definitions/response.SwaggerArticle"
+                "newsletter": {
+                    "$ref": "#/definitions/swagger.Article"
                 },
                 "number_of_ratings": {
                     "type": "integer",
                     "example": 249
                 },
-                "original_text_url": {
+                "original_text_mime_type": {
                     "type": "string",
                     "example": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"
                 },
-                "reference_date_time": {
-                    "type": "string"
+                "original_text_url": {
+                    "type": "string",
+                    "example": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485"
                 },
                 "submitted_at": {
                     "type": "string",
@@ -1624,11 +2277,11 @@ const docTemplate = `{
                     "example": "Requerimento de Votação Nominal-Destaque de Emenda"
                 },
                 "type": {
-                    "$ref": "#/definitions/response.SwaggerArticleType"
+                    "$ref": "#/definitions/swagger.ArticleTypeWithSpecificType"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2023-08-09T14:55:00Z"
+                    "example": "2023-08-09T14:55:00.465814Z"
                 },
                 "user_rating": {
                     "type": "integer",
@@ -1637,39 +2290,86 @@ const docTemplate = `{
                 "view_later": {
                     "type": "boolean",
                     "example": true
+                },
+                "votes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
+                    }
                 }
             }
         },
-        "response.SwaggerResources": {
+        "swagger.PropositionType": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "#C4170C"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Projeto de Lei"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "111c1a6d-d061-40b2-ad39-ec714f05c81c"
+                }
+            }
+        },
+        "swagger.Resources": {
             "type": "object",
             "properties": {
                 "article_types": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerArticleType"
+                        "$ref": "#/definitions/swagger.ArticleType"
                     }
                 },
                 "deputies": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerDeputyResource"
+                        "$ref": "#/definitions/swagger.DeputyResource"
+                    }
+                },
+                "event_situations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.EventSituation"
+                    }
+                },
+                "event_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.EventType"
                     }
                 },
                 "external_authors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerExternalAuthor"
+                        "$ref": "#/definitions/swagger.ExternalAuthor"
+                    }
+                },
+                "legislative_bodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.LegislativeBody"
                     }
                 },
                 "parties": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SwaggerParty"
+                        "$ref": "#/definitions/swagger.Party"
+                    }
+                },
+                "proposition_types": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.PropositionType"
                     }
                 }
             }
         },
-        "response.SwaggerUser": {
+        "swagger.User": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -1678,7 +2378,7 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2022-09-23T18:20:00Z"
+                    "example": "2024-01-06T14:52:23.723959Z"
                 },
                 "email": {
                     "type": "string",
@@ -1711,7 +2411,86 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2022-09-23T18:20:00Z"
+                    "example": "2024-01-06T16:02:29.854799Z"
+                }
+            }
+        },
+        "swagger.VotingArticle": {
+            "type": "object",
+            "properties": {
+                "affected_propositions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
+                    }
+                },
+                "average_rating": {
+                    "type": "number",
+                    "example": 3.5
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-05-18T23:19:00.465814Z"
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
+                    }
+                },
+                "id": {
+                    "type": "string",
+                    "example": "d369b9bc-c226-4bbf-8fbb-fceed205845a"
+                },
+                "is_approved": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "legislative_body": {
+                    "$ref": "#/definitions/swagger.LegislativeBody"
+                },
+                "main_proposition": {
+                    "$ref": "#/definitions/swagger.Article"
+                },
+                "newsletter": {
+                    "$ref": "#/definitions/swagger.Article"
+                },
+                "number_of_ratings": {
+                    "type": "integer",
+                    "example": 254
+                },
+                "related_propositions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swagger.Article"
+                    }
+                },
+                "result_announced_at": {
+                    "type": "string",
+                    "example": "2023-05-18T20:17:32Z"
+                },
+                "result_content": {
+                    "type": "string",
+                    "example": "Aprovado o Substitutivo ao Projeto de Lei nº 1..."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Votação 3457539-42"
+                },
+                "type": {
+                    "$ref": "#/definitions/swagger.ArticleType"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-05-18T23:19:00.465814Z"
+                },
+                "user_rating": {
+                    "type": "integer",
+                    "example": 4
+                },
+                "view_later": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         }
@@ -1732,7 +2511,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Você na Câmara API",
-	Description:      "Set of routes responsible for managing data manipulation in Você na Câmara applications.",
+	Description:      "Set of endpoints that make up the backend of the Você na Câmara platform, structured to enable communication between the services and the execution of the system's functionalities.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

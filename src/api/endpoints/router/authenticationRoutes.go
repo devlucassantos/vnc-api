@@ -2,11 +2,11 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
-	"vnc-api/api/config/diconteiner"
+	"vnc-api/api/config/dicontainer"
 )
 
 func loadAuthenticationRoutes(group *echo.Group) {
-	authenticationHandler := diconteiner.GetAuthenticationHandler()
+	authenticationHandler := dicontainer.GetAuthenticationHandler()
 
 	group = group.Group("/auth")
 

@@ -3,7 +3,6 @@ package response
 import (
 	"github.com/devlucassantos/vnc-domains/src/domains/deputy"
 	"github.com/google/uuid"
-	"time"
 )
 
 type Deputy struct {
@@ -11,26 +10,32 @@ type Deputy struct {
 	Name                  string    `json:"name"`
 	ElectoralName         string    `json:"electoral_name"`
 	ImageUrl              string    `json:"image_url"`
-	CreatedAt             time.Time `json:"created_at"`
-	UpdatedAt             time.Time `json:"updated_at"`
+	ImageDescription      string    `json:"image_description"`
 	Party                 *Party    `json:"party"`
-	PartyInTheProposition *Party    `json:"party_in_the_proposal,omitempty"`
+	FederatedUnit         string    `json:"federated_unit"`
+	PreviousParty         *Party    `json:"previous_party,omitempty"`
+	PreviousFederatedUnit string    `json:"previous_federated_unit,omitempty"`
 }
 
 func NewDeputy(deputy deputy.Deputy) *Deputy {
-	deputyData := &Deputy{
-		Id:            deputy.Id(),
-		Name:          deputy.Name(),
-		ElectoralName: deputy.ElectoralName(),
-		ImageUrl:      deputy.ImageUrl(),
-		CreatedAt:     deputy.CreatedAt(),
-		UpdatedAt:     deputy.CreatedAt(),
-		Party:         NewParty(deputy.Party()),
+	var previousParty *Party
+	var previousFederatedUnit string
+	deputyPreviousParty := deputy.PreviousParty()
+	if !deputyPreviousParty.IsZero() {
+		previousParty = NewParty(deputyPreviousParty)
+		previousFederatedUnit = deputy.PreviousFederatedUnit()
 	}
 
-	deputyPartyInTheProposition := deputy.PartyInTheProposition()
-	if deputyPartyInTheProposition.Id() != uuid.Nil {
-		deputyData.PartyInTheProposition = NewParty(deputyPartyInTheProposition)
+	deputyData := &Deputy{
+		Id:                    deputy.Id(),
+		Name:                  deputy.Name(),
+		ElectoralName:         deputy.ElectoralName(),
+		ImageUrl:              deputy.ImageUrl(),
+		ImageDescription:      deputy.ImageDescription(),
+		Party:                 NewParty(deputy.Party()),
+		FederatedUnit:         deputy.FederatedUnit(),
+		PreviousParty:         previousParty,
+		PreviousFederatedUnit: previousFederatedUnit,
 	}
 
 	return deputyData

@@ -17,32 +17,29 @@ func NewArticleService(repository repositories.Article) *Article {
 	}
 }
 
-func (instance Article) GetArticles(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error) {
+func (instance Article) GetArticles(filter filters.Article, userId uuid.UUID) ([]article.Article, int, error) {
 	return instance.repository.GetArticles(filter, userId)
 }
 
-func (instance Article) GetTrendingArticles(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error) {
+func (instance Article) GetTrendingArticles(filter filters.Article, userId uuid.UUID) ([]article.Article, int, error) {
 	return instance.repository.GetTrendingArticles(filter, userId)
 }
 
-func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, itemsPerType int,
-	userId uuid.UUID) ([]article.Article, error) {
+func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, itemsPerType int, userId uuid.UUID) (
+	[]article.Article, error) {
 	return instance.repository.GetTrendingArticlesByTypeId(articleTypeId, itemsPerType, userId)
 }
 
-func (instance Article) GetArticlesToViewLater(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error) {
+func (instance Article) GetTrendingArticlesBySpecificTypeId(articleSpecificTypeId uuid.UUID, itemsPerType int,
+	userId uuid.UUID) ([]article.Article, error) {
+	return instance.repository.GetTrendingArticlesBySpecificTypeId(articleSpecificTypeId, itemsPerType, userId)
+}
+
+func (instance Article) GetArticlesToViewLater(filter filters.Article, userId uuid.UUID) ([]article.Article, int, error) {
 	return instance.repository.GetArticlesToViewLater(filter, userId)
 }
 
-func (instance Article) GetPropositionArticlesByNewsletterId(newsletterId uuid.UUID, userId uuid.UUID) ([]article.Article, error) {
-	return instance.repository.GetPropositionArticlesByNewsletterId(newsletterId, userId)
-}
-
-func (instance Article) GetNewsletterArticleByPropositionId(propositionId uuid.UUID, userId uuid.UUID) (*article.Article, error) {
-	return instance.repository.GetNewsletterArticleByPropositionId(propositionId, userId)
-}
-
-func (instance Article) SaveArticleRating(userId uuid.UUID, articleId uuid.UUID, rating int) error {
+func (instance Article) SaveArticleRating(userId uuid.UUID, articleId uuid.UUID, rating *int) error {
 	return instance.repository.SaveArticleRating(userId, articleId, rating)
 }
 

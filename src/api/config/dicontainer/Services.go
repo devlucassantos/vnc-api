@@ -1,4 +1,4 @@
-package diconteiner
+package dicontainer
 
 import (
 	interfaces "vnc-api/core/interfaces/services"
@@ -23,6 +23,14 @@ func GetArticleService() interfaces.Article {
 
 func GetPropositionService() interfaces.Proposition {
 	return services.NewPropositionService(GetPropositionPostgresRepository())
+}
+
+func GetVotingService() interfaces.Voting {
+	return services.NewVotingService(GetVotingPostgresRepository())
+}
+
+func GetEventService() interfaces.Event {
+	return services.NewEventService(GetEventPostgresRepository())
 }
 
 func GetNewsletterService() interfaces.Newsletter {

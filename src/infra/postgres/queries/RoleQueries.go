@@ -23,8 +23,7 @@ func (roleSelectSqlManager) ByCodes(numberOfRoles int) string {
 		parameters = append(parameters, fmt.Sprintf("$%d", i))
 	}
 
-	return fmt.Sprintf(`SELECT id AS role_id, code AS role_code, created_at AS role_created_at,
-       			updated_at AS role_updated_at
+	return fmt.Sprintf(`SELECT id AS role_id, code AS role_code
 			FROM role
 			WHERE role.active = true AND role.code IN (%s)`, strings.Join(parameters, ","))
 }

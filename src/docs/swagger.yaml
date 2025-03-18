@@ -48,7 +48,16 @@ definitions:
         example: true
         type: boolean
     type: object
-  response.SwaggerArticle:
+  swagger.AgendaItemRegime:
+    properties:
+      description:
+        example: Matéria Sobre a Mesa
+        type: string
+      id:
+        example: 667084f2-eddb-495b-b50f-8f60a2949a92
+        type: string
+    type: object
+  swagger.Article:
     properties:
       average_rating:
         example: 3.5
@@ -58,28 +67,31 @@ definitions:
           o Regime Tributário...
         type: string
       created_at:
-        example: "2024-01-05T20:25:19Z"
+        example: "2024-01-05T20:25:19.98031Z"
         type: string
       id:
         example: b27947d6-3224-4479-8da4-7917ae16b34d
         type: string
-      image_url:
+      multimedia_description:
+        example: A imagem retrata uma pequena cidade costeira afetada por uma forte
+          chuva...
+        type: string
+      multimedia_url:
         example: https://image.url.com/article/b27947d6-3224-4479-8da4-7917ae16b34d/image.png
         type: string
       number_of_ratings:
         example: 452
         type: integer
-      reference_date_time:
-        example: "2024-01-05T20:25:19Z"
-        type: string
+      situation:
+        $ref: '#/definitions/swagger.ArticleSituation'
       title:
         example: Novo projeto de lei impulsiona crescimento do setor portuário até
           2028
         type: string
       type:
-        $ref: '#/definitions/response.SwaggerArticleType'
+        $ref: '#/definitions/swagger.ArticleTypeWithSpecificType'
       updated_at:
-        example: "2024-01-05T20:25:19Z"
+        example: "2024-01-05T20:25:19.98031Z"
         type: string
       user_rating:
         example: 3
@@ -88,11 +100,11 @@ definitions:
         example: true
         type: boolean
     type: object
-  response.SwaggerArticlePagination:
+  swagger.ArticlePagination:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.SwaggerArticle'
+          $ref: '#/definitions/swagger.Article'
         type: array
       items_per_page:
         example: 15
@@ -104,105 +116,271 @@ definitions:
         example: 4562
         type: integer
     type: object
-  response.SwaggerArticleType:
+  swagger.ArticleSituation:
+    properties:
+      color:
+        example: '#D2D2D2'
+        type: string
+      description:
+        example: Em Andamento
+        type: string
+      ends_at:
+        example: "2023-02-15T17:00:00Z"
+        type: string
+      id:
+        example: 16f6b271-fc96-4143-972c-0a2ac149dc55
+        type: string
+      is_approved:
+        example: true
+        type: boolean
+      starts_at:
+        example: "2023-02-12T10:00:00Z"
+        type: string
+    type: object
+  swagger.ArticleSpecificType:
     properties:
       color:
         example: '#C4170C'
-        type: string
-      created_at:
-        example: "2020-08-14T12:22:00Z"
         type: string
       description:
         example: Projeto de Lei
         type: string
       id:
-        example: 560206f4-7360-4e21-8e45-33026f7e0953
-        type: string
-      sort_order:
-        example: 1
-        type: integer
-      updated_at:
-        example: "2020-08-14T12:22:00Z"
+        example: 111c1a6d-d061-40b2-ad39-ec714f05c81c
         type: string
     type: object
-  response.SwaggerArticleTypeWithArticles:
+  swagger.ArticleType:
+    properties:
+      codes:
+        example: proposition
+        type: string
+      color:
+        example: '#06D13C'
+        type: string
+      description:
+        example: Proposições
+        type: string
+      id:
+        example: 560206f4-7360-4e21-8e45-33026f7e0953
+        type: string
+    type: object
+  swagger.ArticleTypeWithArticles:
     properties:
       articles:
         items:
-          $ref: '#/definitions/response.SwaggerArticle'
+          $ref: '#/definitions/swagger.Article'
         type: array
       color:
         example: '#C4170C'
         type: string
-      created_at:
-        example: "2020-08-14T12:22:00Z"
-        type: string
       description:
         example: Projeto de Lei
         type: string
       id:
+        example: 111c1a6d-d061-40b2-ad39-ec714f05c81c
+        type: string
+    type: object
+  swagger.ArticleTypeWithSpecificType:
+    properties:
+      codes:
+        example: proposition
+        type: string
+      color:
+        example: '#06D13C'
+        type: string
+      description:
+        example: Proposições
+        type: string
+      id:
         example: 560206f4-7360-4e21-8e45-33026f7e0953
         type: string
-      sort_order:
-        example: 1
+      specific_type:
+        $ref: '#/definitions/swagger.ArticleSpecificType'
+    type: object
+  swagger.ArticleTypeWithSpecificTypes:
+    properties:
+      codes:
+        example: proposition
+        type: string
+      color:
+        example: '#06D13C'
+        type: string
+      description:
+        example: Proposições
+        type: string
+      id:
+        example: 560206f4-7360-4e21-8e45-33026f7e0953
+        type: string
+      specific_types:
+        items:
+          $ref: '#/definitions/swagger.ArticleTypeWithArticles'
+        type: array
+    type: object
+  swagger.Deputy:
+    properties:
+      electoral_name:
+        example: José do Povo
+        type: string
+      federated_unit:
+        example: AL
+        type: string
+      id:
+        example: a4b04454-f426-44d2-843e-1331510b19ad
+        type: string
+      image_description:
+        example: Foto do(a) deputado(a) federal José do Povo (PVNC-AL)
+        type: string
+      image_url:
+        example: https://www.camara.leg.br/internet/deputado/bandep/87624.jpg
+        type: string
+      name:
+        example: José da Silva Santos
+        type: string
+      party:
+        $ref: '#/definitions/swagger.Party'
+      previous_federated_unit:
+        example: SP
+        type: string
+      previous_party:
+        $ref: '#/definitions/swagger.Party'
+    type: object
+  swagger.DeputyResource:
+    properties:
+      electoral_name:
+        example: José do Povo
+        type: string
+      federated_unit:
+        example: AL
+        type: string
+      id:
+        example: a4b04454-f426-44d2-843e-1331510b19ad
+        type: string
+      image_description:
+        example: Foto do(a) deputado(a) federal José do Povo (PVNC-AL)
+        type: string
+      image_url:
+        example: https://www.camara.leg.br/internet/deputado/bandep/87624.jpg
+        type: string
+      name:
+        example: José da Silva Santos
+        type: string
+      party:
+        $ref: '#/definitions/swagger.Party'
+    type: object
+  swagger.EventAgendaItem:
+    properties:
+      id:
+        example: a1b5ae2e-b3e7-443d-b87d-dca789224578
+        type: string
+      proposition:
+        $ref: '#/definitions/swagger.Article'
+      rapporteur:
+        $ref: '#/definitions/swagger.Deputy'
+      regime:
+        $ref: '#/definitions/swagger.AgendaItemRegime'
+      related_proposition:
+        $ref: '#/definitions/swagger.Article'
+      situation:
+        example: Discussão em turno único. Encerrada a discussão...
+        type: string
+      title:
+        example: PL 132/4567
+        type: string
+      topic:
+        example: Discussão
+        type: string
+      voting:
+        $ref: '#/definitions/swagger.Article'
+    type: object
+  swagger.EventArticle:
+    properties:
+      agenda_items:
+        items:
+          $ref: '#/definitions/swagger.EventAgendaItem'
+        type: array
+      average_rating:
+        example: 2.5
+        type: number
+      created_at:
+        example: "2023-08-22T10:39:14.465814Z"
+        type: string
+      description_content:
+        example: Discussão e votação de propostas legislativas...
+        type: string
+      ends_at:
+        example: "2023-08-24T18:00:00Z"
+        type: string
+      id:
+        example: e36492f7-5305-4333-9aea-05dcf3689693
+        type: string
+      is_internal:
+        example: true
+        type: boolean
+      legislative_bodies:
+        items:
+          $ref: '#/definitions/swagger.LegislativeBody'
+        type: array
+      location:
+        example: Plenário da Câmara dos Deputados
+        type: string
+      newsletter:
+        $ref: '#/definitions/swagger.Article'
+      number_of_ratings:
+        example: 2
         type: integer
+      requirements:
+        items:
+          $ref: '#/definitions/swagger.Article'
+        type: array
+      situation:
+        $ref: '#/definitions/swagger.EventSituation'
+      starts_at:
+        example: "2023-08-24T13:00:00Z"
+        type: string
+      title:
+        example: TCU Pede Ação Urgente contra Dívida Pública...
+        type: string
+      type:
+        $ref: '#/definitions/swagger.ArticleTypeWithSpecificType'
       updated_at:
-        example: "2020-08-14T12:22:00Z"
+        example: "2023-08-22T10:39:14.465814Z"
         type: string
+      user_rating:
+        example: 4
+        type: integer
+      video_url:
+        example: https://video.url.com/article/e36492f7-5305-4333-9aea-05dcf3689693/video.mp4
+        type: string
+      view_later:
+        example: false
+        type: boolean
     type: object
-  response.SwaggerDeputy:
+  swagger.EventSituation:
     properties:
-      created_at:
-        example: "2022-08-07T15:55:00Z"
+      color:
+        example: '#0047AB'
         type: string
-      electoral_name:
-        example: José do Povo
+      description:
+        example: Encerrado
         type: string
       id:
-        example: a4b04454-f426-44d2-843e-1331510b19ad
-        type: string
-      image_url:
-        example: https://www.camara.leg.br/internet/deputado/bandep/87624.jpg
-        type: string
-      name:
-        example: José da Silva Santos
-        type: string
-      party:
-        $ref: '#/definitions/response.SwaggerParty'
-      party_in_the_proposal:
-        $ref: '#/definitions/response.SwaggerParty'
-      updated_at:
-        example: "2022-08-07T15:55:00Z"
+        example: 0f7f6406-bbce-4a26-aa02-c1694bda5e72
         type: string
     type: object
-  response.SwaggerDeputyResource:
+  swagger.EventType:
     properties:
-      created_at:
-        example: "2022-08-07T15:55:00Z"
+      color:
+        example: '#006767'
         type: string
-      electoral_name:
-        example: José do Povo
+      description:
+        example: Reunião Deliberativa
         type: string
       id:
-        example: a4b04454-f426-44d2-843e-1331510b19ad
-        type: string
-      image_url:
-        example: https://www.camara.leg.br/internet/deputado/bandep/87624.jpg
-        type: string
-      name:
-        example: José da Silva Santos
-        type: string
-      party:
-        $ref: '#/definitions/response.SwaggerParty'
-      updated_at:
-        example: "2022-08-07T15:55:00Z"
+        example: 2371ffd1-67d0-40b2-b6ee-dde3948cbb80
         type: string
     type: object
-  response.SwaggerExternalAuthor:
+  swagger.ExternalAuthor:
     properties:
-      created_at:
-        example: "2020-12-13T18:37:00Z"
-        type: string
       id:
         example: 9d543e6f-20e3-4895-83e4-26b6a976580e
         type: string
@@ -210,19 +388,47 @@ definitions:
         example: Organização Você na Câmara
         type: string
       type:
-        example: Org da Câmara
+        $ref: '#/definitions/swagger.ExternalAuthorType'
+    type: object
+  swagger.ExternalAuthorType:
+    properties:
+      description:
+        example: Órgão Do Poder Legislativo
         type: string
-      updated_at:
-        example: "2020-12-13T18:37:00Z"
+      id:
+        example: 344b3941-69fb-4715-a7e5-6afc21cd3e48
         type: string
     type: object
-  response.SwaggerHttpError:
+  swagger.HttpError:
     properties:
       message:
         example: Something went wrong...
         type: string
     type: object
-  response.SwaggerNewsletterArticle:
+  swagger.LegislativeBody:
+    properties:
+      acronym:
+        example: "2009"
+        type: string
+      id:
+        example: 31991060-fa3d-4647-aea5-b17b41de6a36
+        type: string
+      name:
+        example: Comissão de Educação
+        type: string
+      type:
+        $ref: '#/definitions/swagger.LegislativeBodyType'
+    type: object
+  swagger.LegislativeBodyType:
+    properties:
+      description:
+        example: Comissão Mista Permanente
+        type: string
+      id:
+        example: 3440489a-d787-447f-80dd-51c0c577f07f
+        type: string
+    type: object
+  swagger.NewsletterArticle:
     properties:
       average_rating:
         example: 4.5
@@ -232,31 +438,32 @@ definitions:
           a concessão de descontos fiscais...
         type: string
       created_at:
-        example: "2023-12-24T19:15:22Z"
+        example: "2023-12-24T19:15:22.90905Z"
         type: string
+      events:
+        items:
+          $ref: '#/definitions/swagger.Article'
+        type: array
       id:
         example: 7963a6dd-f0b8-4065-8e56-6d2a79626db7
         type: string
       number_of_ratings:
         example: 743
         type: integer
-      proposition_articles:
+      propositions:
         items:
-          $ref: '#/definitions/response.SwaggerArticle'
+          $ref: '#/definitions/swagger.Article'
         type: array
       reference_date:
-        example: "2023-12-23T16:34:14Z"
-        type: string
-      reference_date_time:
-        example: "2023-12-24T19:15:22Z"
+        example: "2023-12-23T16:34:14.441877Z"
         type: string
       title:
         example: Boletim do dia 26/02/2024
         type: string
       type:
-        $ref: '#/definitions/response.SwaggerArticleType'
+        $ref: '#/definitions/swagger.ArticleType'
       updated_at:
-        example: "2023-12-24T19:15:22Z"
+        example: "2023-12-24T19:15:22.90905Z"
         type: string
       user_rating:
         example: 5
@@ -264,17 +471,21 @@ definitions:
       view_later:
         example: true
         type: boolean
+      votes:
+        items:
+          $ref: '#/definitions/swagger.Article'
+        type: array
     type: object
-  response.SwaggerParty:
+  swagger.Party:
     properties:
       acronym:
         example: PVNC
         type: string
-      created_at:
-        example: "2021-05-19T18:10:00Z"
-        type: string
       id:
         example: 9bb4028f-6fa8-493a-9fe8-e3bbd341c794
+        type: string
+      image_description:
+        example: Logo do Partido Você na Câmara (PVNC)
         type: string
       image_url:
         example: https://www.camara.leg.br/internet/Deputado/img/partidos/VNC.gif
@@ -282,11 +493,8 @@ definitions:
       name:
         example: Partido Você na Câmara
         type: string
-      updated_at:
-        example: "2021-05-19T18:10:00Z"
-        type: string
     type: object
-  response.SwaggerPropositionArticle:
+  swagger.PropositionArticle:
     properties:
       average_rating:
         example: 2.5
@@ -295,31 +503,40 @@ definitions:
         example: O presente requerimento foi elaborado pelos deputados...
         type: string
       created_at:
-        example: "2023-08-09T14:55:00Z"
+        example: "2023-08-09T14:55:00.465814Z"
         type: string
       deputies:
         items:
-          $ref: '#/definitions/response.SwaggerDeputy'
+          $ref: '#/definitions/swagger.Deputy'
+        type: array
+      events:
+        items:
+          $ref: '#/definitions/swagger.Article'
         type: array
       external_authors:
         items:
-          $ref: '#/definitions/response.SwaggerExternalAuthor'
+          $ref: '#/definitions/swagger.ExternalAuthor'
         type: array
       id:
         example: 9dc67bd9-674f-4e4d-9536-07485335c362
         type: string
+      image_description:
+        example: A imagem retrata uma pequena cidade costeira afetada por uma forte
+          chuva...
+        type: string
       image_url:
         example: https://www.vnc.com.br/news/proposition/image/87624.jpg
         type: string
-      newsletter_article:
-        $ref: '#/definitions/response.SwaggerArticle'
+      newsletter:
+        $ref: '#/definitions/swagger.Article'
       number_of_ratings:
         example: 249
         type: integer
-      original_text_url:
+      original_text_mime_type:
         example: https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485
         type: string
-      reference_date_time:
+      original_text_url:
+        example: https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=4865485
         type: string
       submitted_at:
         example: "2023-08-09T14:25:00Z"
@@ -328,9 +545,9 @@ definitions:
         example: Requerimento de Votação Nominal-Destaque de Emenda
         type: string
       type:
-        $ref: '#/definitions/response.SwaggerArticleType'
+        $ref: '#/definitions/swagger.ArticleTypeWithSpecificType'
       updated_at:
-        example: "2023-08-09T14:55:00Z"
+        example: "2023-08-09T14:55:00.465814Z"
         type: string
       user_rating:
         example: 5
@@ -338,33 +555,65 @@ definitions:
       view_later:
         example: true
         type: boolean
+      votes:
+        items:
+          $ref: '#/definitions/swagger.Article'
+        type: array
     type: object
-  response.SwaggerResources:
+  swagger.PropositionType:
+    properties:
+      color:
+        example: '#C4170C'
+        type: string
+      description:
+        example: Projeto de Lei
+        type: string
+      id:
+        example: 111c1a6d-d061-40b2-ad39-ec714f05c81c
+        type: string
+    type: object
+  swagger.Resources:
     properties:
       article_types:
         items:
-          $ref: '#/definitions/response.SwaggerArticleType'
+          $ref: '#/definitions/swagger.ArticleType'
         type: array
       deputies:
         items:
-          $ref: '#/definitions/response.SwaggerDeputyResource'
+          $ref: '#/definitions/swagger.DeputyResource'
+        type: array
+      event_situations:
+        items:
+          $ref: '#/definitions/swagger.EventSituation'
+        type: array
+      event_types:
+        items:
+          $ref: '#/definitions/swagger.EventType'
         type: array
       external_authors:
         items:
-          $ref: '#/definitions/response.SwaggerExternalAuthor'
+          $ref: '#/definitions/swagger.ExternalAuthor'
+        type: array
+      legislative_bodies:
+        items:
+          $ref: '#/definitions/swagger.LegislativeBody'
         type: array
       parties:
         items:
-          $ref: '#/definitions/response.SwaggerParty'
+          $ref: '#/definitions/swagger.Party'
+        type: array
+      proposition_types:
+        items:
+          $ref: '#/definitions/swagger.PropositionType'
         type: array
     type: object
-  response.SwaggerUser:
+  swagger.User:
     properties:
       access_token:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InByb2YiL...
         type: string
       created_at:
-        example: "2022-09-23T18:20:00Z"
+        example: "2024-01-06T14:52:23.723959Z"
         type: string
       email:
         example: example@email.com
@@ -388,15 +637,72 @@ definitions:
           type: string
         type: array
       updated_at:
-        example: "2022-09-23T18:20:00Z"
+        example: "2024-01-06T16:02:29.854799Z"
         type: string
+    type: object
+  swagger.VotingArticle:
+    properties:
+      affected_propositions:
+        items:
+          $ref: '#/definitions/swagger.Article'
+        type: array
+      average_rating:
+        example: 3.5
+        type: number
+      created_at:
+        example: "2023-05-18T23:19:00.465814Z"
+        type: string
+      events:
+        items:
+          $ref: '#/definitions/swagger.Article'
+        type: array
+      id:
+        example: d369b9bc-c226-4bbf-8fbb-fceed205845a
+        type: string
+      is_approved:
+        example: true
+        type: boolean
+      legislative_body:
+        $ref: '#/definitions/swagger.LegislativeBody'
+      main_proposition:
+        $ref: '#/definitions/swagger.Article'
+      newsletter:
+        $ref: '#/definitions/swagger.Article'
+      number_of_ratings:
+        example: 254
+        type: integer
+      related_propositions:
+        items:
+          $ref: '#/definitions/swagger.Article'
+        type: array
+      result_announced_at:
+        example: "2023-05-18T20:17:32Z"
+        type: string
+      result_content:
+        example: Aprovado o Substitutivo ao Projeto de Lei nº 1...
+        type: string
+      title:
+        example: Votação 3457539-42
+        type: string
+      type:
+        $ref: '#/definitions/swagger.ArticleType'
+      updated_at:
+        example: "2023-05-18T23:19:00.465814Z"
+        type: string
+      user_rating:
+        example: 4
+        type: integer
+      view_later:
+        example: true
+        type: boolean
     type: object
 info:
   contact:
     email: email.vocenacamara@gmail.com
     name: Você na Câmara
-  description: Set of routes responsible for managing data manipulation in Você na
-    Câmara applications.
+  description: Set of endpoints that make up the backend of the Você na Câmara platform,
+    structured to enable communication between the services and the execution of the
+    system's functionalities.
   title: Você na Câmara API
   version: v1
 paths:
@@ -410,32 +716,79 @@ paths:
         in: query
         name: typeId
         type: string
+      - description: Article specific type ID
+        in: query
+        name: specificTypeId
+        type: string
       - description: Part of the content of the articles, in the title or content
         in: query
         name: content
         type: string
-      - description: ID of the deputy who drafted the proposition
-        in: query
-        name: deputyId
-        type: string
-      - description: ID of the party that drafted the proposition
-        in: query
-        name: partyId
-        type: string
-      - description: ID of the external author who drafted the proposition
-        in: query
-        name: externalAuthorId
-        type: string
-      - description: 'Date from which the articles may have been created. Accepted
-          format: YYYY-MM-DD'
+      - description: 'Date from which the articles were created. Accepted format:
+          YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Date until which the articles may have been created. Accepted
-          format: YYYY-MM-DD'
+      - description: 'Date until which the articles were created. Accepted format:
+          YYYY-MM-DD'
         in: query
         name: endDate
         type: string
+      - description: ID of the deputy who drafted the proposition
+        in: query
+        name: propositionDeputyId
+        type: string
+      - description: ID of the party that drafted the proposition
+        in: query
+        name: propositionPartyId
+        type: string
+      - description: ID of the external author who drafted the proposition
+        in: query
+        name: propositionExternalAuthorId
+        type: string
+      - description: 'Date from which the voting results were announced. Accepted
+          format: YYYY-MM-DD'
+        in: query
+        name: votingStartDate
+        type: string
+      - description: 'Date until which the voting results were announced. Accepted
+          format: YYYY-MM-DD'
+        in: query
+        name: votingEndDate
+        type: string
+      - description: Is the voting approved?
+        in: query
+        name: isVotingApproved
+        type: boolean
+      - description: ID of the legislative body responsible for the voting
+        in: query
+        name: votingLegislativeBodyId
+        type: string
+      - description: 'Date from which the events occurred. Accepted format: YYYY-MM-DD'
+        in: query
+        name: eventStartDate
+        type: string
+      - description: 'Date until which the events occurred. Accepted format: YYYY-MM-DD'
+        in: query
+        name: eventEndDate
+        type: string
+      - description: ID of the event situation
+        in: query
+        name: eventSituationId
+        type: string
+      - description: ID of the legislative body responsible for the event
+        in: query
+        name: eventLegislativeBodyId
+        type: string
+      - description: ID of the rapporteur (deputy) for one or more items on the event
+          agenda
+        in: query
+        name: eventRapporteurId
+        type: string
+      - description: Remove events in the future?
+        in: query
+        name: removeEventsInTheFuture
+        type: boolean
       - description: Page number. By default, it is 1
         in: query
         name: page
@@ -451,30 +804,77 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerArticlePagination'
+            $ref: '#/definitions/swagger.ArticlePagination'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: List most recent articles
+      tags:
+      - Articles
+  /articles/{articleId}/event:
+    get:
+      description: This request is responsible for looking up the details of an article
+        of an event by the article ID.
+      operationId: GetEventArticleById
+      parameters:
+      - description: Article ID
+        in: path
+        name: articleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful request
+          schema:
+            $ref: '#/definitions/swagger.EventArticle'
+        "400":
+          description: Badly formatted request
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "401":
+          description: Unauthorized access
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "404":
+          description: Requested resource not found
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "422":
+          description: Some of the data provided is invalid
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "500":
+          description: An unexpected error occurred while processing the request
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "503":
+          description: Some of the services/resources are temporarily unavailable
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Get article details by ID (Only for event articles)
       tags:
       - Articles
   /articles/{articleId}/newsletter:
@@ -494,31 +894,31 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerNewsletterArticle'
+            $ref: '#/definitions/swagger.NewsletterArticle'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "404":
           description: Requested resource not found
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: Get article details by ID (Only for newsletter articles)
@@ -541,31 +941,31 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerPropositionArticle'
+            $ref: '#/definitions/swagger.PropositionArticle'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "404":
           description: Requested resource not found
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: Get article details by ID (Only for proposition articles)
@@ -586,7 +986,7 @@ paths:
         type: string
       - description: Request body
         in: body
-        name: body
+        name: requestBody
         required: true
         schema:
           $ref: '#/definitions/request.Rating'
@@ -598,31 +998,31 @@ paths:
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "403":
           description: Access denied
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "404":
           description: Requested resource not found
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: Rate article
@@ -643,7 +1043,7 @@ paths:
         type: string
       - description: Request body
         in: body
-        name: body
+        name: requestBody
         required: true
         schema:
           $ref: '#/definitions/request.ViewLater'
@@ -655,35 +1055,82 @@ paths:
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "403":
           description: Access denied
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "404":
           description: Requested resource not found
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: Add or remove an article from the list of articles bookmarked for later
         viewing by the user
+      tags:
+      - Articles
+  /articles/{articleId}/voting:
+    get:
+      description: This request is responsible for looking up the details of an article
+        of a voting by the article ID.
+      operationId: GetVotingArticleById
+      parameters:
+      - description: Article ID
+        in: path
+        name: articleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful request
+          schema:
+            $ref: '#/definitions/swagger.VotingArticle'
+        "400":
+          description: Badly formatted request
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "401":
+          description: Unauthorized access
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "404":
+          description: Requested resource not found
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "422":
+          description: Some of the data provided is invalid
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "500":
+          description: An unexpected error occurred while processing the request
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+        "503":
+          description: Some of the services/resources are temporarily unavailable
+          schema:
+            $ref: '#/definitions/swagger.HttpError'
+      security:
+      - BearerAuth: []
+      summary: Get article details by ID (Only for voting articles)
       tags:
       - Articles
   /articles/trending:
@@ -696,32 +1143,79 @@ paths:
         in: query
         name: typeId
         type: string
+      - description: Article specific type ID
+        in: query
+        name: specificTypeId
+        type: string
       - description: Part of the content of the articles, in the title or content
         in: query
         name: content
         type: string
-      - description: ID of the deputy who drafted the proposition
-        in: query
-        name: deputyId
-        type: string
-      - description: ID of the party that drafted the proposition
-        in: query
-        name: partyId
-        type: string
-      - description: ID of the external author who drafted the proposition
-        in: query
-        name: externalAuthorId
-        type: string
-      - description: 'Date from which the articles may have been created. Accepted
-          format: YYYY-MM-DD'
+      - description: 'Date from which the articles were created. Accepted format:
+          YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Date until which the articles may have been created. Accepted
-          format: YYYY-MM-DD'
+      - description: 'Date until which the articles were created. Accepted format:
+          YYYY-MM-DD'
         in: query
         name: endDate
         type: string
+      - description: ID of the deputy who drafted the proposition
+        in: query
+        name: propositionDeputyId
+        type: string
+      - description: ID of the party that drafted the proposition
+        in: query
+        name: propositionPartyId
+        type: string
+      - description: ID of the external author who drafted the proposition
+        in: query
+        name: propositionExternalAuthorId
+        type: string
+      - description: 'Date from which the voting results were announced. Accepted
+          format: YYYY-MM-DD'
+        in: query
+        name: votingStartDate
+        type: string
+      - description: 'Date until which the voting results were announced. Accepted
+          format: YYYY-MM-DD'
+        in: query
+        name: votingEndDate
+        type: string
+      - description: Is the voting approved?
+        in: query
+        name: isVotingApproved
+        type: boolean
+      - description: ID of the legislative body responsible for the voting
+        in: query
+        name: votingLegislativeBodyId
+        type: string
+      - description: 'Date from which the events occurred. Accepted format: YYYY-MM-DD'
+        in: query
+        name: eventStartDate
+        type: string
+      - description: 'Date until which the events occurred. Accepted format: YYYY-MM-DD'
+        in: query
+        name: eventEndDate
+        type: string
+      - description: ID of the event situation
+        in: query
+        name: eventSituationId
+        type: string
+      - description: ID of the legislative body responsible for the event
+        in: query
+        name: eventLegislativeBodyId
+        type: string
+      - description: ID of the rapporteur (deputy) for one or more items on the event
+          agenda
+        in: query
+        name: eventRapporteurId
+        type: string
+      - description: Remove events in the future?
+        in: query
+        name: removeEventsInTheFuture
+        type: boolean
       - description: Page number. By default, it is 1
         in: query
         name: page
@@ -737,27 +1231,27 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerArticlePagination'
+            $ref: '#/definitions/swagger.ArticlePagination'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: List trending articles
@@ -766,13 +1260,18 @@ paths:
   /articles/trending/type:
     get:
       description: This request is responsible for listing the trending articles by
-        article types.
-      operationId: GetTrendingArticlesByTypeId
+        article types or specific types.
+      operationId: GetTrendingArticlesByType
       parameters:
       - description: List of IDs of the types of articles that should be returned
           (separated by commas). By default, it returns all types
         in: query
         name: articleTypeIds
+        type: string
+      - description: List of IDs of the specific types of articles that should be
+          returned (separated by commas). By default, it returns all specific types
+        in: query
+        name: articleSpecificTypeIds
         type: string
       - description: Number of articles returned by type. The default is 5 and the
           allowed values are between 1 and 20
@@ -785,23 +1284,23 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerArticleTypeWithArticles'
+            $ref: '#/definitions/swagger.ArticleTypeWithSpecificTypes'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: List trending articles by article types
@@ -818,32 +1317,79 @@ paths:
         in: query
         name: typeId
         type: string
+      - description: Article specific type ID
+        in: query
+        name: specificTypeId
+        type: string
       - description: Part of the content of the articles, in the title or content
         in: query
         name: content
         type: string
-      - description: ID of the deputy who drafted the proposition
-        in: query
-        name: deputyId
-        type: string
-      - description: ID of the party that drafted the proposition
-        in: query
-        name: partyId
-        type: string
-      - description: ID of the external author who drafted the proposition
-        in: query
-        name: externalAuthorId
-        type: string
-      - description: 'Date from which the articles may have been created. Accepted
-          format: YYYY-MM-DD'
+      - description: 'Date from which the articles were created. Accepted format:
+          YYYY-MM-DD'
         in: query
         name: startDate
         type: string
-      - description: 'Date until which the articles may have been created. Accepted
-          format: YYYY-MM-DD'
+      - description: 'Date until which the articles were created. Accepted format:
+          YYYY-MM-DD'
         in: query
         name: endDate
         type: string
+      - description: ID of the deputy who drafted the proposition
+        in: query
+        name: propositionDeputyId
+        type: string
+      - description: ID of the party that drafted the proposition
+        in: query
+        name: propositionPartyId
+        type: string
+      - description: ID of the external author who drafted the proposition
+        in: query
+        name: propositionExternalAuthorId
+        type: string
+      - description: 'Date from which the voting results were announced. Accepted
+          format: YYYY-MM-DD'
+        in: query
+        name: votingStartDate
+        type: string
+      - description: 'Date until which the voting results were announced. Accepted
+          format: YYYY-MM-DD'
+        in: query
+        name: votingEndDate
+        type: string
+      - description: Is the voting approved?
+        in: query
+        name: isVotingApproved
+        type: boolean
+      - description: ID of the legislative body responsible for the voting
+        in: query
+        name: votingLegislativeBodyId
+        type: string
+      - description: 'Date from which the events occurred. Accepted format: YYYY-MM-DD'
+        in: query
+        name: eventStartDate
+        type: string
+      - description: 'Date until which the events occurred. Accepted format: YYYY-MM-DD'
+        in: query
+        name: eventEndDate
+        type: string
+      - description: ID of the event situation
+        in: query
+        name: eventSituationId
+        type: string
+      - description: ID of the legislative body responsible for the event
+        in: query
+        name: eventLegislativeBodyId
+        type: string
+      - description: ID of the rapporteur (deputy) for one or more items on the event
+          agenda
+        in: query
+        name: eventRapporteurId
+        type: string
+      - description: Remove events in the future?
+        in: query
+        name: removeEventsInTheFuture
+        type: boolean
       - description: Page number. By default, it is 1
         in: query
         name: page
@@ -859,27 +1405,27 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerArticlePagination'
+            $ref: '#/definitions/swagger.ArticlePagination'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: List articles bookmarked for later viewing by the user
@@ -895,7 +1441,7 @@ paths:
       parameters:
       - description: Request body
         in: body
-        name: body
+        name: requestBody
         required: true
         schema:
           $ref: '#/definitions/request.RefreshTokens'
@@ -905,27 +1451,27 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerUser'
+            $ref: '#/definitions/swagger.User'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       summary: Refresh access tokens
       tags:
       - Authentication
@@ -938,7 +1484,7 @@ paths:
       parameters:
       - description: Request body
         in: body
-        name: body
+        name: requestBody
         required: true
         schema:
           $ref: '#/definitions/request.SignIn'
@@ -948,27 +1494,27 @@ paths:
         "200":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerUser'
+            $ref: '#/definitions/swagger.User'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       summary: Sign In
       tags:
       - Authentication
@@ -984,23 +1530,23 @@ paths:
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "403":
           description: Access denied
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: Sign Out
@@ -1015,7 +1561,7 @@ paths:
       parameters:
       - description: Request body
         in: body
-        name: body
+        name: requestBody
         required: true
         schema:
           $ref: '#/definitions/request.SignUp'
@@ -1025,31 +1571,31 @@ paths:
         "201":
           description: Successful request
           schema:
-            $ref: '#/definitions/response.SwaggerUser'
+            $ref: '#/definitions/swagger.User'
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "409":
           description: Some of the data provided is conflicting
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "422":
           description: Some of the data provided is invalid
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       summary: Sign Up
       tags:
       - Authentication
@@ -1064,20 +1610,20 @@ paths:
           description: Successful request
           schema:
             items:
-              $ref: '#/definitions/response.SwaggerResources'
+              $ref: '#/definitions/swagger.Resources'
             type: array
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       summary: List all resources
       tags:
       - Resources
@@ -1092,7 +1638,7 @@ paths:
       parameters:
       - description: Request body
         in: body
-        name: body
+        name: requestBody
         required: true
         schema:
           $ref: '#/definitions/request.UserAccountActivation'
@@ -1103,32 +1649,32 @@ paths:
           description: Successful request
           schema:
             items:
-              $ref: '#/definitions/response.SwaggerUser'
+              $ref: '#/definitions/swagger.User'
             type: array
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "403":
           description: Access denied
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "409":
           description: Some of the data provided is conflicting
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: Activate user account
@@ -1148,27 +1694,27 @@ paths:
         "400":
           description: Badly formatted request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "401":
           description: Unauthorized access
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "403":
           description: Access denied
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "409":
           description: Some of the data provided is conflicting
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "500":
           description: An unexpected error occurred while processing the request
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
         "503":
           description: Some of the services/resources are temporarily unavailable
           schema:
-            $ref: '#/definitions/response.SwaggerHttpError'
+            $ref: '#/definitions/swagger.HttpError'
       security:
       - BearerAuth: []
       summary: Resend user account activation email

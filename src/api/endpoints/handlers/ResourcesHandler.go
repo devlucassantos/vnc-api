@@ -23,22 +23,24 @@ func NewResourcesHandler(service services.Resources) *Resources {
 // @Tags        Resources
 // @Description This request is responsible for listing all the platform resources.
 // @Produce     json
-// @Success 200 {array}  response.SwaggerResources "Successful request"
-// @Failure 401 {object} response.SwaggerHttpError "Unauthorized access"
-// @Failure 500 {object} response.SwaggerHttpError "An unexpected error occurred while processing the request"
-// @Failure 503 {object} response.SwaggerHttpError "Some of the services/resources are temporarily unavailable"
+// @Success 200 {array}  swagger.Resources "Successful request"
+// @Failure 401 {object} swagger.HttpError "Unauthorized access"
+// @Failure 500 {object} swagger.HttpError "An unexpected error occurred while processing the request"
+// @Failure 503 {object} swagger.HttpError "Some of the services/resources are temporarily unavailable"
 // @Router /resources [GET]
 func (instance Resources) GetResources(context echo.Context) error {
-	articleTypes, parties, deputies, externalAuthors, err := instance.service.GetResources()
+	articleTypes, propositionTypes, parties, deputies, externalAuthors, legislativeBodies, eventTypes, eventSituations,
+		err := instance.service.GetResources()
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
 			log.Error("Database unavailable: ", err.Error())
 			return context.JSON(http.StatusServiceUnavailable, response.NewServiceUnavailableError())
 		}
 
-		log.Error("Error fetching resource data: ", err.Error())
+		log.Error("Error retrieving resource data: ", err.Error())
 		return context.JSON(http.StatusInternalServerError, response.NewInternalServerError())
 	}
 
-	return context.JSON(http.StatusOK, response.NewResources(articleTypes, parties, deputies, externalAuthors))
+	return context.JSON(http.StatusOK, response.NewResources(articleTypes, propositionTypes, parties, deputies,
+		externalAuthors, legislativeBodies, eventTypes, eventSituations))
 }

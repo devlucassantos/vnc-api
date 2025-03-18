@@ -7,12 +7,13 @@ import (
 )
 
 type Article interface {
-	GetArticles(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error)
-	GetTrendingArticles(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error)
-	GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, itemsPerType int, userId uuid.UUID) ([]article.Article, error)
-	GetArticlesToViewLater(filter filters.ArticleFilter, userId uuid.UUID) ([]article.Article, int, error)
-	GetPropositionArticlesByNewsletterId(newsletterId uuid.UUID, userId uuid.UUID) ([]article.Article, error)
-	GetNewsletterArticleByPropositionId(propositionId uuid.UUID, userId uuid.UUID) (*article.Article, error)
-	SaveArticleRating(userId uuid.UUID, articleId uuid.UUID, rating int) error
+	GetArticles(filter filters.Article, userId uuid.UUID) ([]article.Article, int, error)
+	GetTrendingArticles(filter filters.Article, userId uuid.UUID) ([]article.Article, int, error)
+	GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, itemsPerType int, userId uuid.UUID) ([]article.Article,
+		error)
+	GetTrendingArticlesBySpecificTypeId(articleSpecificTypeId uuid.UUID, itemsPerType int, userId uuid.UUID) (
+		[]article.Article, error)
+	GetArticlesToViewLater(filter filters.Article, userId uuid.UUID) ([]article.Article, int, error)
+	SaveArticleRating(userId uuid.UUID, articleId uuid.UUID, rating *int) error
 	SaveArticleToViewLater(userId uuid.UUID, articleId uuid.UUID, viewLater bool) error
 }

@@ -27,13 +27,13 @@ func GetUserIdFromAuthorizationHeader(context echo.Context) uuid.UUID {
 	}
 
 	if claims.Subject == "" {
-		log.Error("Invalid token: The provided token does not contain the user ID")
+		log.Warn("Invalid token: The provided token does not contain the user ID")
 		return uuid.Nil
 	}
 
 	userId, err := uuid.Parse(claims.Subject)
 	if err != nil || userId == uuid.Nil {
-		log.Error("Invalid Token: The user ID contained in the provided token is invalid")
+		log.Warn("Invalid token: The user ID contained in the provided token is invalid")
 		return uuid.Nil
 	}
 
@@ -44,7 +44,7 @@ func getAuthorizationClaims(authorizationHeader string) (*user.Claims, *response
 	_, token := ExtractToken(authorizationHeader)
 	authenticationClaims, err := ExtractTokenClaims(token)
 	if err != nil {
-		log.Error("Error extracting claims from access token: " + err.Message)
+		log.Warn("Error extracting claims from access token: ", err.Message)
 		return nil, err
 	}
 
@@ -63,21 +63,21 @@ func ExtractToken(authorizationHeader string) (tokenType string, accessToken str
 func ExtractTokenClaims(token string) (*user.Claims, *response.HttpError) {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		log.Error("Error separating the access token parts: The number of token parts is invalid")
+		log.Warn("Error separating the access token parts: The number of token parts is invalid")
 		return nil, response.NewUnauthorizedError()
 	}
 
 	payload := parts[1]
 	payloadBytes, err := jwt.DecodeSegment(payload)
 	if err != nil {
-		log.Error("Error decoding token: " + err.Error())
+		log.Warn("Error decoding token: ", err.Error())
 		return nil, response.NewUnauthorizedError()
 	}
 
 	var claims user.Claims
 	err = json.Unmarshal(payloadBytes, &claims)
 	if err != nil {
-		log.Error("Error assigning token data to user claims: " + err.Error())
+		log.Warn("Error assigning token data to user claims: ", err.Error())
 		return nil, response.NewUnauthorizedError()
 	}
 
@@ -100,13 +100,13 @@ func ValidateRefreshToken(refreshToken string) *response.HttpError {
 
 	splitToken := strings.Split(refreshToken, ".")
 	if len(splitToken) != 3 {
-		log.Error("Error splitting the refresh token parts: The number of token parts is invalid")
+		log.Warn("Error splitting the refresh token parts: The number of token parts is invalid")
 		return response.NewUnauthorizedError()
 	}
 
 	err = jwt.SigningMethodRS256.Verify(strings.Join(splitToken[0:2], "."), splitToken[2], rsaPublicKey)
 	if err != nil {
-		log.Error("The refresh token provided is not authentic")
+		log.Warn("The refresh token provided is not authentic")
 		return response.NewUnauthorizedError()
 	}
 
@@ -126,7 +126,7 @@ func ExtractUserAuthorizationRoles(authorizationHeader string) []string {
 
 	claims, httpError := ExtractTokenClaims(accessToken)
 	if httpError != nil {
-		log.Error("Error extracting claims from access token: ", httpError.Message)
+		log.Warn("Error extracting claims from access token: ", httpError.Message)
 		return nil
 	}
 
@@ -150,17 +150,17 @@ func authorizationIsValid(tokenType, accessToken string) bool {
 		return rsaPublicKey, nil
 	})
 	if err != nil {
-		log.Error("Error converting the provided token: ", err.Error())
+		log.Warn("Error converting the provided token: ", err.Error())
 		return false
 	}
 
 	if !token.Valid || token.Claims.Valid() != nil {
-		log.Error("The token provided is invalid or expired")
+		log.Warn("The token provided is invalid or expired")
 		return false
 	}
 
 	if strings.ToLower(tokenType) != "bearer" {
-		log.Error("The token type used is not supported: ", tokenType)
+		log.Warn("The token type used is not supported: ", tokenType)
 		return false
 	}
 

@@ -84,7 +84,7 @@ func (instance Authentication) SignUp(signUpData user.User) (*user.User, error) 
 func (instance Authentication) SignIn(signInData user.User) (*user.User, error) {
 	userData, err := instance.userRepository.GetUserByEmail(signInData.Email())
 	if err != nil {
-		log.Errorf("Error fetching data for user %s from the database: %s", signInData.Email(), err.Error())
+		log.Errorf("Error retrieving data for user %s from the database: %s", signInData.Email(), err.Error())
 		return nil, err
 	}
 
@@ -96,7 +96,7 @@ func (instance Authentication) SignIn(signInData user.User) (*user.User, error) 
 
 	err = bcrypt.CompareHashAndPassword(decodedPassword, []byte(signInData.Password()))
 	if err != nil {
-		log.Errorf("Error comparing password for user %s: %s", userData.Email(), err.Error())
+		log.Warnf("Error comparing password for user %s: %s", userData.Email(), err.Error())
 		return nil, errors.New("incorrect password")
 	}
 
@@ -129,7 +129,7 @@ func (instance Authentication) SignOut(userId uuid.UUID, sessionId uuid.UUID) er
 func (instance Authentication) RefreshTokens(userId uuid.UUID, sessionId uuid.UUID, refreshToken string) (*user.User, error) {
 	userData, err := instance.userRepository.GetUserById(userId)
 	if err != nil {
-		log.Errorf("Error fetching data for user %s from the database: %s", userId, err.Error())
+		log.Errorf("Error retrieving data for user %s from the database: %s", userId, err.Error())
 		return nil, err
 	}
 
@@ -140,7 +140,7 @@ func (instance Authentication) RefreshTokens(userId uuid.UUID, sessionId uuid.UU
 	}
 
 	if !tokenExists {
-		log.Errorf("The refresh token for user %s is invalid", userData.Email())
+		log.Warnf("The refresh token for user %s is invalid", userData.Email())
 		return nil, errors.New("invalid token")
 	}
 

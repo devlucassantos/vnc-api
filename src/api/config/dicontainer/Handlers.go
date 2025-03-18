@@ -1,4 +1,4 @@
-package diconteiner
+package dicontainer
 
 import "vnc-api/api/endpoints/handlers"
 
@@ -15,5 +15,6 @@ func GetResourcesHandler() *handlers.Resources {
 }
 
 func GetArticleHandler() *handlers.Article {
-	return handlers.NewArticleHandler(GetArticleService(), GetResourcesService(), GetPropositionService(), GetNewsletterService())
+	return handlers.NewArticleHandler(GetArticleService(), GetResourcesService(), GetPropositionService(),
+		GetVotingService(), GetEventService(), GetNewsletterService())
 }

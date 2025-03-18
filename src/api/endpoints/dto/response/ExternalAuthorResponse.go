@@ -1,25 +1,20 @@
 package response
 
 import (
-	"github.com/devlucassantos/vnc-domains/src/domains/external"
+	"github.com/devlucassantos/vnc-domains/src/domains/externalauthor"
 	"github.com/google/uuid"
-	"time"
 )
 
 type ExternalAuthor struct {
-	Id        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Type      string    `json:"type"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id   uuid.UUID           `json:"id"`
+	Name string              `json:"name"`
+	Type *ExternalAuthorType `json:"type"`
 }
 
-func NewExternalAuthor(externalAuthor external.ExternalAuthor) *ExternalAuthor {
+func NewExternalAuthor(externalAuthor externalauthor.ExternalAuthor) *ExternalAuthor {
 	return &ExternalAuthor{
-		Id:        externalAuthor.Id(),
-		Name:      externalAuthor.Name(),
-		Type:      externalAuthor.Type(),
-		CreatedAt: externalAuthor.CreatedAt(),
-		UpdatedAt: externalAuthor.UpdatedAt(),
+		Id:   externalAuthor.Id(),
+		Name: externalAuthor.Name(),
+		Type: NewExternalAuthorType(externalAuthor.Type()),
 	}
 }

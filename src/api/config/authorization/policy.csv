@@ -7,6 +7,8 @@ p, anonymous, \/api\/v1\/articles$, *
 p, anonymous, \/api\/v1\/articles\/trending$, *
 p, anonymous, \/api\/v1\/articles\/trending\/type$, *
 p, anonymous, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/proposition$, *
+p, anonymous, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/voting$, *
+p, anonymous, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/event$, *
 p, anonymous, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/newsletter$, *
 
 p, INACTIVE_USER, \/api\/v1\/auth\/[^\r\n]*, *
@@ -18,6 +20,8 @@ p, INACTIVE_USER, \/api\/v1\/articles\/trending$, *
 p, INACTIVE_USER, \/api\/v1\/articles\/trending\/type$, *
 p, INACTIVE_USER, \/api\/v1\/articles\/view-later$, *
 p, INACTIVE_USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/proposition$, *
+p, INACTIVE_USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/voting$, *
+p, INACTIVE_USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/event$, *
 p, INACTIVE_USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/newsletter$, *
 
 p, USER, \/api\/v1\/auth\/[^\r\n]*, *
@@ -27,6 +31,8 @@ p, USER, \/api\/v1\/articles\/trending$, *
 p, USER, \/api\/v1\/articles\/trending\/type$, *
 p, USER, \/api\/v1\/articles\/view-later$, *
 p, USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/proposition$, *
+p, USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/voting$, *
+p, USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/event$, *
 p, USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/newsletter$, *
 p, USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/view-later$, *
 p, USER, \/api\/v1\/articles\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/rating$, *

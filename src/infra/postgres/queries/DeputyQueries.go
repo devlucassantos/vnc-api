@@ -14,9 +14,9 @@ func (deputySqlManager) Select() *deputySelectSqlManager {
 
 func (deputySelectSqlManager) All() string {
 	return `SELECT deputy.id AS deputy_id, deputy.name AS deputy_name, deputy.electoral_name AS deputy_electoral_name,
-       			deputy.image_url AS deputy_image_url, deputy.created_at AS deputy_created_at, deputy.updated_at AS deputy_updated_at,
-        		party.id AS party_id, party.name AS party_name, party.acronym AS party_acronym, party.image_url AS party_image_url,
-        		party.created_at AS party_created_at, party.updated_at AS party_updated_at
+       			deputy.image_url AS deputy_image_url, deputy.federated_unit AS deputy_federated_unit,
+        		party.id AS party_id, party.name AS party_name, party.acronym AS party_acronym,
+        		party.image_url AS party_image_url
     		FROM deputy
     			INNER JOIN party ON party.id = deputy.party_id
     		WHERE deputy.active = true AND party.active = true

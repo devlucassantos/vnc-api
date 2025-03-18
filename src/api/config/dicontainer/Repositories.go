@@ -1,4 +1,4 @@
-package diconteiner
+package dicontainer
 
 import (
 	"vnc-api/core/interfaces/repositories"
@@ -32,6 +32,14 @@ func GetArticlePostgresRepository() repositories.Article {
 
 func GetPropositionPostgresRepository() repositories.Proposition {
 	return postgres.NewPropositionRepository(GetPostgresDatabaseManager())
+}
+
+func GetVotingPostgresRepository() repositories.Voting {
+	return postgres.NewVotingRepository(GetPostgresDatabaseManager())
+}
+
+func GetEventPostgresRepository() repositories.Event {
+	return postgres.NewEventRepository(GetPostgresDatabaseManager())
 }
 
 func GetNewsletterPostgresRepository() repositories.Newsletter {

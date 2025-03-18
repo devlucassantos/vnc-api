@@ -62,7 +62,7 @@ func (instance Session) SessionExists(userId uuid.UUID, sessionId uuid.UUID, han
 
 	storedValue, err := redisConnection.Get(accessKey).Result()
 	if err != nil {
-		log.Errorf("Error fetching access key value for user %s (Session: %s): %s", userId, sessionId, err.Error())
+		log.Errorf("Error retrieving access key value for user %s (Session: %s): %s", userId, sessionId, err.Error())
 		return false, err
 	}
 
@@ -91,7 +91,7 @@ func (instance Session) RefreshTokenExists(userId uuid.UUID, sessionId uuid.UUID
 
 	storedValue, err := redisConnection.Get(refreshKey).Result()
 	if err != nil {
-		log.Errorf("Error fetching refresh key value for user %s (Session: %s): %s", userId, sessionId, err.Error())
+		log.Errorf("Error retrieving refresh key value for user %s (Session: %s): %s", userId, sessionId, err.Error())
 		return false, err
 	}
 
