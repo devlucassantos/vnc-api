@@ -385,12 +385,17 @@ func (instance Voting) GetVotingByArticleId(articleId uuid.UUID, userId uuid.UUI
 				articleBuilder.MultimediaUrl(articleData.Event.VideoUrl)
 			}
 
-			articleSituation, err := articlesituation.NewBuilder().
+			articleSituationBuilder := articlesituation.NewBuilder()
+
+			if !articleData.Event.EndsAt.IsZero() {
+				articleSituationBuilder.EndsAt(articleData.Event.EndsAt)
+			}
+
+			articleSituation, err := articleSituationBuilder.
 				Id(articleData.Event.EventSituation.Id).
 				Description(articleData.Event.EventSituation.Description).
 				Color(articleData.Event.EventSituation.Color).
 				StartsAt(articleData.Event.StartsAt).
-				EndsAt(articleData.Event.EndsAt).
 				Build()
 			if err != nil {
 				log.Errorf("Error validating data for article/event situation %s of event %s of article %s: %s",
