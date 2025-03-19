@@ -16,5 +16,5 @@ func (eventTypeSelectSqlManager) All() string {
 	return `SELECT id AS event_type_id, description AS event_type_description, color AS event_type_color
 			FROM event_type
 			WHERE active = true
-			ORDER BY description`
+			ORDER BY sort_order`
 }
