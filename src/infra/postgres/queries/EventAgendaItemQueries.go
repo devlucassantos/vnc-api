@@ -15,7 +15,7 @@ func (eventAgendaItemSqlManager) Select() *eventAgendaItemSelectSqlManager {
 func (eventAgendaItemSelectSqlManager) ByEventId() string {
 	return `SELECT event_agenda_item.id AS event_agenda_item_id, event_agenda_item.title AS event_agenda_item_title,
 				event_agenda_item.topic AS event_agenda_item_topic,
-				event_agenda_item.situation AS event_agenda_item_situation,
+				COALESCE(event_agenda_item.situation, '') AS event_agenda_item_situation,
 				COALESCE(event_agenda_item.rapporteur_federated_unit, '') AS deputy_previous_federated_unit,
 				proposition.article_id AS event_agenda_item_proposition_article_id,
 				COALESCE(related_proposition.article_id, '00000000-0000-0000-0000-000000000000')

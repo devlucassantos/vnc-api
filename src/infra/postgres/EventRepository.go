@@ -509,6 +509,10 @@ func (instance Event) GetEventByArticleId(articleId uuid.UUID, userId uuid.UUID)
 
 		agendaItemBuilder := eventagendaitem.NewBuilder()
 
+		if agendaItemData.Situation != "" {
+			agendaItemBuilder.Situation(agendaItemData.Situation)
+		}
+
 		if rapporteur != nil {
 			agendaItemBuilder.Rapporteur(*rapporteur)
 		}
@@ -525,7 +529,6 @@ func (instance Event) GetEventByArticleId(articleId uuid.UUID, userId uuid.UUID)
 			Id(agendaItemData.Id).
 			Title(agendaItemData.Title).
 			Topic(agendaItemData.Topic).
-			Situation(agendaItemData.Situation).
 			Regime(*agendaItemRegime).
 			Proposition(*agendaItemProposition).
 			Build()
@@ -581,7 +584,7 @@ func (instance Event) GetEventByArticleId(articleId uuid.UUID, userId uuid.UUID)
 		eventBuilder.VideoUrl(eventData.Event.VideoUrl)
 	}
 
-	eventDomain, err := event.NewBuilder().
+	eventDomain, err := eventBuilder.
 		Id(eventData.Event.Id).
 		Code(eventData.Event.Code).
 		Title(eventData.Event.Title).
@@ -589,7 +592,6 @@ func (instance Event) GetEventByArticleId(articleId uuid.UUID, userId uuid.UUID)
 		StartsAt(eventData.Event.StartsAt).
 		Location(eventData.Event.Location).
 		IsInternal(eventData.Event.IsInternal).
-		VideoUrl(eventData.Event.VideoUrl).
 		Type(*eventType).
 		Situation(*eventSituation).
 		LegislativeBodies(legislativeBodies).
