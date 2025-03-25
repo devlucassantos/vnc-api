@@ -31,9 +31,9 @@ func NewArticle(article article.Article) *Article {
 	}
 
 	articleType := NewArticleType(article.Type())
-	if strings.Contains(articleType.Codes, "voting") && situation == nil {
-		var isApproved bool
-		situation = &ArticleSituation{IsApproved: &isApproved}
+	if strings.Contains(articleType.Codes, "voting") {
+		isApproved := articleSituation.IsApproved()
+		situation.IsApproved = &isApproved
 	}
 
 	articleSpecificType := article.SpecificType()

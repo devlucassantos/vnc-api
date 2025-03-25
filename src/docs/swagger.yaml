@@ -133,6 +133,12 @@ definitions:
       is_approved:
         example: true
         type: boolean
+      result:
+        example: Aprovado o Substitutivo ao Projeto de Lei nº 1...
+        type: string
+      result_announced_at:
+        example: "2023-01-18T20:17:32Z"
+        type: string
       starts_at:
         example: "2023-02-12T10:00:00Z"
         type: string
@@ -652,6 +658,9 @@ definitions:
       created_at:
         example: "2023-05-18T23:19:00.465814Z"
         type: string
+      description:
+        example: A Câmara dos Deputados aprovou o Projeto de Lei nº 1...
+        type: string
       events:
         items:
           $ref: '#/definitions/swagger.Article'
@@ -675,11 +684,11 @@ definitions:
         items:
           $ref: '#/definitions/swagger.Article'
         type: array
+      result:
+        example: Aprovado o Substitutivo ao Projeto de Lei nº 1...
+        type: string
       result_announced_at:
         example: "2023-05-18T20:17:32Z"
-        type: string
-      result_content:
-        example: Aprovado o Substitutivo ao Projeto de Lei nº 1...
         type: string
       title:
         example: Votação 3457539-42

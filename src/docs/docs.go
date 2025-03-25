@@ -1699,6 +1699,14 @@ const docTemplate = `{
                     "type": "boolean",
                     "example": true
                 },
+                "result": {
+                    "type": "string",
+                    "example": "Aprovado o Substitutivo ao Projeto de Lei nº 1..."
+                },
+                "result_announced_at": {
+                    "type": "string",
+                    "example": "2023-01-18T20:17:32Z"
+                },
                 "starts_at": {
                     "type": "string",
                     "example": "2023-02-12T10:00:00Z"
@@ -2432,6 +2440,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "2023-05-18T23:19:00.465814Z"
                 },
+                "description": {
+                    "type": "string",
+                    "example": "A Câmara dos Deputados aprovou o Projeto de Lei nº 1..."
+                },
                 "events": {
                     "type": "array",
                     "items": {
@@ -2465,13 +2477,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/swagger.Article"
                     }
                 },
+                "result": {
+                    "type": "string",
+                    "example": "Aprovado o Substitutivo ao Projeto de Lei nº 1..."
+                },
                 "result_announced_at": {
                     "type": "string",
                     "example": "2023-05-18T20:17:32Z"
-                },
-                "result_content": {
-                    "type": "string",
-                    "example": "Aprovado o Substitutivo ao Projeto de Lei nº 1..."
                 },
                 "title": {
                     "type": "string",

@@ -135,6 +135,8 @@ func (instance Article) GetArticles(filter filters.Article, userId uuid.UUID) ([
 				Build()
 		} else if articleData.Voting != nil && articleData.Voting.Id != uuid.Nil {
 			articleSituation, err := articlesituation.NewBuilder().
+				Result(articleData.Voting.Result).
+				ResultAnnouncedAt(articleData.Voting.ResultAnnouncedAt).
 				IsApproved(articleData.Voting.IsApproved).
 				Build()
 			if err != nil {
@@ -145,7 +147,7 @@ func (instance Article) GetArticles(filter filters.Article, userId uuid.UUID) ([
 
 			articleDomain, articleErr = articleBuilder.
 				Title(fmt.Sprint("Votação ", articleData.Voting.Code)).
-				Content(articleData.Voting.Result).
+				Content(articleData.Voting.Description).
 				Situation(*articleSituation).
 				Build()
 		} else if articleData.Event != nil && articleData.Event.Id != uuid.Nil {
@@ -343,6 +345,8 @@ func (instance Article) GetTrendingArticles(filter filters.Article, userId uuid.
 				Build()
 		} else if articleData.Voting != nil && articleData.Voting.Id != uuid.Nil {
 			articleSituation, err := articlesituation.NewBuilder().
+				Result(articleData.Voting.Result).
+				ResultAnnouncedAt(articleData.Voting.ResultAnnouncedAt).
 				IsApproved(articleData.Voting.IsApproved).
 				Build()
 			if err != nil {
@@ -353,7 +357,7 @@ func (instance Article) GetTrendingArticles(filter filters.Article, userId uuid.
 
 			articleDomain, articleErr = articleBuilder.
 				Title(fmt.Sprint("Votação ", articleData.Voting.Code)).
-				Content(articleData.Voting.Result).
+				Content(articleData.Voting.Description).
 				Situation(*articleSituation).
 				Build()
 		} else if articleData.Event != nil && articleData.Event.Id != uuid.Nil {
@@ -532,6 +536,8 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, ite
 				Build()
 		} else if articleData.Voting != nil && articleData.Voting.Id != uuid.Nil {
 			articleSituation, err := articlesituation.NewBuilder().
+				Result(articleData.Voting.Result).
+				ResultAnnouncedAt(articleData.Voting.ResultAnnouncedAt).
 				IsApproved(articleData.Voting.IsApproved).
 				Build()
 			if err != nil {
@@ -542,7 +548,7 @@ func (instance Article) GetTrendingArticlesByTypeId(articleTypeId uuid.UUID, ite
 
 			articleDomain, articleErr = articleBuilder.
 				Title(fmt.Sprint("Votação ", articleData.Voting.Code)).
-				Content(articleData.Voting.Result).
+				Content(articleData.Voting.Description).
 				Situation(*articleSituation).
 				Build()
 		} else if articleData.Event != nil && articleData.Event.Id != uuid.Nil {
@@ -856,6 +862,8 @@ func (instance Article) GetArticlesToViewLater(filter filters.Article, userId uu
 				Build()
 		} else if articleData.Voting.Id != uuid.Nil {
 			articleSituation, err := articlesituation.NewBuilder().
+				Result(articleData.Voting.Result).
+				ResultAnnouncedAt(articleData.Voting.ResultAnnouncedAt).
 				IsApproved(articleData.Voting.IsApproved).
 				Build()
 			if err != nil {
@@ -866,7 +874,7 @@ func (instance Article) GetArticlesToViewLater(filter filters.Article, userId uu
 
 			articleDomain, articleErr = articleBuilder.
 				Title(fmt.Sprint("Votação ", articleData.Voting.Code)).
-				Content(articleData.Voting.Result).
+				Content(articleData.Voting.Description).
 				Situation(*articleSituation).
 				Build()
 		} else if articleData.Event != nil && articleData.Event.Id != uuid.Nil {

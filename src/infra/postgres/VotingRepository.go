@@ -475,6 +475,7 @@ func (instance Voting) GetVotingByArticleId(articleId uuid.UUID, userId uuid.UUI
 
 	votingDomain, err := votingBuilder.Id(votingArticle.Voting.Id).
 		Title(fmt.Sprint("Votação ", votingArticle.Voting.Code)).
+		Description(votingArticle.Voting.Description).
 		Result(votingArticle.Voting.Result).
 		ResultAnnouncedAt(votingArticle.Voting.ResultAnnouncedAt).
 		IsApproved(votingArticle.Voting.IsApproved).
