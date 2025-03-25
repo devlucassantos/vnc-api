@@ -2436,13 +2436,13 @@ const docTemplate = `{
                     "type": "number",
                     "example": 3.5
                 },
+                "content": {
+                    "type": "string",
+                    "example": "A Câmara dos Deputados aprovou o Projeto de Lei nº 1..."
+                },
                 "created_at": {
                     "type": "string",
                     "example": "2023-05-18T23:19:00.465814Z"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "A Câmara dos Deputados aprovou o Projeto de Lei nº 1..."
                 },
                 "events": {
                     "type": "array",

@@ -10,7 +10,7 @@ import (
 type VotingArticle struct {
 	Id                   uuid.UUID        `json:"id"`
 	Title                string           `json:"title"`
-	Description          string           `json:"description"`
+	Content              string           `json:"content"`
 	Result               string           `json:"result"`
 	ResultAnnouncedAt    time.Time        `json:"result_announced_at"`
 	IsApproved           bool             `json:"is_approved"`
@@ -62,7 +62,7 @@ func NewVotingArticle(voting voting.Voting) *VotingArticle {
 	return &VotingArticle{
 		Id:                   voting.Id(),
 		Title:                voting.Title(),
-		Description:          voting.Description(),
+		Content:              voting.Description(),
 		Result:               voting.Result(),
 		ResultAnnouncedAt:    voting.ResultAnnouncedAt(),
 		IsApproved:           voting.IsApproved(),

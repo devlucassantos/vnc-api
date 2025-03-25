@@ -655,11 +655,11 @@ definitions:
       average_rating:
         example: 3.5
         type: number
+      content:
+        example: A Câmara dos Deputados aprovou o Projeto de Lei nº 1...
+        type: string
       created_at:
         example: "2023-05-18T23:19:00.465814Z"
-        type: string
-      description:
-        example: A Câmara dos Deputados aprovou o Projeto de Lei nº 1...
         type: string
       events:
         items:
