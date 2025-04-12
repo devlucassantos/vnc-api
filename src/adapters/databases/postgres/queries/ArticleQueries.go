@@ -173,7 +173,8 @@ func (articleSelectSqlManager) TotalNumberOfEvents() string {
 				(event.title ILIKE $3 OR event.description ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				DATE_TRUNC('day', event.ends_at) >= DATE_TRUNC('day', COALESCE($6, event.ends_at)) AND
+				DATE_TRUNC('day', COALESCE(event.ends_at, event.starts_at)) >=
+				DATE_TRUNC('day', COALESCE($6, COALESCE(event.ends_at, event.starts_at))) AND
 				DATE_TRUNC('day', event.starts_at) <= DATE_TRUNC('day', COALESCE($7, event.starts_at)) AND
 				event_situation.id = COALESCE($8, event_situation.id) AND
 				event_legislative_body.legislative_body_id = COALESCE($9, event_legislative_body.legislative_body_id) AND
@@ -353,7 +354,8 @@ func (articleSelectSqlManager) Events() string {
 				(event.title ILIKE $3 OR event.description ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				DATE_TRUNC('day', event.ends_at) >= DATE_TRUNC('day', COALESCE($6, event.ends_at)) AND
+				DATE_TRUNC('day', COALESCE(event.ends_at, event.starts_at)) >=
+				DATE_TRUNC('day', COALESCE($6, COALESCE(event.ends_at, event.starts_at))) AND
 				DATE_TRUNC('day', event.starts_at) <= DATE_TRUNC('day', COALESCE($7, event.starts_at)) AND
 				event_situation.id = COALESCE($8, event_situation.id) AND
 				event_legislative_body.legislative_body_id = COALESCE($9, event_legislative_body.legislative_body_id) AND
@@ -545,7 +547,8 @@ func (articleSelectSqlManager) TrendingEvents() string {
 				(event.title ILIKE $3 OR event.description ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				DATE_TRUNC('day', event.ends_at) >= DATE_TRUNC('day', COALESCE($6, event.ends_at)) AND
+				DATE_TRUNC('day', COALESCE(event.ends_at, event.starts_at)) >=
+				DATE_TRUNC('day', COALESCE($6, COALESCE(event.ends_at, event.starts_at))) AND
 				DATE_TRUNC('day', event.starts_at) <= DATE_TRUNC('day', COALESCE($7, event.starts_at)) AND
 				event_situation.id = COALESCE($8, event_situation.id) AND
 				event_legislative_body.legislative_body_id = COALESCE($9, event_legislative_body.legislative_body_id) AND
@@ -1001,7 +1004,8 @@ func (articleSelectSqlManager) NumberOfEventsBookmarkedToViewLater() string {
 				(event.title ILIKE $3 OR event.description ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				DATE_TRUNC('day', event.ends_at) >= DATE_TRUNC('day', COALESCE($6, event.ends_at)) AND
+				DATE_TRUNC('day', COALESCE(event.ends_at, event.starts_at)) >=
+				DATE_TRUNC('day', COALESCE($6, COALESCE(event.ends_at, event.starts_at))) AND
 				DATE_TRUNC('day', event.starts_at) <= DATE_TRUNC('day', COALESCE($7, event.starts_at)) AND
 				event_situation.id = COALESCE($8, event_situation.id) AND
 				event_legislative_body.legislative_body_id = COALESCE($9, event_legislative_body.legislative_body_id) AND
@@ -1122,7 +1126,8 @@ func (articleSelectSqlManager) EventsBookmarkedToViewLater() string {
 				(event.title ILIKE $3 OR event.description ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				DATE_TRUNC('day', event.ends_at) >= DATE_TRUNC('day', COALESCE($6, event.ends_at)) AND
+				DATE_TRUNC('day', COALESCE(event.ends_at, event.starts_at)) >=
+				DATE_TRUNC('day', COALESCE($6, COALESCE(event.ends_at, event.starts_at))) AND
 				DATE_TRUNC('day', event.starts_at) <= DATE_TRUNC('day', COALESCE($7, event.starts_at)) AND
 				event_situation.id = COALESCE($8, event_situation.id) AND
 				event_legislative_body.legislative_body_id = COALESCE($9, event_legislative_body.legislative_body_id) AND
