@@ -3,14 +3,14 @@ package services
 import (
 	"github.com/devlucassantos/vnc-domains/src/domains/voting"
 	"github.com/google/uuid"
-	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/postgres"
 )
 
 type Voting struct {
-	repository repositories.Voting
+	repository postgres.Voting
 }
 
-func NewVotingService(repository repositories.Voting) *Voting {
+func NewVotingService(repository postgres.Voting) *Voting {
 	return &Voting{
 		repository: repository,
 	}

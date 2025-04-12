@@ -3,14 +3,14 @@ package services
 import (
 	"github.com/devlucassantos/vnc-domains/src/domains/proposition"
 	"github.com/google/uuid"
-	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/postgres"
 )
 
 type Proposition struct {
-	repository repositories.Proposition
+	repository postgres.Proposition
 }
 
-func NewPropositionService(repository repositories.Proposition) *Proposition {
+func NewPropositionService(repository postgres.Proposition) *Proposition {
 	return &Proposition{
 		repository: repository,
 	}

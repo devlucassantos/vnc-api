@@ -10,14 +10,14 @@ import (
 	"github.com/devlucassantos/vnc-domains/src/domains/party"
 	"github.com/devlucassantos/vnc-domains/src/domains/propositiontype"
 	"github.com/labstack/gommon/log"
-	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/postgres"
 )
 
 type Resources struct {
-	repository repositories.Resources
+	repository postgres.Resources
 }
 
-func NewResourcesService(repository repositories.Resources) *Resources {
+func NewResourcesService(repository postgres.Resources) *Resources {
 	return &Resources{
 		repository: repository,
 	}

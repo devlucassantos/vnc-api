@@ -4,14 +4,14 @@ import (
 	"github.com/devlucassantos/vnc-domains/src/domains/article"
 	"github.com/google/uuid"
 	"vnc-api/core/filters"
-	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/postgres"
 )
 
 type Article struct {
-	repository repositories.Article
+	repository postgres.Article
 }
 
-func NewArticleService(repository repositories.Article) *Article {
+func NewArticleService(repository postgres.Article) *Article {
 	return &Article{
 		repository: repository,
 	}

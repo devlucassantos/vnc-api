@@ -7,18 +7,19 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
-	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/postgres"
+	"vnc-api/core/interfaces/redis"
 	"vnc-api/core/interfaces/services"
 	"vnc-api/core/services/utils"
 )
 
 type Authentication struct {
-	userRepository    repositories.User
-	sessionRepository repositories.Session
+	userRepository    postgres.User
+	sessionRepository redis.Session
 	emailService      services.Email
 }
 
-func NewAuthenticationService(userRepository repositories.User, sessionRepository repositories.Session,
+func NewAuthenticationService(userRepository postgres.User, sessionRepository redis.Session,
 	emailService services.Email) *Authentication {
 	return &Authentication{
 		userRepository:    userRepository,
@@ -60,13 +61,14 @@ func (instance Authentication) SignUp(signUpData user.User) (*user.User, error) 
 	sessionId := uuid.New()
 	userData, err = userData.NewUpdater().Tokens(sessionId).Build()
 	if err != nil {
-		log.Errorf("Error generating tokens for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error generating tokens for user %s: %s", signUpData.Email(), err.Error())
 		return nil, err
 	}
 
-	err = instance.sessionRepository.CreateSession(userData.Id(), sessionId, userData.AccessToken(), userData.RefreshToken())
+	err = instance.sessionRepository.CreateSession(userData.Id(), sessionId, userData.AccessToken(),
+		userData.RefreshToken())
 	if err != nil {
-		log.Errorf("Error creating session for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error creating session for user %s: %s", signUpData.Email(), err.Error())
 		return nil, err
 	}
 
@@ -74,7 +76,7 @@ func (instance Authentication) SignUp(signUpData user.User) (*user.User, error) 
 		err = instance.emailService.SendUserAccountActivationEmail(*userData)
 		if err != nil {
 			log.Errorf("Error sending account activation email for user %s when creating account: %s",
-				userData.Email(), err.Error())
+				signUpData.Email(), err.Error())
 		}
 	}()
 
@@ -90,26 +92,26 @@ func (instance Authentication) SignIn(signInData user.User) (*user.User, error) 
 
 	decodedPassword, err := hex.DecodeString(userData.Password())
 	if err != nil {
-		log.Errorf("Error decoding password for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error decoding password for user %s: %s", signInData.Email(), err.Error())
 		return nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword(decodedPassword, []byte(signInData.Password()))
 	if err != nil {
-		log.Warnf("Error comparing password for user %s: %s", userData.Email(), err.Error())
+		log.Warnf("Error comparing password for user %s: %s", signInData.Email(), err.Error())
 		return nil, errors.New("incorrect password")
 	}
 
 	sessionId := uuid.New()
 	userData, err = userData.NewUpdater().Tokens(sessionId).Build()
 	if err != nil {
-		log.Errorf("Error generating tokens for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error generating tokens for user %s: %s", signInData.Email(), err.Error())
 		return nil, err
 	}
 
 	err = instance.sessionRepository.CreateSession(userData.Id(), sessionId, userData.AccessToken(), userData.RefreshToken())
 	if err != nil {
-		log.Errorf("Error creating session for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error creating session for user %s: %s", signInData.Email(), err.Error())
 		return nil, err
 	}
 
@@ -135,31 +137,31 @@ func (instance Authentication) RefreshTokens(userId uuid.UUID, sessionId uuid.UU
 
 	tokenExists, err := instance.sessionRepository.RefreshTokenExists(userData.Id(), sessionId, refreshToken)
 	if err != nil {
-		log.Errorf("Error checking if the refresh token for user %s exists: %s", userData.Email(), err.Error())
+		log.Errorf("Error checking if the refresh token for user %s exists: %s", userId, err.Error())
 		return nil, err
 	}
 
 	if !tokenExists {
-		log.Warnf("The refresh token for user %s is invalid", userData.Email())
+		log.Warnf("The refresh token for user %s is invalid", userId)
 		return nil, errors.New("invalid token")
 	}
 
 	err = instance.sessionRepository.DeleteSession(userData.Id(), sessionId)
 	if err != nil {
-		log.Errorf("Error removing access token for user %s from the database: %s", userData.Email(),
-			err.Error())
+		log.Errorf("Error removing access token for user %s from the database: %s", userId, err.Error())
 		return nil, err
 	}
 
 	userData, err = userData.NewUpdater().Tokens(sessionId).Build()
 	if err != nil {
-		log.Errorf("Error generating tokens for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error generating tokens for user %s: %s", userId, err.Error())
 		return nil, err
 	}
 
-	err = instance.sessionRepository.CreateSession(userData.Id(), sessionId, userData.AccessToken(), userData.RefreshToken())
+	err = instance.sessionRepository.CreateSession(userData.Id(), sessionId, userData.AccessToken(),
+		userData.RefreshToken())
 	if err != nil {
-		log.Errorf("Error updating the session for user %s: %s", userData.Email(), err.Error())
+		log.Errorf("Error updating the session for user %s: %s", userId, err.Error())
 		return nil, err
 	}
 

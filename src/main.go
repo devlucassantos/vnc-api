@@ -1,7 +1,7 @@
 package main
 
 import (
-	"vnc-api/api/config"
+	"vnc-api/adapters/api/config"
 	_ "vnc-api/docs"
 )
 

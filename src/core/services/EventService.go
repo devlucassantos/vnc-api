@@ -3,14 +3,14 @@ package services
 import (
 	"github.com/devlucassantos/vnc-domains/src/domains/event"
 	"github.com/google/uuid"
-	"vnc-api/core/interfaces/repositories"
+	"vnc-api/core/interfaces/postgres"
 )
 
 type Event struct {
-	repository repositories.Event
+	repository postgres.Event
 }
 
-func NewEventService(repository repositories.Event) *Event {
+func NewEventService(repository postgres.Event) *Event {
 	return &Event{
 		repository: repository,
 	}

@@ -14,7 +14,7 @@ RUN go mod tidy && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o vnc-api
 
 FROM gcr.io/distroless/static
 
-COPY --from=builder /app/src/api/config/authorization /api/config/authorization
+COPY --from=builder /app/src/adapters/api/config/authorization /adapters/api/config/authorization
 COPY --from=builder /app/src/core/services/resources /core/services/resources
 COPY --from=builder /app/src/vnc-api /vnc-api
 
