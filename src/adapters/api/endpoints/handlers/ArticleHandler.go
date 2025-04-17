@@ -54,7 +54,7 @@ func NewArticleHandler(articleService services.Article, resourceService services
 // @Param       propositionExternalAuthorId query string false "ID of the external author who drafted the proposition"
 // @Param       votingStartDate             query string false "Date from which the voting results were announced. Accepted format: YYYY-MM-DD"
 // @Param       votingEndDate               query string false "Date until which the voting results were announced. Accepted format: YYYY-MM-DD"
-// @Param       isVotingApproved            query bool   false "Is the voting approved?"
+// @Param       votingStatus                query string false "Voting status. Accepted values: approved, rejected and undetermined"
 // @Param       votingLegislativeBodyId     query string false "ID of the legislative body responsible for the voting"
 // @Param       eventStartDate              query string false "Date from which the events occurred. Accepted format: YYYY-MM-DD"
 // @Param       eventEndDate                query string false "Date until which the events occurred. Accepted format: YYYY-MM-DD"
@@ -232,21 +232,20 @@ func getArticleQueryParametersFromContext(context echo.Context) (*filters.Articl
 		return nil, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage)
 	}
 
-	isVotingApprovedParameter := context.QueryParam("isVotingApproved")
-	if isVotingApprovedParameter != "" {
-		parameter, parameterDescription := "isVotingApproved", "Is the voting approved?"
-		isVotingApproved, httpError := utils.ConvertFromStringToBool(isVotingApprovedParameter, parameter,
-			parameterDescription)
-		if httpError != nil {
-			log.Warn("Error converting the isVotingApproved parameter: ", httpError.Message)
-			return nil, httpError
+	votingStatusParameter := context.QueryParam("votingStatus")
+	if votingStatusParameter != "" {
+		if votingStatusParameter != "approved" && votingStatusParameter != "rejected" &&
+			votingStatusParameter != "undetermined" {
+			errorMessage := fmt.Sprint("Invalid parameter: Voting status (votingStatus)")
+			log.Warn(errorMessage)
+			return nil, response.NewHttpError(http.StatusBadRequest, errorMessage)
 		}
-		articleFilter.Voting.IsVotingApproved = &isVotingApproved
+		articleFilter.Voting.Status = votingStatusParameter
 	}
 
 	votingLegislativeBodyIdParameter := context.QueryParam("votingLegislativeBodyId")
 	if votingLegislativeBodyIdParameter != "" {
-		parameter, parameterDescription := "votingLegislativeBodyId", "Voting Legislative Body ID"
+		parameter, parameterDescription := "votingLegislativeBodyId", "Voting legislative body ID"
 		votingLegislativeBodyId, httpError := utils.ConvertFromStringToUuid(votingLegislativeBodyIdParameter, parameter,
 			parameterDescription)
 		if httpError != nil {
@@ -289,7 +288,7 @@ func getArticleQueryParametersFromContext(context echo.Context) (*filters.Articl
 
 	eventSituationIdParameter := context.QueryParam("eventSituationId")
 	if eventSituationIdParameter != "" {
-		parameter, parameterDescription := "eventSituationId", "Event Situation ID"
+		parameter, parameterDescription := "eventSituationId", "Event situation ID"
 		eventSituationId, httpError := utils.ConvertFromStringToUuid(eventSituationIdParameter, parameter,
 			parameterDescription)
 		if httpError != nil {
@@ -301,7 +300,7 @@ func getArticleQueryParametersFromContext(context echo.Context) (*filters.Articl
 
 	eventLegislativeBodyIdParameter := context.QueryParam("eventLegislativeBodyId")
 	if eventLegislativeBodyIdParameter != "" {
-		parameter, parameterDescription := "eventLegislativeBodyId", "Event Legislative Body ID"
+		parameter, parameterDescription := "eventLegislativeBodyId", "Event legislative body ID"
 		eventLegislativeBodyId, httpError := utils.ConvertFromStringToUuid(eventLegislativeBodyIdParameter, parameter,
 			parameterDescription)
 		if httpError != nil {
@@ -313,7 +312,7 @@ func getArticleQueryParametersFromContext(context echo.Context) (*filters.Articl
 
 	eventRapporteurIdParameter := context.QueryParam("eventRapporteurId")
 	if eventRapporteurIdParameter != "" {
-		parameter, parameterDescription := "eventRapporteurId", "Event Rapporteur ID"
+		parameter, parameterDescription := "eventRapporteurId", "Event rapporteur ID"
 		eventRapporteurId, httpError := utils.ConvertFromStringToUuid(eventRapporteurIdParameter, parameter,
 			parameterDescription)
 		if httpError != nil {
@@ -396,7 +395,7 @@ func getArticleQueryParametersFromContext(context echo.Context) (*filters.Articl
 // @Param       propositionExternalAuthorId query string false "ID of the external author who drafted the proposition"
 // @Param       votingStartDate             query string false "Date from which the voting results were announced. Accepted format: YYYY-MM-DD"
 // @Param       votingEndDate               query string false "Date until which the voting results were announced. Accepted format: YYYY-MM-DD"
-// @Param       isVotingApproved            query bool   false "Is the voting approved?"
+// @Param       votingStatus                query string false "Voting status. Accepted values: approved, rejected and undetermined"
 // @Param       votingLegislativeBodyId     query string false "ID of the legislative body responsible for the voting"
 // @Param       eventStartDate              query string false "Date from which the events occurred. Accepted format: YYYY-MM-DD"
 // @Param       eventEndDate                query string false "Date until which the events occurred. Accepted format: YYYY-MM-DD"
@@ -698,7 +697,7 @@ func (instance Article) GetTrendingArticlesByType(context echo.Context) error {
 // @Param       propositionExternalAuthorId query string false "ID of the external author who drafted the proposition"
 // @Param       votingStartDate             query string false "Date from which the voting results were announced. Accepted format: YYYY-MM-DD"
 // @Param       votingEndDate               query string false "Date until which the voting results were announced. Accepted format: YYYY-MM-DD"
-// @Param       isVotingApproved            query bool   false "Is the voting approved?"
+// @Param       votingStatus                query string false "Voting status. Accepted values: approved, rejected and undetermined"
 // @Param       votingLegislativeBodyId     query string false "ID of the legislative body responsible for the voting"
 // @Param       eventStartDate              query string false "Date from which the events occurred. Accepted format: YYYY-MM-DD"
 // @Param       eventEndDate                query string false "Date until which the events occurred. Accepted format: YYYY-MM-DD"

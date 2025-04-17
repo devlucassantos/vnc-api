@@ -765,10 +765,10 @@ paths:
         in: query
         name: votingEndDate
         type: string
-      - description: Is the voting approved?
+      - description: 'Voting status. Accepted values: approved, rejected and undetermined'
         in: query
-        name: isVotingApproved
-        type: boolean
+        name: votingStatus
+        type: string
       - description: ID of the legislative body responsible for the voting
         in: query
         name: votingLegislativeBodyId
@@ -1192,10 +1192,10 @@ paths:
         in: query
         name: votingEndDate
         type: string
-      - description: Is the voting approved?
+      - description: 'Voting status. Accepted values: approved, rejected and undetermined'
         in: query
-        name: isVotingApproved
-        type: boolean
+        name: votingStatus
+        type: string
       - description: ID of the legislative body responsible for the voting
         in: query
         name: votingLegislativeBodyId
@@ -1366,10 +1366,10 @@ paths:
         in: query
         name: votingEndDate
         type: string
-      - description: Is the voting approved?
+      - description: 'Voting status. Accepted values: approved, rejected and undetermined'
         in: query
-        name: isVotingApproved
-        type: boolean
+        name: votingStatus
+        type: string
       - description: ID of the legislative body responsible for the voting
         in: query
         name: votingLegislativeBodyId

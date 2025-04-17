@@ -9,7 +9,7 @@ import (
 type Voting struct {
 	StartDate         *time.Time
 	EndDate           *time.Time
-	IsVotingApproved  *bool
+	Status            string
 	LegislativeBodyId *uuid.UUID
 }
 

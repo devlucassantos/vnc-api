@@ -121,21 +121,15 @@ func (articleSelectSqlManager) TotalNumberOfPropositions() string {
 				(prop.title ILIKE $3 OR prop.content ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				((deputy.id IS NULL AND ($6::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $6::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.deputy_id = $6 AND article.id = prop.article_id))) AND
-				((previous_party.id IS NULL AND ($7::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $7::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.party_id = $7 AND article.id = prop.article_id))) AND
-				((external_author.id IS NULL AND (($6::uuid IS NOT NULL OR $7::uuid IS NOT NULL) AND $8::uuid IS NULL))
-				OR $8::uuid IS NULL OR (SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.external_author_id = $8 AND article.id = prop.article_id)))`
+				($6::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.deputy_id = $6::uuid AND p.article_id = article.id)) AND
+				($7::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.party_id = $7::uuid AND p.article_id = article.id)) AND
+				($8::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.external_author_id = $8::uuid AND p.article_id = article.id))`
 }
 
 func (articleSelectSqlManager) TotalNumberOfVotes() string {
@@ -152,7 +146,10 @@ func (articleSelectSqlManager) TotalNumberOfVotes() string {
 				DATE_TRUNC('day', voting.result_announced_at) >= DATE_TRUNC('day',
 				COALESCE($6, voting.result_announced_at)) AND
 				DATE_TRUNC('day', voting.result_announced_at) <= DATE_TRUNC('day',
-				COALESCE($7, voting.result_announced_at)) AND voting.is_approved = COALESCE($8, voting.is_approved) AND
+				COALESCE($7, voting.result_announced_at)) AND
+			    (CASE WHEN $8 = 'approved' THEN voting.is_approved = true
+			        WHEN $8 = 'rejected' THEN voting.is_approved = false
+    				WHEN $8 = 'undetermined' THEN voting.is_approved IS NULL ELSE TRUE END) AND
 				voting.legislative_body_id = COALESCE($9, voting.legislative_body_id)`
 }
 
@@ -246,52 +243,46 @@ func (articleSelectSqlManager) All() string {
 
 func (articleSelectSqlManager) Propositions() string {
 	return `SELECT article.id AS article_id, article.created_at AS article_created_at,
-				article.updated_at AS article_updated_at,
-				COALESCE(AVG(user_article.rating), 0) AS article_average_rating,
-				COUNT(user_article.rating) AS article_number_of_ratings,
-				article_type.id AS article_type_id, article_type.description AS article_type_description,
-				article_type.codes AS article_type_codes, article_type.color AS article_type_color,
-				prop.id AS proposition_id, prop.title AS proposition_title, prop.content AS proposition_content,
-				COALESCE(prop.image_url, '') AS proposition_image_url,
-				COALESCE(prop.image_description, '') AS proposition_image_description,
-				proposition_type.id AS proposition_type_id,
-				proposition_type.description AS proposition_type_description,
-				proposition_type.color AS proposition_type_color
-			FROM article
-				INNER JOIN article_type ON article_type.id = article.article_type_id
-				INNER JOIN proposition prop ON prop.article_id = article.id
-				INNER JOIN proposition_type ON proposition_type.id = prop.proposition_type_id
-				INNER JOIN proposition_author ON proposition_author.proposition_id = prop.id
-				LEFT JOIN deputy ON deputy.id = proposition_author.deputy_id
-				LEFT JOIN party previous_party ON previous_party.id = proposition_author.party_id
-				LEFT JOIN external_author ON external_author.id = proposition_author.external_author_id
-				LEFT JOIN user_article ON user_article.article_id = article.id
-			WHERE article.active = true AND article_type.active = true AND prop.active = true AND
-				proposition_type.active = true AND proposition_author.active = true AND deputy.active IS NOT false AND
-				previous_party.active IS NOT false AND external_author.active IS NOT false AND
-				user_article.active IS NOT false AND article_type.id = COALESCE($1, article_type.id) AND
-				proposition_type.id = COALESCE($2, proposition_type.id) AND
-				(prop.title ILIKE $3 OR prop.content ILIKE $3) AND
-				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
-				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				((deputy.id IS NULL AND ($6::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $6::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.deputy_id = $6 AND article.id = prop.article_id))) AND
-				((previous_party.id IS NULL AND ($7::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $7::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.party_id = $7 AND article.id = prop.article_id))) AND
-				((external_author.id IS NULL AND (($6::uuid IS NOT NULL OR $7::uuid IS NOT NULL) AND $8::uuid IS NULL))
-				OR $8::uuid IS NULL OR (SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.external_author_id = $8 AND article.id = prop.article_id)))
-			GROUP BY article.id, article.reference_date_time, article_type.id, prop.id, proposition_type.id
-			ORDER BY article.reference_date_time DESC
-			OFFSET $9 LIMIT $10`
+       article.updated_at AS article_updated_at,
+       COALESCE(AVG(user_article.rating), 0) AS article_average_rating,
+       COUNT(user_article.rating) AS article_number_of_ratings,
+       article_type.id AS article_type_id, article_type.description AS article_type_description,
+       article_type.codes AS article_type_codes, article_type.color AS article_type_color,
+       prop.id AS proposition_id, prop.title AS proposition_title, prop.content AS proposition_content,
+       COALESCE(prop.image_url, '') AS proposition_image_url,
+       COALESCE(prop.image_description, '') AS proposition_image_description,
+       proposition_type.id AS proposition_type_id,
+       proposition_type.description AS proposition_type_description,
+       proposition_type.color AS proposition_type_color
+FROM article
+         INNER JOIN article_type ON article_type.id = article.article_type_id
+         INNER JOIN proposition prop ON prop.article_id = article.id
+         INNER JOIN proposition_type ON proposition_type.id = prop.proposition_type_id
+         INNER JOIN proposition_author ON proposition_author.proposition_id = prop.id
+         LEFT JOIN deputy ON deputy.id = proposition_author.deputy_id
+         LEFT JOIN party previous_party ON previous_party.id = proposition_author.party_id
+         LEFT JOIN external_author ON external_author.id = proposition_author.external_author_id
+         LEFT JOIN user_article ON user_article.article_id = article.id
+WHERE article.active = true AND article_type.active = true AND prop.active = true AND
+    proposition_type.active = true AND proposition_author.active = true AND deputy.active IS NOT false AND
+    previous_party.active IS NOT false AND external_author.active IS NOT false AND
+    user_article.active IS NOT false AND article_type.id = COALESCE($1, article_type.id) AND
+    proposition_type.id = COALESCE($2, proposition_type.id) AND
+          (prop.title ILIKE $3 OR prop.content ILIKE $3) AND
+    DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
+    DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
+    ($6::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+    	INNER JOIN proposition p ON p.id = pa.proposition_id
+    WHERE pa.deputy_id = $6::uuid AND p.article_id = article.id)) AND
+    ($7::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+    	INNER JOIN proposition p ON p.id = pa.proposition_id
+    WHERE pa.party_id = $7::uuid AND p.article_id = article.id)) AND
+    ($8::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+    	INNER JOIN proposition p ON p.id = pa.proposition_id
+    WHERE pa.external_author_id = $8::uuid AND p.article_id = article.id))
+GROUP BY article.id, article.reference_date_time, article_type.id, prop.id, proposition_type.id
+ORDER BY article.reference_date_time DESC
+OFFSET $9 LIMIT $10`
 }
 
 func (articleSelectSqlManager) Votes() string {
@@ -301,8 +292,9 @@ func (articleSelectSqlManager) Votes() string {
 				COUNT(user_article.rating) AS article_number_of_ratings,
 				article_type.id AS article_type_id, article_type.description AS article_type_description,
 				article_type.codes AS article_type_codes, article_type.color AS article_type_color,
-				voting.id AS voting_id, voting.code AS voting_code, voting.result AS voting_result,
-				voting.is_approved AS voting_is_approved
+				voting.id AS voting_id, voting.code AS voting_code, voting.description AS voting_description,
+    			voting.result AS voting_result, voting.result_announced_at AS voting_result_announced_at,
+    			voting.is_approved AS voting_is_approved
 			FROM article
 				INNER JOIN article_type ON article_type.id = article.article_type_id
 				INNER JOIN voting ON voting.article_id = article.id
@@ -315,7 +307,10 @@ func (articleSelectSqlManager) Votes() string {
 				DATE_TRUNC('day', voting.result_announced_at) >= DATE_TRUNC('day',
 				COALESCE($6, voting.result_announced_at)) AND
 				DATE_TRUNC('day', voting.result_announced_at) <= DATE_TRUNC('day',
-				COALESCE($7, voting.result_announced_at)) AND voting.is_approved = COALESCE($8, voting.is_approved) AND
+				COALESCE($7, voting.result_announced_at)) AND
+			    (CASE WHEN $8 = 'approved' THEN voting.is_approved = true
+			        WHEN $8 = 'rejected' THEN voting.is_approved = false
+    				WHEN $8 = 'undetermined' THEN voting.is_approved IS NULL ELSE TRUE END) AND
 				voting.legislative_body_id = COALESCE($9, voting.legislative_body_id)
 			GROUP BY article.id, article.reference_date_time, article_type.id, voting.id
 			ORDER BY article.reference_date_time DESC
@@ -463,21 +458,15 @@ func (articleSelectSqlManager) TrendingPropositions() string {
 				(prop.title ILIKE $3 OR prop.content ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				((deputy.id IS NULL AND ($6::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $6::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.deputy_id = $6 AND article.id = prop.article_id))) AND
-				((previous_party.id IS NULL AND ($7::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $7::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.party_id = $7 AND article.id = prop.article_id))) AND
-				((external_author.id IS NULL AND (($6::uuid IS NOT NULL OR $7::uuid IS NOT NULL) AND $8::uuid IS NULL))
-				OR $8::uuid IS NULL OR (SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.external_author_id = $8 AND article.id = prop.article_id)))
+				($6::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.deputy_id = $6::uuid AND p.article_id = article.id)) AND
+				($7::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.party_id = $7::uuid AND p.article_id = article.id)) AND
+				($8::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.external_author_id = $8::uuid AND p.article_id = article.id))
 			GROUP BY article.id, article.reference_date_time, article_type.id, prop.id, proposition_type.id
 			ORDER BY article_views DESC, article.reference_date_time DESC
 			OFFSET $9 LIMIT $10`
@@ -490,8 +479,9 @@ func (articleSelectSqlManager) TrendingVotes() string {
 				COUNT(user_article.rating) AS article_number_of_ratings,
 				article_type.id AS article_type_id, article_type.description AS article_type_description,
 				article_type.codes AS article_type_codes, article_type.color AS article_type_color,
-				voting.id AS voting_id, voting.code AS voting_code, voting.result AS voting_result,
-				voting.is_approved AS voting_is_approved
+				voting.id AS voting_id, voting.code AS voting_code, voting.description AS voting_description,
+    			voting.result AS voting_result, voting.result_announced_at AS voting_result_announced_at,
+    			voting.is_approved AS voting_is_approved
 			FROM article
 				INNER JOIN article_type ON article_type.id = article.article_type_id
 				INNER JOIN voting ON voting.article_id = article.id
@@ -506,7 +496,10 @@ func (articleSelectSqlManager) TrendingVotes() string {
 				DATE_TRUNC('day', voting.result_announced_at) >= DATE_TRUNC('day',
 				COALESCE($6, voting.result_announced_at)) AND
 				DATE_TRUNC('day', voting.result_announced_at) <= DATE_TRUNC('day',
-				COALESCE($7, voting.result_announced_at)) AND voting.is_approved = COALESCE($8, voting.is_approved) AND
+				COALESCE($7, voting.result_announced_at)) AND
+			    (CASE WHEN $8 = 'approved' THEN voting.is_approved = true
+			        WHEN $8 = 'rejected' THEN voting.is_approved = false
+    				WHEN $8 = 'undetermined' THEN voting.is_approved IS NULL ELSE TRUE END) AND
 				voting.legislative_body_id = COALESCE($9, voting.legislative_body_id)
 			GROUP BY article.id, article.reference_date_time, article_type.id, voting.id
 			ORDER BY article_views DESC, article.reference_date_time DESC
@@ -950,21 +943,15 @@ func (articleSelectSqlManager) NumberOfPropositionsBookmarkedToViewLater() strin
 				(prop.title ILIKE $3 OR prop.content ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				((deputy.id IS NULL AND ($6::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $6::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.deputy_id = $6 AND article.id = prop.article_id))) AND
-				((previous_party.id IS NULL AND ($7::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $7::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.party_id = $7 AND article.id = prop.article_id))) AND
-				((external_author.id IS NULL AND (($6::uuid IS NOT NULL OR $7::uuid IS NOT NULL) AND $8::uuid IS NULL))
-				OR $8::uuid IS NULL OR (SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.external_author_id = $8 AND article.id = prop.article_id))) AND
+				($6::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.deputy_id = $6::uuid AND p.article_id = article.id)) AND
+				($7::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.party_id = $7::uuid AND p.article_id = article.id)) AND
+				($8::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.external_author_id = $8::uuid AND p.article_id = article.id)) AND
 				user_article.user_id = $9 AND user_article.view_later = true`
 }
 
@@ -982,7 +969,10 @@ func (articleSelectSqlManager) NumberOfVotesBookmarkedToViewLater() string {
 				DATE_TRUNC('day', voting.result_announced_at) >= DATE_TRUNC('day',
 				COALESCE($6, voting.result_announced_at)) AND
 				DATE_TRUNC('day', voting.result_announced_at) <= DATE_TRUNC('day',
-				COALESCE($7, voting.result_announced_at)) AND voting.is_approved = COALESCE($8, voting.is_approved) AND
+				COALESCE($7, voting.result_announced_at)) AND
+			    (CASE WHEN $8 = 'approved' THEN voting.is_approved = true
+			        WHEN $8 = 'rejected' THEN voting.is_approved = false
+    				WHEN $8 = 'undetermined' THEN voting.is_approved IS NULL ELSE TRUE END) AND
 				voting.legislative_body_id = COALESCE($9, voting.legislative_body_id) AND
 				user_article.user_id = $10 AND user_article.view_later = true`
 }
@@ -1064,21 +1054,15 @@ func (articleSelectSqlManager) PropositionsBookmarkedToViewLater() string {
 				(prop.title ILIKE $3 OR prop.content ILIKE $3) AND
 				DATE_TRUNC('day', article.created_at) >= DATE_TRUNC('day', COALESCE($4, article.created_at)) AND
 				DATE_TRUNC('day', article.created_at) <= DATE_TRUNC('day', COALESCE($5, article.created_at)) AND
-				((deputy.id IS NULL AND ($6::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $6::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.deputy_id = $6 AND article.id = prop.article_id))) AND
-				((previous_party.id IS NULL AND ($7::uuid IS NULL AND $8::uuid IS NOT NULL)) OR $7::uuid IS NULL OR
-				(SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.party_id = $7 AND article.id = prop.article_id))) AND
-				((external_author.id IS NULL AND (($6::uuid IS NOT NULL OR $7::uuid IS NOT NULL) AND $8::uuid IS NULL))
-				OR $8::uuid IS NULL OR (SELECT EXISTS(SELECT 1 FROM article
-					INNER JOIN proposition prop2 ON prop2.article_id = article.id
-					INNER JOIN proposition_author ON proposition_author.proposition_id = prop2.id
-				WHERE proposition_author.external_author_id = $8 AND article.id = prop.article_id))) AND
+				($6::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.deputy_id = $6::uuid AND p.article_id = article.id)) AND
+				($7::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.party_id = $7::uuid AND p.article_id = article.id)) AND
+				($8::uuid IS NULL OR EXISTS (SELECT 1 FROM proposition_author pa
+					INNER JOIN proposition p ON p.id = pa.proposition_id
+				WHERE pa.external_author_id = $8::uuid AND p.article_id = article.id)) AND
 				user_article.user_id = $9 AND user_article.view_later = true
 			GROUP BY article.id, user_article.rating, user_article.view_later, user_article.view_later_set_at
 			ORDER BY user_article.view_later_set_at DESC
@@ -1100,7 +1084,10 @@ func (articleSelectSqlManager) VotesBookmarkedToViewLater() string {
 				DATE_TRUNC('day', voting.result_announced_at) >= DATE_TRUNC('day',
 				COALESCE($6, voting.result_announced_at)) AND
 				DATE_TRUNC('day', voting.result_announced_at) <= DATE_TRUNC('day',
-				COALESCE($7, voting.result_announced_at)) AND voting.is_approved = COALESCE($8, voting.is_approved) AND
+				COALESCE($7, voting.result_announced_at)) AND
+			    (CASE WHEN $8 = 'approved' THEN voting.is_approved = true
+			        WHEN $8 = 'rejected' THEN voting.is_approved = false
+    				WHEN $8 = 'undetermined' THEN voting.is_approved IS NULL ELSE TRUE END) AND
 				voting.legislative_body_id = COALESCE($9, voting.legislative_body_id) AND
 				user_article.user_id = $10 AND user_article.view_later = true
 			GROUP BY article.id, user_article.rating, user_article.view_later, user_article.view_later_set_at

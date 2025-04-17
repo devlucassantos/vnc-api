@@ -97,9 +97,9 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "boolean",
-                        "description": "Is the voting approved?",
-                        "name": "isVotingApproved",
+                        "type": "string",
+                        "description": "Voting status. Accepted values: approved, rejected and undetermined",
+                        "name": "votingStatus",
                         "in": "query"
                     },
                     {
@@ -275,9 +275,9 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "boolean",
-                        "description": "Is the voting approved?",
-                        "name": "isVotingApproved",
+                        "type": "string",
+                        "description": "Voting status. Accepted values: approved, rejected and undetermined",
+                        "name": "votingStatus",
                         "in": "query"
                     },
                     {
@@ -523,9 +523,9 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "boolean",
-                        "description": "Is the voting approved?",
-                        "name": "isVotingApproved",
+                        "type": "string",
+                        "description": "Voting status. Accepted values: approved, rejected and undetermined",
+                        "name": "votingStatus",
                         "in": "query"
                     },
                     {
