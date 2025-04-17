@@ -54,7 +54,7 @@ func NewArticleHandler(articleService services.Article, resourceService services
 // @Param       propositionExternalAuthorId query string false "ID of the external author who drafted the proposition"
 // @Param       votingStartDate             query string false "Date from which the voting results were announced. Accepted format: YYYY-MM-DD"
 // @Param       votingEndDate               query string false "Date until which the voting results were announced. Accepted format: YYYY-MM-DD"
-// @Param       votingStatus                query string false "Voting status. Accepted values: approved, rejected and undetermined"
+// @Param       votingResult                query string false "Voting result. Accepted values: approved, rejected and undetermined"
 // @Param       votingLegislativeBodyId     query string false "ID of the legislative body responsible for the voting"
 // @Param       eventStartDate              query string false "Date from which the events occurred. Accepted format: YYYY-MM-DD"
 // @Param       eventEndDate                query string false "Date until which the events occurred. Accepted format: YYYY-MM-DD"
@@ -232,15 +232,15 @@ func getArticleQueryParametersFromContext(context echo.Context) (*filters.Articl
 		return nil, response.NewHttpError(http.StatusUnprocessableEntity, errorMessage)
 	}
 
-	votingStatusParameter := context.QueryParam("votingStatus")
-	if votingStatusParameter != "" {
-		if votingStatusParameter != "approved" && votingStatusParameter != "rejected" &&
-			votingStatusParameter != "undetermined" {
-			errorMessage := fmt.Sprint("Invalid parameter: Voting status (votingStatus)")
+	votingResultParameter := context.QueryParam("votingResult")
+	if votingResultParameter != "" {
+		if votingResultParameter != "approved" && votingResultParameter != "rejected" &&
+			votingResultParameter != "undetermined" {
+			errorMessage := fmt.Sprint("Invalid parameter: Voting result (votingResult)")
 			log.Warn(errorMessage)
 			return nil, response.NewHttpError(http.StatusBadRequest, errorMessage)
 		}
-		articleFilter.Voting.Status = votingStatusParameter
+		articleFilter.Voting.Result = votingResultParameter
 	}
 
 	votingLegislativeBodyIdParameter := context.QueryParam("votingLegislativeBodyId")
@@ -395,7 +395,7 @@ func getArticleQueryParametersFromContext(context echo.Context) (*filters.Articl
 // @Param       propositionExternalAuthorId query string false "ID of the external author who drafted the proposition"
 // @Param       votingStartDate             query string false "Date from which the voting results were announced. Accepted format: YYYY-MM-DD"
 // @Param       votingEndDate               query string false "Date until which the voting results were announced. Accepted format: YYYY-MM-DD"
-// @Param       votingStatus                query string false "Voting status. Accepted values: approved, rejected and undetermined"
+// @Param       votingResult                query string false "Voting result. Accepted values: approved, rejected and undetermined"
 // @Param       votingLegislativeBodyId     query string false "ID of the legislative body responsible for the voting"
 // @Param       eventStartDate              query string false "Date from which the events occurred. Accepted format: YYYY-MM-DD"
 // @Param       eventEndDate                query string false "Date until which the events occurred. Accepted format: YYYY-MM-DD"
@@ -697,7 +697,7 @@ func (instance Article) GetTrendingArticlesByType(context echo.Context) error {
 // @Param       propositionExternalAuthorId query string false "ID of the external author who drafted the proposition"
 // @Param       votingStartDate             query string false "Date from which the voting results were announced. Accepted format: YYYY-MM-DD"
 // @Param       votingEndDate               query string false "Date until which the voting results were announced. Accepted format: YYYY-MM-DD"
-// @Param       votingStatus                query string false "Voting status. Accepted values: approved, rejected and undetermined"
+// @Param       votingResult                query string false "Voting result. Accepted values: approved, rejected and undetermined"
 // @Param       votingLegislativeBodyId     query string false "ID of the legislative body responsible for the voting"
 // @Param       eventStartDate              query string false "Date from which the events occurred. Accepted format: YYYY-MM-DD"
 // @Param       eventEndDate                query string false "Date until which the events occurred. Accepted format: YYYY-MM-DD"

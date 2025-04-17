@@ -42,7 +42,7 @@ func (instance Article) GetArticles(filter filters.Article, userId uuid.UUID) ([
 	} else if !filter.Voting.IsZero() {
 		err = postgresConnection.Select(&articles, queries.Article().Select().Votes(),
 			filter.TypeId, filter.SpecificTypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate,
-			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Status,
+			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Result,
 			filter.Voting.LegislativeBodyId, filter.Pagination.CalculateOffset(), filter.Pagination.GetItemsPerPage())
 	} else if !filter.Event.IsZero() {
 		err = postgresConnection.Select(&articles, queries.Article().Select().Events(),
@@ -214,7 +214,7 @@ func (instance Article) GetArticles(filter filters.Article, userId uuid.UUID) ([
 	} else if !filter.Voting.IsZero() {
 		err = postgresConnection.Get(&totalNumberOfArticles, queries.Article().Select().TotalNumberOfVotes(),
 			filter.TypeId, filter.SpecificTypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate,
-			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Status,
+			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Result,
 			filter.Voting.LegislativeBodyId)
 	} else if !filter.Event.IsZero() {
 		err = postgresConnection.Get(&totalNumberOfArticles, queries.Article().Select().TotalNumberOfEvents(),
@@ -252,7 +252,7 @@ func (instance Article) GetTrendingArticles(filter filters.Article, userId uuid.
 	} else if !filter.Voting.IsZero() {
 		err = postgresConnection.Select(&trendingArticles, queries.Article().Select().TrendingVotes(),
 			filter.TypeId, filter.SpecificTypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate,
-			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Status,
+			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Result,
 			filter.Voting.LegislativeBodyId, filter.Pagination.CalculateOffset(), filter.Pagination.GetItemsPerPage())
 	} else if !filter.Event.IsZero() {
 		err = postgresConnection.Select(&trendingArticles, queries.Article().Select().TrendingEvents(),
@@ -423,7 +423,7 @@ func (instance Article) GetTrendingArticles(filter filters.Article, userId uuid.
 	} else if !filter.Voting.IsZero() {
 		err = postgresConnection.Get(&totalNumberOfArticles, queries.Article().Select().TotalNumberOfVotes(),
 			filter.TypeId, filter.SpecificTypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate,
-			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Status,
+			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Result,
 			filter.Voting.LegislativeBodyId)
 	} else if !filter.Event.IsZero() {
 		err = postgresConnection.Get(&totalNumberOfArticles, queries.Article().Select().TotalNumberOfEvents(),
@@ -770,7 +770,7 @@ func (instance Article) GetArticlesToViewLater(filter filters.Article, userId uu
 	} else if !filter.Voting.IsZero() {
 		err = postgresConnection.Select(&userArticles, queries.Article().Select().VotesBookmarkedToViewLater(),
 			filter.TypeId, filter.SpecificTypeId, fmt.Sprint("%", filter.Content, "%"), filter.StartDate,
-			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Status,
+			filter.EndDate, filter.Voting.StartDate, filter.Voting.EndDate, filter.Voting.Result,
 			filter.Voting.LegislativeBodyId, userId, filter.Pagination.CalculateOffset(),
 			filter.Pagination.GetItemsPerPage())
 	} else if !filter.Event.IsZero() {
@@ -942,7 +942,7 @@ func (instance Article) GetArticlesToViewLater(filter filters.Article, userId uu
 		err = postgresConnection.Get(&totalNumberOfArticles, queries.Article().Select().
 			NumberOfVotesBookmarkedToViewLater(), filter.TypeId, filter.SpecificTypeId,
 			fmt.Sprint("%", filter.Content, "%"), filter.StartDate, filter.EndDate, filter.Voting.StartDate,
-			filter.Voting.EndDate, filter.Voting.Status, filter.Voting.LegislativeBodyId, userId)
+			filter.Voting.EndDate, filter.Voting.Result, filter.Voting.LegislativeBodyId, userId)
 	} else if !filter.Event.IsZero() {
 		err = postgresConnection.Get(&totalNumberOfArticles, queries.Article().Select().
 			NumberOfEventsBookmarkedToViewLater(), filter.TypeId, filter.SpecificTypeId,

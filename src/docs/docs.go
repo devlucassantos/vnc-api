@@ -98,8 +98,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Voting status. Accepted values: approved, rejected and undetermined",
-                        "name": "votingStatus",
+                        "description": "Voting result. Accepted values: approved, rejected and undetermined",
+                        "name": "votingResult",
                         "in": "query"
                     },
                     {
@@ -276,8 +276,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Voting status. Accepted values: approved, rejected and undetermined",
-                        "name": "votingStatus",
+                        "description": "Voting result. Accepted values: approved, rejected and undetermined",
+                        "name": "votingResult",
                         "in": "query"
                     },
                     {
@@ -524,8 +524,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Voting status. Accepted values: approved, rejected and undetermined",
-                        "name": "votingStatus",
+                        "description": "Voting result. Accepted values: approved, rejected and undetermined",
+                        "name": "votingResult",
                         "in": "query"
                     },
                     {

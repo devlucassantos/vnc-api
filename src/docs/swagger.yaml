@@ -765,9 +765,9 @@ paths:
         in: query
         name: votingEndDate
         type: string
-      - description: 'Voting status. Accepted values: approved, rejected and undetermined'
+      - description: 'Voting result. Accepted values: approved, rejected and undetermined'
         in: query
-        name: votingStatus
+        name: votingResult
         type: string
       - description: ID of the legislative body responsible for the voting
         in: query
@@ -1192,9 +1192,9 @@ paths:
         in: query
         name: votingEndDate
         type: string
-      - description: 'Voting status. Accepted values: approved, rejected and undetermined'
+      - description: 'Voting result. Accepted values: approved, rejected and undetermined'
         in: query
-        name: votingStatus
+        name: votingResult
         type: string
       - description: ID of the legislative body responsible for the voting
         in: query
@@ -1366,9 +1366,9 @@ paths:
         in: query
         name: votingEndDate
         type: string
-      - description: 'Voting status. Accepted values: approved, rejected and undetermined'
+      - description: 'Voting result. Accepted values: approved, rejected and undetermined'
         in: query
-        name: votingStatus
+        name: votingResult
         type: string
       - description: ID of the legislative body responsible for the voting
         in: query
