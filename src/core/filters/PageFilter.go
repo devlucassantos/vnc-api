@@ -1,6 +1,6 @@
 package filters
 
-type PaginationFilter struct {
+type Pagination struct {
 	Page         *int
 	ItemsPerPage *int
 }
@@ -8,7 +8,7 @@ type PaginationFilter struct {
 const DefaultPageNumberFilter = 1
 const DefaultNumberOfItemsPerPageFilter = 15
 
-func (instance PaginationFilter) GetPage() int {
+func (instance Pagination) GetPage() int {
 	if instance.Page == nil {
 		return DefaultPageNumberFilter
 	}
@@ -16,7 +16,7 @@ func (instance PaginationFilter) GetPage() int {
 	return *instance.Page
 }
 
-func (instance PaginationFilter) GetItemsPerPage() int {
+func (instance Pagination) GetItemsPerPage() int {
 	if instance.ItemsPerPage == nil {
 		return DefaultNumberOfItemsPerPageFilter
 	}
@@ -24,6 +24,6 @@ func (instance PaginationFilter) GetItemsPerPage() int {
 	return *instance.ItemsPerPage
 }
 
-func (instance PaginationFilter) CalculateOffset() int {
+func (instance Pagination) CalculateOffset() int {
 	return (instance.GetPage() - 1) * instance.GetItemsPerPage()
 }
