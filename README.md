@@ -47,7 +47,6 @@ After running the project, all the available routes for accessing the API can be
 > [http://localhost:8083/api/documentation](http://localhost:8083/api/documentation)
 <img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/6b623d88-0e84-4f99-9621-bb87a2d0a1db" />
 
-
 ## Você na Câmara
 
 Você na Câmara (VNC) is a news platform developed to simplify and make accessible the legislative propositions being
